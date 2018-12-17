@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/stackhpc/openhpc.svg?branch=master)](https://travis-ci.com/stackhpc/openhpc)
+[![Build Status](https://travis-ci.com/stackhpc/ansible-role-openhpc.svg?branch=master)](https://travis-ci.com/stackhpc/ansible-role-openhpc)
 
 # stackhpc.openhpc
 
