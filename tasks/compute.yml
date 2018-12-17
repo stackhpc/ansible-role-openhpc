@@ -1,0 +1,19 @@
+---
+- name: Install OpenHPC compute image packages
+  yum:
+    name: "@ohpc-base-compute"
+    state: installed
+
+- name: Install OpenHPC SLURM client packages
+  yum:
+    name: "@ohpc-slurm-client"
+    state: installed
+
+- name: Select the SLURM service to control
+  set_fact:
+    slurm_service: slurmd
+
+- name: Install OpenHPC LMOD
+  yum:
+    name: "lmod-ohpc"
+    state: installed

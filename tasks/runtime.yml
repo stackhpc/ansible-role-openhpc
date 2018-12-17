@@ -1,0 +1,55 @@
+---
+- name: Install OpenHPC runtime Slurm packages
+  yum:
+    name:
+      - "slurm-ohpc"
+      - "munge-ohpc"
+      - "slurm-slurmd-ohpc"
+      - "slurm-example-configs-ohpc"
+    state: installed
+
+- name: Ensure the SLURM spool directory exists
+  file:
+    path: /var/spool/slurm
+    owner: slurm
+    group: slurm
+    mode: 0755
+    state: directory
+
+- name: What is the service
+  debug:
+    var: slurm_service
+
+- name: Ensure SLURM services are enabled
+  service:
+    name: "{{ slurm_service }}"
+    enabled: "{{ slurm_service_enabled | bool }}"
+  notify:
+    - Restart SLURM service
+
+- name: Apply customised SLURM configuration
+  template:
+    src: slurm.conf.j2
+    dest: /etc/slurm/slurm.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: 
+    - Restart SLURM service
+
+- name: Flush handlers
+  meta: flush_handlers
+
+# In case the service isn't running and the config hasn't changed to trigger
+# the handler, ensure it's running here.
+- name: Ensure SLURM services are running
+  service:
+    name: "{{slurm_service}}"
+    state: "{{'started' if slurm_service_enabled|bool else 'stopped'}}"
+
+# Install OpenHPC runtime
+- name: Ensure selected OpenHPC packages are installed
+  yum:
+    name: "{{openhpc_packages}}"
+    state: present
+...

@@ -1,0 +1,12 @@
+---
+- name: Install OpenHPC master SLURM packages
+  yum:
+    name:
+      - "@ohpc-slurm-server"
+      - "slurm-slurmctld-ohpc"
+      - "slurm-example-configs-ohpc"
+    state: installed
+
+- name: Select the SLURM service to control
+  set_fact:
+    slurm_service: slurmctld
