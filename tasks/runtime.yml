@@ -36,6 +36,10 @@
     mode: 0644
   notify: 
     - Restart SLURM service
+  when:
+  - slurm_control_host != none
+  - cluster_name != none
+  - slurm_partitions | length > 0
 
 - name: Flush handlers
   meta: flush_handlers
