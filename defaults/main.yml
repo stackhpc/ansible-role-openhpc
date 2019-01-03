@@ -3,6 +3,6 @@ slurm_service_enabled: true
 slurm_service: slurmd
 slurm_control_host: "{{ groups['cluster_login'] | first }}"
 openhpc_enable:
-  - control: false
-  - batch: false
-  - runtime: false 
+  control: false
+  batch: false
+  runtime: false 
