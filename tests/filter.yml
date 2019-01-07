@@ -1,0 +1,25 @@
+---
+- hosts: openstack
+  connection: local
+  gather_facts: false
+  vars:
+    sp:
+      - localhost0-1
+      - localhost0-2
+      - localhost0-3
+      - localhost1-4
+      - localhost1-6
+      - localhost1-7
+      - localhost1-8
+      - localhost1-10
+    filtered: "{{ sp | group_hosts }}"
+  tasks:
+    - name: Hosts
+      debug: var=filtered
+    - name: Test filter
+      assert:
+        that:
+          - "'localhost0-[1-3]' in filtered"
+          - "'localhost1-[4,6-8,10]' in filtered"
+        msg: "Some assertions did not pass" # alias for fail_msg in 2.7+
+...
