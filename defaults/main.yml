@@ -3,7 +3,7 @@ slurm_service_enabled: true
 slurm_service: slurmd
 slurm_control_host: # Example: "{{ groups['cluster_login'] | first }}"
 slurm_partitions: []
-cluster_name:
+slurm_cluster_name:
 openhpc_packages: []
 openhpc_enable:
   control: false
