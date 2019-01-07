@@ -31,18 +31,18 @@ def _get_hostvar(context, var_name, inventory_hostname=None):
 
 @jinja2.contextfilter
 def group_hosts(context, var_name, inventory_hostname=None):
+    return {g:_group_hosts(context["groups"][g]) for g in var_name}
+
+def _group_hosts(hosts):
     results = {} 
-    for v in var_name:
+    for v in hosts:
         m = pattern.match(v)
         prefix, suffix = m.groups()
         results[prefix] = r = results.get(prefix, [])
         r.append(int(suffix))
+    return ['{}[{}]'.format(k, _group_numbers(v)) for k, v in results.iteritems()]
 
-    groups = ['{}[{}]'.format(k, group_numbers(v)) for k, v in results.iteritems()]
-    return groups
-    #return _get_hostvar(context, var_name, inventory_hostname)
-
-def group_numbers(numbers):
+def _group_numbers(numbers):
     units = []
     prev = min(numbers)
     for v in sorted(numbers):
