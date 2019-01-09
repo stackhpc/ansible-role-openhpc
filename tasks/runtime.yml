@@ -1,4 +1,12 @@
 ---
+- name: Fail if slurm_control_host or slurm_cluster_name or slurm_partitions are undefined
+  fail:
+    msg: "Undefined slurm_control_host or slurm_cluster_name or slurm_partitions."
+  when: 
+    slurm_control_host == none or
+    slurm_cluster_name == none or
+    slurm_partitions == 0
+
 - name: Install OpenHPC runtime Slurm packages
   yum:
     name:
@@ -22,14 +30,6 @@
     enabled: "{{ slurm_service_enabled | bool }}"
   notify:
     - Restart SLURM service
-
-- name: Fail if slurm_control_host or slurm_cluster_name or slurm_partitions are undefined
-  fail:
-    msg: "Undefined slurm_control_host or slurm_cluster_name or slurm_partitions."
-  when: 
-    slurm_control_host == none or
-    slurm_cluster_name == none or
-    slurm_partitions == 0
 
 - name: Apply customised SLURM configuration
   template:

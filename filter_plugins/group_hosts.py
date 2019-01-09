@@ -17,7 +17,8 @@ from ansible import errors
 import jinja2
 import re
 
-pattern = re.compile("(.*\D(?=\d))(\d+)")
+# Pattern to match a hostname with numerical ending
+pattern = re.compile("^(.*\D(?=\d))(\d+)$")
 
 def _get_hostvar(context, var_name, inventory_hostname=None):
     if inventory_hostname is None:
@@ -30,17 +31,21 @@ def _get_hostvar(context, var_name, inventory_hostname=None):
     return namespace.get(var_name)
 
 @jinja2.contextfilter
-def group_hosts(context, var_name, inventory_hostname=None):
-    return {g:_group_hosts(context["groups"][g]) for g in var_name}
+def group_hosts(context, group_names):
+    return {g:_group_hosts(context["groups"].get(g, [])) for g in sorted(group_names)}
 
 def _group_hosts(hosts):
-    results = {} 
+    results = {}
+    unmatchable = []
     for v in hosts:
         m = pattern.match(v)
-        prefix, suffix = m.groups()
-        results[prefix] = r = results.get(prefix, [])
-        r.append(int(suffix))
-    return ['{}[{}]'.format(k, _group_numbers(v)) for k, v in results.iteritems()]
+        if m:
+            prefix, suffix = m.groups()
+            r = results.setdefault(prefix, [])
+            r.append(int(suffix))
+        else:
+            unmatchable.append(v)
+    return ['{}[{}]'.format(k, _group_numbers(v)) for k, v in results.iteritems()] + unmatchable
 
 def _group_numbers(numbers):
     units = []
