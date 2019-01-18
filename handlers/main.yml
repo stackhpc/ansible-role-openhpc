@@ -3,4 +3,8 @@
   service:
     name: "{{slurm_service}}"
     state: reloaded
-  when: slurm_service_enabled | bool
+
+- name: Restart Munge service
+  service:
+    name: "munge"
+    state: restarted

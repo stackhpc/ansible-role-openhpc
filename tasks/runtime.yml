@@ -24,6 +24,35 @@
     mode: 0755
     state: directory
 
+- name: Ensure the Munge service is enabled
+  service:
+    name: munge
+    enabled: "{{ slurm_service_enabled | bool }}"
+  notify:
+    - Restart Munge service
+
+- name: Generate a Munge key for the platform
+  command: "dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024"
+  args:
+    creates: "/etc/munge/munge.key"
+  when: inventory_hostname == slurm_control_host
+
+- name: Retrieve Munge key from Slurm control host
+  slurp:
+    src: "/etc/munge/munge.key"
+  register: slurm_munge_key 
+  when: inventory_hostname == slurm_control_host
+
+- name: Write Munge key
+  copy:
+    content: "{{ hostvars[slurm_control_host]['slurm_munge_key']['content'] | b64decode }}"
+    dest: "/etc/munge/munge.key"
+    owner: munge
+    group: munge
+    mode: 0400
+  notify:
+    - Restart Munge service
+
 - name: Ensure SLURM services are enabled
   service:
     name: "{{ slurm_service }}"
