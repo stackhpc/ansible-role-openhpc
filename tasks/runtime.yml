@@ -5,7 +5,7 @@
   when: 
     slurm_control_host == none or
     slurm_cluster_name == none or
-    slurm_partitions == 0
+    slurm_partitions | length == 0
 
 - name: Install OpenHPC runtime Slurm packages
   yum:
