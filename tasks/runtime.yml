@@ -2,7 +2,7 @@
 - name: Fail if slurm_control_host or slurm_cluster_name or slurm_partitions are undefined
   fail:
     msg: "Undefined slurm_control_host or slurm_cluster_name or slurm_partitions."
-  when: 
+  when:
     slurm_control_host == none or
     slurm_cluster_name == none or
     slurm_partitions | length == 0
@@ -40,7 +40,7 @@
 - name: Retrieve Munge key from Slurm control host
   slurp:
     src: "/etc/munge/munge.key"
-  register: slurm_munge_key 
+  register: slurm_munge_key
   when: inventory_hostname == slurm_control_host
 
 - name: Write Munge key
@@ -67,7 +67,7 @@
     owner: root
     group: root
     mode: 0644
-  notify: 
+  notify:
     - Restart SLURM service
 
 - name: Flush handlers
@@ -77,12 +77,12 @@
 # the handler, ensure it's running here.
 - name: Ensure SLURM services are running
   service:
-    name: "{{slurm_service}}"
-    state: "{{'started' if slurm_service_enabled|bool else 'stopped'}}"
+    name: "{{ slurm_service }}"
+    state: "{{ 'started' if slurm_service_enabled | bool else 'stopped' }}"
 
 # Install OpenHPC runtime
 - name: Ensure selected OpenHPC packages are installed
   yum:
-    name: "{{openhpc_packages}}"
+    name: "{{ openhpc_packages }}"
     state: present
 ...
