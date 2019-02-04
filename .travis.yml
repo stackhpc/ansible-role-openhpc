@@ -13,7 +13,7 @@ addons:
     
 install:
   # Install ansible
-  - pip install ansible
+  - pip install ansible ansible-lint
 
   # Check ansible version
   - ansible --version
@@ -27,6 +27,11 @@ install:
 script:
   # Basic role syntax check
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+  
+  # Run Ansible lint against the role
+  - ansible-lint tasks/main.yml  
+  
+  # Test the custom filters
   - ansible-playbook tests/filter.yml -i tests/inventory -i tests/inventory-mock-groups
 
 notifications:
