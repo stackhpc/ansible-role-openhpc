@@ -1,7 +1,7 @@
 ---
 - name: Restart SLURM service
   service:
-    name: "{{openhpc_slurm_service}}"
+    name: "{{ openhpc_slurm_service }}"
     state: reloaded
   when: openhpc_slurm_service_enabled | bool
 
