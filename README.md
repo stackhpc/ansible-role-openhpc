@@ -11,7 +11,7 @@ Role Variables
 
 `openhpc_slurm_service`: name of the slurm service e.g. `slurmd`
 
-`openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_login'] | first }}"`
+`openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`
 
 `openhpc_slurm_partitions`: list of slurm partitions
 
@@ -42,8 +42,13 @@ To deploy, create a playbook which looks like this:
             runtime: true
           openhpc_slurm_service_enabled: true
           openhpc_slurm_service: slurmd
-          openhpc_slurm_control_host: "{{ groups['cluster_login'] | first }}"
-          openhpc_slurm_partitions: "{{ slurm_compute }}"
+          openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
+          openhpc_slurm_partitions:
+            - name: "compute"
+              flavor: "compute-A"
+              image: "CentOS7.5-OpenHPC"
+              num_nodes: 8
+              user: "centos"
           openhpc_cluster_name: openhpc
           openhpc_packages: []
     ...
