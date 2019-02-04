@@ -8,8 +8,8 @@
 #
 # See the slurm.conf man page for more information.
 #
-ClusterName={{ slurm_cluster_name }}
-ControlMachine={{ slurm_control_host }}
+ClusterName={{ openhpc_cluster_name }}
+ControlMachine={{ openhpc_slurm_control_host }}
 #ControlAddr=
 #BackupController=
 #BackupAddr=
@@ -102,13 +102,13 @@ PropagateResourceLimitsExcept=MEMLOCK
 #SlurmctldLogFile=/var/log/slurmctld.log
 AccountingStorageType=accounting_storage/filetxt
 Epilog=/etc/slurm/slurm.epilog.clean
-{% for part in slurm_partitions %}
+{% for part in openhpc_slurm_partitions %}
 {% for group in part.get('groups', [part]) %}
-NodeName={{group.cluster_name|default(slurm_cluster_name)}}-{{group.name}}-[0-{{group.num_nodes-1}}] \
+NodeName={{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-[0-{{group.num_nodes-1}}] \
 {% if 'ram_mb' in group %}
     RealMemory={{group.ram_mb}} \
 {% endif %}
-{% set group_name = group.cluster_name|default(slurm_cluster_name) ~ '_' ~ group.name %}
+{% set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
 {# If using --limit, the first host in each group may not have facts available. Find one that does. #}
 {% set group_hosts = groups[group_name] | intersect(play_hosts) %}
 {% if group_hosts | length > 0 %}
@@ -120,8 +120,8 @@ NodeName={{group.cluster_name|default(slurm_cluster_name)}}-{{group.name}}-[0-{{
     State=UNKNOWN
 {% endfor %}
 {% endfor %}
-{% for part in slurm_partitions %}
-PartitionName={{part.name}} Nodes={% for group in part.get('groups', [part]) %}{{group.cluster_name|default(slurm_cluster_name)}}-{{group.name}}-[0-{{group.num_nodes-1}}]{% if not loop.last %},{% endif %}{% endfor %} Default=YES MaxTime=24:00:00 State=UP
+{% for part in openhpc_slurm_partitions %}
+PartitionName={{part.name}} Nodes={% for group in part.get('groups', [part]) %}{{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-[0-{{group.num_nodes-1}}]{% if not loop.last %},{% endif %}{% endfor %} Default=YES MaxTime=24:00:00 State=UP
 {% endfor %}
 # Want nodes that drop out of SLURM's configuration to be automatically 
 # returned to service when they come back.

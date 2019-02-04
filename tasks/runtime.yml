@@ -1,11 +1,11 @@
 ---
-- name: Fail if slurm_control_host or slurm_cluster_name or slurm_partitions are undefined
+- name: Fail if openhpc_slurm_control_host or openhpc_cluster_name or openhpc_slurm_partitions are undefined
   fail:
-    msg: "Undefined slurm_control_host or slurm_cluster_name or slurm_partitions."
+    msg: "Undefined openhpc_slurm_control_host or openhpc_cluster_name or openhpc_slurm_partitions."
   when:
-    slurm_control_host == none or
-    slurm_cluster_name == none or
-    slurm_partitions | length == 0
+    openhpc_slurm_control_host == none or
+    openhpc_cluster_name == none or
+    openhpc_slurm_partitions | length == 0
 
 - name: Install OpenHPC runtime Slurm packages
   yum:
@@ -27,7 +27,7 @@
 - name: Ensure the Munge service is enabled
   service:
     name: munge
-    enabled: "{{ slurm_service_enabled | bool }}"
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
   notify:
     - Restart Munge service
 
@@ -35,17 +35,17 @@
   command: "dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024"
   args:
     creates: "/etc/munge/munge.key"
-  when: inventory_hostname == slurm_control_host
+  when: inventory_hostname == openhpc_slurm_control_host
 
 - name: Retrieve Munge key from Slurm control host
   slurp:
     src: "/etc/munge/munge.key"
   register: slurm_munge_key
-  when: inventory_hostname == slurm_control_host
+  when: inventory_hostname == openhpc_slurm_control_host
 
 - name: Write Munge key
   copy:
-    content: "{{ hostvars[slurm_control_host]['slurm_munge_key']['content'] | b64decode }}"
+    content: "{{ hostvars[openhpc_slurm_control_host]['slurm_munge_key']['content'] | b64decode }}"
     dest: "/etc/munge/munge.key"
     owner: munge
     group: munge
@@ -55,8 +55,8 @@
 
 - name: Ensure SLURM services are enabled
   service:
-    name: "{{ slurm_service }}"
-    enabled: "{{ slurm_service_enabled | bool }}"
+    name: "{{ openhpc_slurm_service }}"
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
   notify:
     - Restart SLURM service
 
@@ -77,8 +77,8 @@
 # the handler, ensure it's running here.
 - name: Ensure SLURM services are running
   service:
-    name: "{{ slurm_service }}"
-    state: "{{ 'started' if slurm_service_enabled | bool else 'stopped' }}"
+    name: "{{ openhpc_slurm_service }}"
+    state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
 
 # Install OpenHPC runtime
 - name: Ensure selected OpenHPC packages are installed
