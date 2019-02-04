@@ -1,9 +1,9 @@
 ---
-slurm_service_enabled: true
-slurm_service: slurmd
-slurm_control_host: # Example: "{{ groups['cluster_login'] | first }}"
-slurm_partitions: []
-slurm_cluster_name:
+openhpc_slurm_service_enabled: true
+openhpc_slurm_service: slurmd
+openhpc_slurm_control_host: # Example: "{{ groups['cluster_login'] | first }}"
+openhpc_slurm_partitions: []
+openhpc_cluster_name:
 openhpc_packages: []
 openhpc_enable:
   control: false

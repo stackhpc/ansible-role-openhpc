@@ -9,4 +9,4 @@
 
 - name: Select the SLURM service to control
   set_fact:
-    slurm_service: slurmctld
+    openhpc_slurm_service: slurmctld
