@@ -8,11 +8,17 @@ Role Variables
 --------------
 
 `openhpc_slurm_service_enabled`: checks whether `openhpc_slurm_service` is enabled
+
 `openhpc_slurm_service`: name of the slurm service e.g. `slurmd`
+
 `openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_login'] | first }}"`
+
 `openhpc_slurm_partitions`: list of slurm partitions
+
 `openhpc_cluster_name`: name of the cluster
+
 `openhpc_packages`: additional OpenHPC packages to install
+
 `openhpc_enable`: 
 * `control`: whether to enable control host
 * `batch`: whether to enable compute nodes 
@@ -36,9 +42,9 @@ To deploy, create a playbook which looks like this:
             runtime: true
           openhpc_slurm_service_enabled: true
           openhpc_slurm_service: slurmd
-          openhpc_slurm_control_host:
-          openhpc_slurm_partitions: []
-          openhpc_cluster_name:
+          openhpc_slurm_control_host: "{{ groups['cluster_login'] | first }}"
+          openhpc_slurm_partitions: "{{ slurm_compute }}"
+          openhpc_cluster_name: openhpc
           openhpc_packages: []
     ...
 

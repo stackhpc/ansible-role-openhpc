@@ -1,4 +1,4 @@
---
+---
 - name: Restart SLURM service
   service:
     name: "{{openhpc_slurm_service}}"
