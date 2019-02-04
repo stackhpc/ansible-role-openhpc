@@ -29,7 +29,7 @@ script:
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
   
   # Run Ansible lint against the role
-	  - ansible-lint tasks/main.yml  
+  - ansible-lint tasks/main.yml  
   
   # Test the custom filters
   - ansible-playbook tests/filter.yml -i tests/inventory -i tests/inventory-mock-groups
