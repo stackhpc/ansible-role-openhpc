@@ -16,7 +16,7 @@
       - "slurm-example-configs-ohpc"
     state: installed
 
-- name: Ensure the SLURM spool directory exists
+- name: Ensure the Slurm spool directory exists
   file:
     path: /var/spool/slurm
     owner: slurm
@@ -53,10 +53,11 @@
   notify:
     - Restart Munge service
 
-- name: Ensure SLURM services are enabled
+- name: Ensure Slurm services are enabled
   service:
     name: "{{ openhpc_slurm_service }}"
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
+  when: openhpc_slurm_service is not none
   notify:
     - Restart SLURM service
 
@@ -75,10 +76,11 @@
 
 # In case the service isn't running and the config hasn't changed to trigger
 # the handler, ensure it's running here.
-- name: Ensure SLURM services are running
+- name: Ensure Slurm services are running
   service:
     name: "{{ openhpc_slurm_service }}"
     state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
+  when: openhpc_slurm_service is not none
 
 # Install OpenHPC runtime
 - name: Ensure selected OpenHPC packages are installed
