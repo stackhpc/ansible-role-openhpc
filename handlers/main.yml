@@ -3,7 +3,9 @@
   service:
     name: "{{ openhpc_slurm_service }}"
     state: reloaded
-  when: openhpc_slurm_service_enabled | bool
+  when:
+    - openhpc_slurm_service is not none
+    - openhpc_slurm_service_enabled | bool
 
 - name: Restart Munge service
   service:
