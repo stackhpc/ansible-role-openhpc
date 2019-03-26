@@ -104,7 +104,7 @@ AccountingStorageType=accounting_storage/filetxt
 Epilog=/etc/slurm/slurm.epilog.clean
 {% for part in openhpc_slurm_partitions %}
 {% for group in part.get('groups', [part]) %}
-NodeName={{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-[0-{{group.num_nodes-1}}] \
+NodeName={{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-[0-{{group.num_nodes|int-1}}] \
 {% if 'ram_mb' in group %}
     RealMemory={{group.ram_mb}} \
 {% endif %}
@@ -121,7 +121,7 @@ NodeName={{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-[0-
 {% endfor %}
 {% endfor %}
 {% for part in openhpc_slurm_partitions %}
-PartitionName={{part.name}} Nodes={% for group in part.get('groups', [part]) %}{{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-[0-{{group.num_nodes-1}}]{% if not loop.last %},{% endif %}{% endfor %} Default=YES MaxTime=24:00:00 State=UP
+PartitionName={{part.name}} Nodes={% for group in part.get('groups', [part]) %}{{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-[0-{{group.num_nodes|int-1}}]{% if not loop.last %},{% endif %}{% endfor %} Default=YES MaxTime=24:00:00 State=UP
 {% endfor %}
 # Want nodes that drop out of SLURM's configuration to be automatically 
 # returned to service when they come back.
