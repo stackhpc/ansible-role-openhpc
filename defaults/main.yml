@@ -9,3 +9,5 @@ openhpc_enable:
   control: false
   batch: false
   runtime: false 
+  drain: false 
+  resume: false 

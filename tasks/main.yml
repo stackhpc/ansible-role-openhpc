@@ -7,4 +7,10 @@
 
 - include: runtime.yml
   when: openhpc_enable.runtime | bool
+
+- include: drain.yml
+  when: openhpc_enable.drain | bool
+
+- include: resume.yml
+  when: openhpc_enable.resume | bool
 ...
