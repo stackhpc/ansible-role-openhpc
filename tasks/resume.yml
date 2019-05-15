@@ -8,11 +8,12 @@
 
 - name: Resume compute node
   become: yes
-  command: "scontrol update nodename={{ node_to_resume }} state=RESUME"
+  command: "scontrol update nodename={{ inventory_hostname }} state=RESUME"
 
 - name: Check node has resumed
   command: "sinfo --noheader --Node --format='%N' --states=ALLOC,IDLE"
   register: resumed_nodes
-  until: "resumed_nodes.stdout_lines is superset([node_to_resume])"
+  until: "inventory_hostname in resumed_nodes.stdout_lines"
   delay: 10
   retries: "{{ (resume_timeout|default(300) / 10)|int }}"
+  changed_when: false

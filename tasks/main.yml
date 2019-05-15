@@ -1,16 +1,16 @@
 ---
 - include: control.yml
-  when: openhpc_enable.control | bool
+  when: openhpc_enable.control | default(false) | bool
 
 - include: compute.yml
-  when: openhpc_enable.batch | bool
+  when: openhpc_enable.batch | default(false) | bool
 
 - include: runtime.yml
-  when: openhpc_enable.runtime | bool
+  when: openhpc_enable.runtime | default(false) | bool
 
 - include: drain.yml
-  when: openhpc_enable.drain | bool
+  when: openhpc_enable.drain | default(false) | bool
 
 - include: resume.yml
-  when: openhpc_enable.resume | bool
+  when: openhpc_enable.resume | default(false) | bool
 ...

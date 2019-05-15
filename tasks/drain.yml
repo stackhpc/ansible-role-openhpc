@@ -8,11 +8,12 @@
 
 - name: Drain compute node
   become: yes
-  command: "scontrol update nodename={{ node_to_drain }} state=DRAIN reason='maintenance'"
+  command: "scontrol update nodename={{ inventory_hostname }} state=DRAIN reason='maintenance'"
 
 - name: Check node has drained
   command: "sinfo --noheader --Node --format='%N' --states=DRAINED"
   register: drained_nodes
-  until: "drained_nodes.stdout_lines is superset([node_to_drain])"
+  until: "inventory_hostname in drained_nodes.stdout_lines"
   delay: 10
   retries: "{{ (drain_timeout|default(86400) / 10)|int }}"
+  changed_when: false
