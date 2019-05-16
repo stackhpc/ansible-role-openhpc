@@ -23,14 +23,35 @@ Role Variables
 * `control`: whether to enable control host
 * `batch`: whether to enable compute nodes 
 * `runtime`: whether to enable OpenHPC runtime
+* `drain`: whether to drain a compute nodes
+* `resume`: whether to resume a compute nodes
 
-Example Playbook
+Example Inventory
+-----------------
+
+And an Ansible inventory as this:
+
+    [openhpc_login]
+    openhpc-login-0 ansible_host=10.60.253.40 ansible_user=centos
+
+    [openhpc_compute]
+    openhpc-compute-0 ansible_host=10.60.253.31 ansible_user=centos
+    openhpc-compute-1 ansible_host=10.60.253.32 ansible_user=centos
+
+    [cluster_control:children]
+    openhpc_login
+
+    [cluster_batch:children]
+    openhpc_compute
+
+Example Playbooks
 ----------------
  
 To deploy, create a playbook which looks like this:
 
     ---
     - hosts:
+      - cluster_login
       - cluster_control
       - cluster_batch
       become: yes
@@ -53,19 +74,44 @@ To deploy, create a playbook which looks like this:
           openhpc_packages: []
     ...
 
-Example Inventory
------------------
 
-And an Ansible inventory as this:
+To drain nodes, for example, before scaling down the cluster to 6 nodes:
 
-    [openhpc_login]
-    openhpc-login-0 ansible_host=10.60.253.40 ansible_user=centos
+    ---
+    - hosts: openstack
+      gather_facts: false
+      
+      roles:
+        - role: stackhpc.cluster-infra
+          cluster_name: "{{ cluster_name }}"
+          cluster_state: query
+          cluster_params:
+            cluster_groups: "{{ cluster_groups }}"
+      tasks:
+        - name: Count the number of compute nodes per slurm partition
+          vars:
+            partition: "{{ cluster_group.output_value | selectattr('group', 'equalto', item.name) | list }}"
+            openhpc_slurm_partitions:
+              - name: "compute"
+                flavor: "compute-A"
+                image: "CentOS7.5-OpenHPC"
+                num_nodes: 6
+                user: "centos"
+            openhpc_cluster_name: openhpc
+          set_fact:
+            desired_state: "{{ (( partition | first).nodes | map(attribute='name') | list )[:item.num_nodes] + desired_state | default([]) }}"
+          when: partition | length > 0
+          with_items: "{{ openhpc_slurm_partitions }}"
+        - debug: var=desired_state
 
-    [openhpc_compute]
-    openhpc-compute-0 ansible_host=10.60.253.33 ansible_user=centos
+    - hosts: cluster_batch
+      become: yes
+      roles:
+        - role: stackhpc.openhpc
+          desired_state: "{{ hostvars['localhost']['desired_state'] | default([]) }}"
+          openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
+          openhpc_enable:
+            drain: "{{ inventory_hostname not in desired_state }}"
+            resume: "{{ inventory_hostname in desired_state }}"
+    ...
 
-    [cluster_control:children]
-    openhpc_login
-
-    [cluster_batch:children]
-    openhpc_compute
