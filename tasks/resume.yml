@@ -19,6 +19,6 @@
   command: "sinfo --noheader --Node --format='%N' --states=ALLOC,IDLE"
   register: resumed_nodes
   until: "inventory_hostname in resumed_nodes.stdout_lines"
-  delay: 10
-  retries: "{{ (openhpc_resume_timeout/10) | int }}"
+  delay: "{{ openhpc_retry_delay }}"
+  retries: "{{ (openhpc_resume_timeout/openhpc_retry_delay) | int }}"
   changed_when: false

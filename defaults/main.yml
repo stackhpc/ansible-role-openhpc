@@ -7,6 +7,7 @@ openhpc_cluster_name:
 openhpc_packages: []
 openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
+openhpc_retry_delay: 10
 openhpc_enable:
   control: false
   batch: false
