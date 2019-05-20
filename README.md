@@ -23,8 +23,8 @@ Role Variables
 * `control`: whether to enable control host
 * `batch`: whether to enable compute nodes
 * `runtime`: whether to enable OpenHPC runtime
-* `drain`: whether to drain a compute nodes
-* `resume`: whether to resume a compute nodes
+* `drain`: whether to drain compute nodes
+* `resume`: whether to resume compute nodes
 
 Example Inventory
 -----------------
