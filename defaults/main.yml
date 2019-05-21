@@ -1,11 +1,16 @@
 ---
 openhpc_slurm_service_enabled: true
 openhpc_slurm_service:
-openhpc_slurm_control_host:
+openhpc_slurm_control_host: "{{ inventory_hostname }}"
 openhpc_slurm_partitions: []
 openhpc_cluster_name:
 openhpc_packages: []
+openhpc_drain_timeout: 86400
+openhpc_resume_timeout: 300
+openhpc_retry_delay: 10
 openhpc_enable:
   control: false
   batch: false
   runtime: false 
+  drain: false 
+  resume: false 
