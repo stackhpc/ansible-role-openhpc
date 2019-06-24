@@ -8,6 +8,7 @@ openhpc_packages: []
 openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
+openhpc_job_maxtime: 24:00:00
 openhpc_enable:
   control: false
   batch: false
