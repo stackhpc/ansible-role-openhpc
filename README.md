@@ -65,7 +65,6 @@ To deploy, create a playbook which looks like this:
             batch: "{{ inventory_hostname in groups['cluster_batch'] }}"
             runtime: true
           openhpc_slurm_service_enabled: true
-          openhpc_slurm_service: slurmd
           openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
           openhpc_slurm_partitions:
             - name: "compute"
