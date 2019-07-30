@@ -13,7 +13,19 @@ Role Variables
 
 `openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`
 
-`openhpc_slurm_partitions`: list of slurm partitions
+`openhpc_slurm_partitions`: list of one or more slurm partitions.  Each partition may contain the following values:
+* `groups`: If there are multiple node groups that make up the partition, a list of group objects can be defined here.
+  Otherwise, `groups` can be omitted and the following attributes can be defined in the partition object.
+  * `name`: The name of the nodes within this group.
+  * `cluster_name`: Optional.  An override for the top-level definition `openhpc_cluster_name`.
+  * `num_nodes`: Nodes within the group are assumed to number `0:num_nodes-1`.
+  * `ram_mb`: Optional.  The physical RAM available in each server of this group.
+  Compute node hostnames are assumed to take the form: `cluster_name-group_name-{0..num_nodes-1}`
+* `default`: Optional.  A boolean flag for whether this partion.  Valid settings are `YES` and `NO`.
+* `maxtime`: Optional.  A partition-specific time limit in hours, minutes and seconds.  The default value is
+  `openhpc_job_maxtime`, which defaults to `24:00:00`.
+
+`openhpc_job_maxtime`: A maximum time job limit in hours, minutes and seconds.  The default is `24:00:00`.
 
 `openhpc_cluster_name`: name of the cluster
 
