@@ -77,7 +77,6 @@ To deploy, create a playbook which looks like this:
             batch: "{{ inventory_hostname in groups['cluster_batch'] }}"
             runtime: true
           openhpc_slurm_service_enabled: true
-          openhpc_slurm_service: slurmd
           openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
           openhpc_slurm_partitions:
             - name: "compute"
@@ -89,6 +88,10 @@ To deploy, create a playbook which looks like this:
           openhpc_packages: []
     ...
 
+Note that the "compute" of the openhpc_slurm_partition name and the
+openhpc_cluster_name are used to generate the compute node in the
+slurm config of openhpc-compute-[0:7]. Your inventory entries
+for that partition must match that convention.
 
 To drain nodes, for example, before scaling down the cluster to 6 nodes:
 
