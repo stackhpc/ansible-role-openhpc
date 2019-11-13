@@ -14,7 +14,7 @@
       - "munge-ohpc"
       - "slurm-slurmd-ohpc"
       - "slurm-example-configs-ohpc"
-    state: installed
+    state: present
 
 - name: Ensure the Slurm spool directory exists
   file:

@@ -5,7 +5,7 @@
       - "@ohpc-slurm-server"
       - "slurm-slurmctld-ohpc"
       - "slurm-example-configs-ohpc"
-    state: installed
+    state: present
 
 - name: Select the SLURM service to control
   set_fact:
