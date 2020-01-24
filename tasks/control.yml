@@ -15,4 +15,3 @@
   yum:
     name: "lmod-ohpc"
     state: present
-    
