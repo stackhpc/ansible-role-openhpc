@@ -10,3 +10,9 @@
 - name: Select the SLURM service to control
   set_fact:
     openhpc_slurm_service: slurmctld
+
+- name: Install OpenHPC LMOD
+  yum:
+    name: "lmod-ohpc"
+    state: present
+    
