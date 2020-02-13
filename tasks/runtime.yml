@@ -77,6 +77,11 @@
     name: "{{ openhpc_packages }}"
     state: present
 
+- name: Install OpenHPC LMOD
+  yum:
+    name: "lmod-ohpc"
+    state: present
+
 - name: Flush handlers
   meta: flush_handlers
 
@@ -95,5 +100,3 @@
     name: "{{ openhpc_slurm_service }}"
     state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
   when: openhpc_slurm_service is not none
-
-...
