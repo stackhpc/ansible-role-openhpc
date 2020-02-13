@@ -95,4 +95,9 @@
   yum:
     name: "{{ openhpc_packages }}"
     state: present
-...
+
+- name: Install OpenHPC LMOD
+  yum:
+    name: "lmod-ohpc"
+    state: present
+

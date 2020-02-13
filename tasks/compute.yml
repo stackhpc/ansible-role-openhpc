@@ -13,7 +13,3 @@
   set_fact:
     openhpc_slurm_service: slurmd
 
-- name: Install OpenHPC LMOD
-  yum:
-    name: "lmod-ohpc"
-    state: present
