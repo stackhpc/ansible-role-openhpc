@@ -104,7 +104,11 @@ AccountingStorageType=accounting_storage/filetxt
 Epilog=/etc/slurm/slurm.epilog.clean
 {% for part in openhpc_slurm_partitions %}
 {% for group in part.get('groups', [part]) %}
+{% if group.num_nodes > 1 %}
 NodeName={{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-[0-{{group.num_nodes|int-1}}] \
+{% else %}
+NodeName={{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-0 \
+{% endif %}
 {% if 'ram_mb' in group %}
     RealMemory={{group.ram_mb}} \
 {% endif %}
@@ -122,7 +126,7 @@ NodeName={{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-[0-
 {% endfor %}
 {% for part in openhpc_slurm_partitions %}
 PartitionName={{part.name}} \
-    Nodes={% for group in part.get('groups', [part]) %}{{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-[0-{{group.num_nodes|int-1}}]{% if not loop.last %},{% endif %}{% endfor %} \
+    Nodes={% for group in part.get('groups', [part]) %}{{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-{% if group.num_nodes > 1 %}[0-{{group.num_nodes|int-1}}]{% else %}0{% endif %}{% if not loop.last %},{% endif %}{% endfor %} \
     Default={% if 'default' in part %}{{ part.default }}{% else %}YES{% endif %} \
     MaxTime={% if 'maxtime' in part %}{{ part.maxtime }}{% else %}{{ openhpc_job_maxtime }}{% endif %} \
     State=UP
