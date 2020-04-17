@@ -1,5 +1,5 @@
 ---
-openhpc_actions: ['packages']
+openhpc_actions: ['packages', 'configure']
 openhpc_slurm_service_enabled: true
 openhpc_slurm_service:
 openhpc_slurm_control_host: "{{ inventory_hostname }}"

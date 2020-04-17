@@ -58,9 +58,7 @@
     name: "{{ openhpc_slurm_service }}"
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
   when: openhpc_slurm_service is not none
-  notify:
-    - Restart SLURM service
-
+  
 - name: Apply customised SLURM configuration
   template:
     src: slurm.conf.j2
@@ -68,35 +66,4 @@
     owner: root
     group: root
     mode: 0644
-  notify:
-    - Restart SLURM service
-
-# Install OpenHPC runtime
-- name: Ensure selected OpenHPC packages are installed
-  yum:
-    name: "{{ openhpc_packages }}"
-    state: present
-
-- name: Install OpenHPC LMOD
-  yum:
-    name: "lmod-ohpc"
-    state: present
-
-- name: Flush handlers
-  meta: flush_handlers
-
-# Munge state could be unchanged but the service is not running.
-# Handle that here.
-- name: Ensure Munge services are enabled and started
-  service:
-    name: munge
-    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
-    state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
-
-# In case the service isn't running and the config hasn't changed to trigger
-# the handler, ensure it's running here.
-- name: Ensure Slurm services are running
-  service:
-    name: "{{ openhpc_slurm_service }}"
-    state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
-  when: openhpc_slurm_service is not none
+  
