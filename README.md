@@ -38,6 +38,13 @@ Role Variables
 * `drain`: whether to drain compute nodes
 * `resume`: whether to resume compute nodes
 
+Optionally, you may also provide `openhpc_actions` as a list containing one or more of the following words:
+- `packages` to install packages only
+- `configure` to configure slurm
+- `start` to start slurm and munge daemons
+
+The default is to run all these actions. **TODO: drain and resume actions**
+
 Example Inventory
 -----------------
 

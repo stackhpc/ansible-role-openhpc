@@ -1,0 +1,14 @@
+---
+
+- name: Ensure Munge services are enabled and started
+  service:
+    name: munge
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
+    state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
+
+- name: Ensure Slurm services are running
+  service:
+    name: "{{ openhpc_slurm_service[openhpc_slurm_nodetype] }}"
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
+    state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
+  when: "openhpc_slurm_nodetype in openhpc_slurm_service.keys()"

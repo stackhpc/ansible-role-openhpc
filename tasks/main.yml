@@ -1,9 +1,9 @@
 ---
 
-- name: Set slurm node type
+- name: Set slurm node type # NB defaults to login due to default var
   set_fact:
-    slurm_nodetype: "{{ item }}"
-  loop: "{{ openhpc_typevars.keys() }}"
+    openhpc_slurm_nodetype: "{{ item }}"
+  loop: ['control', 'batch']
   when: "openhpc_enable[item] | default(false) | bool"
 
 - include_tasks: "{{ openhpc_action }}.yml"

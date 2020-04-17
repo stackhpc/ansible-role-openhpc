@@ -53,11 +53,12 @@
   notify:
     - Restart Munge service
 
+# NB: Think this is correct, but should disable before doing things which cause a reboot.
 - name: Ensure Slurm services are enabled
   service:
-    name: "{{ openhpc_slurm_service }}"
+    name: "{{ openhpc_slurm_service[openhpc_slurm_nodetype] }}"
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
-  when: openhpc_slurm_service is not none
+  when: "openhpc_slurm_nodetype in openhpc_slurm_service.keys()"
   
 - name: Apply customised SLURM configuration
   template:

@@ -1,23 +1,23 @@
 ---
-openhpc_actions: ['packages', 'configure']
+openhpc_actions: ['packages', 'configure', 'start']
 openhpc_slurm_service_enabled: true
-openhpc_slurm_service:
 openhpc_slurm_control_host: "{{ inventory_hostname }}"
 openhpc_slurm_partitions: []
 openhpc_cluster_name:
 openhpc_packages: []
 openhpc_mandatory_packages:
+  all:
+     - "slurm-ohpc"
+     - "munge-ohpc"
+     - "slurm-slurmd-ohpc"
+     - "slurm-example-configs-ohpc"
   control:
     - "@ohpc-slurm-server"
     - "slurm-slurmctld-ohpc"
     - "slurm-example-configs-ohpc"
   batch: # "compute" really but keeping old name
     - "@ohpc-base-compute"
-  all:
-     - "slurm-ohpc"
-     - "munge-ohpc"
-     - "slurm-slurmd-ohpc"
-     - "slurm-example-configs-ohpc"
+  login: []
 openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
@@ -27,10 +27,9 @@ openhpc_enable:
   batch: false
   runtime: false 
   drain: false 
-  resume: false 
-openhpc_typevars:
-  control:
-    slurm_service: slurmctld
-  batch:
-    slurm_service: slurmd
-  # login?
+  resume: false
+openhpc_slurm_nodetype: login
+openhpc_slurm_service:
+  control: slurmctld
+  batch: slurmd
+  

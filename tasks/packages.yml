@@ -2,7 +2,7 @@
 - name: Install slurm packages
   yum:
     name: "{{ item }}"
-  loop: "{{ openhpc_mandatory_packages['all'] + openhpc_mandatory_packages[slurm_nodetype] }}"
+  loop: "{{ openhpc_mandatory_packages['all'] + openhpc_mandatory_packages[openhpc_slurm_nodetype] }}"
 
 - name: Install OpenHPC LMOD
   yum:
