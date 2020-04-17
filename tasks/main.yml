@@ -7,7 +7,7 @@
   when: "openhpc_enable[item] | default(false) | bool"
 
 - include_tasks: "{{ openhpc_action }}.yml"
-  loop: "{{ openhpc_actions }}"
+  loop: "{{ query('items', openhpc_actions) }}" # ensures a list even if passed a single item
   loop_control:
     loop_var: openhpc_action
 

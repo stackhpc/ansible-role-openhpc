@@ -1,5 +1,5 @@
 ---
-openhpc_actions: ['packages', 'configure', 'start']
+openhpc_actions: ['install', 'configure', 'start']
 openhpc_slurm_service_enabled: true
 openhpc_slurm_control_host: "{{ inventory_hostname }}"
 openhpc_slurm_partitions: []
@@ -28,7 +28,7 @@ openhpc_enable:
   runtime: false 
   drain: false 
   resume: false
-openhpc_slurm_nodetype: login
+openhpc_slurm_nodetype: login # default if openhpc_enable.control or batch not set
 openhpc_slurm_service:
   control: slurmctld
   batch: slurmd
