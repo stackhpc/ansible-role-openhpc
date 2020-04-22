@@ -1,4 +1,5 @@
 ---
+# all tasks here are taken from runtime.yml - see bottom of file for what has been moved elsewhere
 - name: Fail if openhpc_slurm_control_host or openhpc_cluster_name or openhpc_slurm_partitions are undefined
   fail:
     msg: "Undefined openhpc_slurm_control_host or openhpc_cluster_name or openhpc_slurm_partitions."
@@ -67,4 +68,10 @@
     owner: root
     group: root
     mode: 0644
-  
+
+# tasks in runtime.yml which aren't here:
+# - name: Ensure selected OpenHPC packages are installed => done by install action now
+# - name: Install OpenHPC LMOD => done by install (separate task not in package list - why??)
+# - name: Flush handlers => no longer reqd
+# - name: Ensure Munge services are enabled and started => now done by start action
+# - name: Ensure Slurm services are running => now done by start action

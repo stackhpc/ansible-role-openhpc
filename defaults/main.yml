@@ -6,17 +6,18 @@ openhpc_slurm_partitions: []
 openhpc_cluster_name:
 openhpc_packages: []
 openhpc_mandatory_packages:
-  all:
-     - "slurm-ohpc"
-     - "munge-ohpc"
-     - "slurm-slurmd-ohpc"
-     - "slurm-example-configs-ohpc"
+  all: # TODO: these used not to be installed for "compute" or "control" flags?
+     - "slurm-ohpc" # from runtime.yml
+     - "munge-ohpc" # from runtime.yml
+     - "slurm-slurmd-ohpc" # from runtime.yml
+     - "slurm-example-configs-ohpc" # from control.yml and runtime.yml
   control:
     - "@ohpc-slurm-server"
     - "slurm-slurmctld-ohpc"
     - "slurm-example-configs-ohpc"
   batch: # "compute" really but keeping old name
     - "@ohpc-base-compute"
+    - "@ohpc-slurm-client"
   login: []
 openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
