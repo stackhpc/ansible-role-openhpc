@@ -5,20 +5,20 @@ openhpc_slurm_control_host: "{{ inventory_hostname }}"
 openhpc_slurm_partitions: []
 openhpc_cluster_name:
 openhpc_packages: []
-openhpc_mandatory_packages:
-  all: # TODO: these used not to be installed for "compute" or "control" flags?
-     - "slurm-ohpc" # from runtime.yml
-     - "munge-ohpc" # from runtime.yml
-     - "slurm-slurmd-ohpc" # from runtime.yml
-     - "slurm-example-configs-ohpc" # from control.yml and runtime.yml
+openhpc_slurm_packages:
   control:
     - "@ohpc-slurm-server"
     - "slurm-slurmctld-ohpc"
-    - "slurm-example-configs-ohpc"
+    - "slurm-example-configs-ohpc" # in both control.yml and runtime.yml
   batch: # "compute" really but keeping old name
     - "@ohpc-base-compute"
     - "@ohpc-slurm-client"
-  login: []
+  runtime:
+    - "slurm-ohpc"
+    - "munge-ohpc"
+    - "slurm-slurmd-ohpc"
+    - "slurm-example-configs-ohpc" # in both control.yml and runtime.yml
+    - "lmod-ohpc" # TODO: check that doing this before openhpc_packages install is ok?
 openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
@@ -29,8 +29,7 @@ openhpc_enable:
   runtime: false 
   drain: false 
   resume: false
-openhpc_slurm_nodetype: login # default if openhpc_enable.control or batch not set
-openhpc_slurm_service:
+openhpc_slurm_services:
   control: slurmctld
   batch: slurmd
   

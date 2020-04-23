@@ -1,5 +1,5 @@
 ---
-
+## TODO: add a big when: "openhpc_enable.runtime  | default(false) | bool" guard around all this
 - name: Ensure Munge services are enabled and started
   service:
     name: munge
@@ -8,7 +8,6 @@
 
 - name: Ensure Slurm services are running
   service:
-    name: "{{ openhpc_slurm_service[openhpc_slurm_nodetype] }}"
+    name: "{{ openhpc_slurm_service }}"
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
-  when: "openhpc_slurm_nodetype in openhpc_slurm_service.keys()"

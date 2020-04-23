@@ -1,15 +1,17 @@
 ---
-
-- name: Set slurm node type # NB defaults to login due to default var
+- name: Select slurm service to control # TODO: handle multiple (don't think existing role doesn't) and none?
   set_fact:
-    openhpc_slurm_nodetype: "{{ item }}"
-  loop: ['control', 'batch']
-  when: "openhpc_enable[item] | default(false) | bool"
+    openhpc_slurm_service: "{{ openhpc_slurm_services[item] }}"
+  loop: "{{ openhpc_slurm_services.keys() }}"
+  when: "openhpc_enable[item]"
+# alternative non-loop implementation:
+# openhpc_slurm_service: "{{ openhpc_enable | dict2items | selectattr('value') | map(attribute='key') | list | intersect(openhpc_slurm_services.keys()) | first }}"
+# python equivalent: set([openhpc_slurm_services[k] for (k, v) in openhpc_enable.items() if v]).intersect(openhpc_slurm_services.keys())[0]
 
-- include_tasks: "{{ openhpc_action }}.yml"
+- include_tasks: "{{ openhpc_include_action }}.yml"
   loop: "{{ query('items', openhpc_actions) }}" # ensures a list even if passed a single item
   loop_control:
-    loop_var: openhpc_action
+    loop_var: openhpc_include_action
 
 # - include: runtime.yml
 #   when: openhpc_enable.runtime | default(false) | bool

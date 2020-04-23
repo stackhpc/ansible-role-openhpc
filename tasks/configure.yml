@@ -1,4 +1,5 @@
 ---
+## TODO: add a big when: "openhpc_enable.runtime  | default(false) | bool" guard around all this
 # all tasks here are taken from runtime.yml - see bottom of file for what has been moved elsewhere
 - name: Fail if openhpc_slurm_control_host or openhpc_cluster_name or openhpc_slurm_partitions are undefined
   fail:
@@ -57,9 +58,8 @@
 # NB: Think this is correct, but should disable before doing things which cause a reboot.
 - name: Ensure Slurm services are enabled
   service:
-    name: "{{ openhpc_slurm_service[openhpc_slurm_nodetype] }}"
+    name: "{{ openhpc_slurm_service }}"
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
-  when: "openhpc_slurm_nodetype in openhpc_slurm_service.keys()"
   
 - name: Apply customised SLURM configuration
   template:
