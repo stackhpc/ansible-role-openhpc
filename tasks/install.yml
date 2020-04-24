@@ -1,10 +1,16 @@
+- name: Build host-specific list of required slurm packages
+  set_fact:
+    openhpc_slurm_pkglist: "{{ openhpc_slurm_pkglist | default([]) + item.value }}"
+  loop: "{{ openhpc_slurm_packages | dict2items }}"
+  when: "openhpc_enable.get(item.key, false)"
+
 - name: Install required slurm packages
   yum:
-    name: "{{ item.value }}" # list of packages - ok after 2.0
-  loop: "{{ openhpc_slurm_packages | dict2items }}"
-  when: "openhpc_enable.get(item.key, false) | bool"
-
+    name: "{{ item }}"
+  loop: "{{ openhpc_slurm_pkglist }}"
+  
 - name: Install packages from openhpc_packages variable
   yum:
-    name: "{{ openhpc_packages }}"
+    name: "{{ item }}"
+  loop: "{{ openhpc_packages }}"
   when: "openhpc_enable.runtime  | default(false) | bool"
