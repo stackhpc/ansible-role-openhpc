@@ -2,7 +2,9 @@
 
 # stackhpc.openhpc
 
-This Ansible role is used to install the necessary packages to have a fully functional OpenHPC cluster.
+This Ansible role installs packages and performs configuration to provide a fully functional OpenHPC cluster. It can also be used to drain and resume nodes.
+
+As a role it must be used from a playbook, for which a simple example is given below. This approach means it is totally modular with no assumptions about available networks or any cluster features except for some hostname conventions. Any desired cluster fileystem or other required functionality may be freely integrated using additional Ansible roles or other approaches.
 
 Role Variables
 --------------
