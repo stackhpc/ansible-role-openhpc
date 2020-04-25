@@ -43,6 +43,8 @@ Optionally, you may also provide `openhpc_actions` with one of the following val
 - `configure` to configure slurm
 - `start` to start slurm and munge daemons
 
+The order in which they are specified is ignored.
+
 The default is to run all these actions. **TODO: drain and resume actions**
 
 Example Inventory

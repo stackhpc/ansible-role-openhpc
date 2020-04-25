@@ -8,11 +8,17 @@
 # openhpc_slurm_service: "{{ openhpc_enable | dict2items | selectattr('value') | map(attribute='key') | list | intersect(openhpc_slurm_services.keys()) | first }}"
 # python equivalent: set([openhpc_slurm_services[k] for (k, v) in openhpc_enable.items() if v]).intersect(openhpc_slurm_services.keys())[0]
 
-- include_tasks: "{{ openhpc_include_action }}.yml"
-  loop: "{{ query('items', openhpc_actions) }}" # ensures a list even if passed a single item
-  loop_control:
-    loop_var: openhpc_include_action
+# NB: below approach means user cannot choose order of actions - is that what we want??
+#     OTOH means we can control delegate to/run once etc
+- include_tasks: "install.yml"
+  when: "'install' in query('items', openhpc_actions)" # ensures a list even if passed a single item
 
+- include_tasks: "configure.yml"
+  when: "'configure' in query('items', openhpc_actions)"
+
+- include_tasks: "start.yml"
+  when: "'start' in query('items', openhpc_actions)"
+  
 # - include: runtime.yml
 #   when: openhpc_enable.runtime | default(false) | bool
 
