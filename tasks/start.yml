@@ -1,5 +1,4 @@
 ---
-## TODO: add a big when: "openhpc_enable.runtime  | default(false) | bool" guard around all this
 - name: Ensure Munge services are enabled and started
   service:
     name: munge

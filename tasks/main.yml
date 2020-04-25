@@ -11,16 +11,19 @@
 # NB: below approach means user cannot choose order of actions - is that what we want??
 #     OTOH means we can control delegate to/run once etc
 - include_tasks: "install.yml"
-  when: "'install' in query('items', openhpc_actions)" # ensures a list even if passed a single item
+  when:
+    - "'install' in query('items', openhpc_actions)" # ensures a list even if passed a single item
+  # no guard on openhpc_enable required - package lists take this into account
 
 - include_tasks: "configure.yml"
-  when: "'configure' in query('items', openhpc_actions)"
+  when:
+    - "'configure' in query('items', openhpc_actions)"
+    - openhpc_enable.runtime | default(false) | bool
 
 - include_tasks: "start.yml"
-  when: "'start' in query('items', openhpc_actions)"
-  
-# - include: runtime.yml
-#   when: openhpc_enable.runtime | default(false) | bool
+  when:
+    - "'start' in query('items', openhpc_actions)"
+    - openhpc_enable.runtime | default(false) | bool
 
 # - include: drain.yml
 #   when: openhpc_enable.drain | default(false) | bool
