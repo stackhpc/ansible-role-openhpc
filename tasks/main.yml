@@ -25,11 +25,11 @@
     - "'start' in query('items', openhpc_actions)"
     - openhpc_enable.runtime | default(false) | bool
 
-# - include: drain.yml
-#   when: openhpc_enable.drain | default(false) | bool
-#   delegate_to: "{{ openhpc_slurm_control_host }}"
+- include: drain.yml
+  when: openhpc_enable.drain | default(false) | bool
+  delegate_to: "{{ openhpc_slurm_control_host }}"
 
-# - include: resume.yml
-#   when: openhpc_enable.resume | default(false) | bool
-#   delegate_to: "{{ openhpc_slurm_control_host }}"
+- include: resume.yml
+  when: openhpc_enable.resume | default(false) | bool
+  delegate_to: "{{ openhpc_slurm_control_host }}"
 ...

@@ -32,20 +32,18 @@ Role Variables
 `openhpc_packages`: additional OpenHPC packages to install
 
 `openhpc_enable`:
-* `control`: whether to enable control host
-* `batch`: whether to enable compute nodes
-* `runtime`: whether to enable OpenHPC runtime
-* `drain`: whether to drain compute nodes
-* `resume`: whether to resume compute nodes
+* `control`: bool, set True on control hosts
+* `batch`: bool, set True on compute nodes
+* `runtime`: bool, whether to enable OpenHPC runtime (could also be node-specific if required)
+* `drain`: bool, whether to drain compute nodes
+* `resume`: bool, whether to resume compute nodes
 
 Optionally, you may also provide `openhpc_actions` with one of the following values or a list with one or more of the following values:
 - `install` to install packages only
-- `configure` to configure slurm
-- `start` to start slurm and munge daemons
+- `configure` to configure slurm (requires `openhpc_enable.runtime`)
+- `start` to start slurm and munge daemons (requires `openhpc_enable.runtime`)
 
-The order in which they are specified is ignored.
-
-The default is to run all these actions. **TODO: drain and resume actions**
+The order in which they are specified is ignored. The default is to run all these actions.
 
 Example Inventory
 -----------------
