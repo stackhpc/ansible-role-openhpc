@@ -40,6 +40,11 @@ Role Variables
 * `drain`: bool, whether to drain compute nodes
 * `resume`: bool, whether to resume compute nodes
 
+`openhpc_slurm_conf`: (optional) mapping possibly containing:
+  `location`: Path for slurm configuration file (default: /etc/slurm/slurm.conf). The parent directory will be created if required.
+  `shared_fs`: bool, whether this is a filesystem shared (writably) across the cluster (default: false)
+**TODO: this is WIP**
+
 Optionally, you may also provide `openhpc_actions` with one of the following values or a list with one or more of the following values:
 - `install` to install packages only
 - `configure` to configure slurm (requires `openhpc_enable.runtime`)

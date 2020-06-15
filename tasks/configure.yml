@@ -59,14 +59,33 @@
   service:
     name: "{{ openhpc_slurm_service }}"
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
-  
+
+- name: Ensure slurm config directory exists & world-readable
+  file:
+    path: "{{ openhpc_slurm_conf.location | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
 - name: Apply customised SLURM configuration
   template:
     src: slurm.conf.j2
-    dest: /etc/slurm/slurm.conf
+    dest: "{{ openhpc_slurm_conf.location }}"
     owner: root
     group: root
     mode: 0644
+  run_once: "{{ openhpc_slurm_conf.shared_fs }}"
+
+- name: Set slurm.conf location for slurmctld
+  TODO:
+
+- name: Set slurm.conf location for slurmd
+  TODO:
+  
+  # TODO: need to prevent daemon start until mount if true
+  # TODO: need to tell daemons where it is
+  # TODO: restart daemon if changing location??
 
 # tasks in runtime.yml which aren't here:
 # - name: Ensure selected OpenHPC packages are installed => done by install action now

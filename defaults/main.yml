@@ -32,4 +32,7 @@ openhpc_enable:
 openhpc_slurm_services:
   control: slurmctld
   batch: slurmd
+openhpc_slurm_conf:
+  location: /etc/slurm/slurm.conf
+  shared_fs: false
   
