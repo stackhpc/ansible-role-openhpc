@@ -8,7 +8,7 @@
     openhpc_cluster_name == none or
     openhpc_slurm_partitions | length == 0
 
-- name: Install OpenHPC runtime Slurm packages
+- name: Install OpenHPC runtime Slurm packages # TODO: move this to install.yml
   yum:
     name:
       - "slurm-ohpc"
@@ -77,15 +77,41 @@
     mode: 0644
   run_once: "{{ openhpc_slurm_conf.shared_fs }}"
 
-- name: Set slurm.conf location for slurmctld
-  TODO:
+- name: Set slurm.conf location for slurm daemons
+  lineinfile:
+    path: "/etc/sysconfig/{{ openhpc_slurm_service }}"
+    line: '{{ openhpc_slurm_service | upper }}_OPTIONS="-f {{ openhpc_slurm_conf.location }}"'
+    regexp: '^{{ openhpc_slurm_service | upper }}\w+D_OPTIONS'
+    create: yes
+  when: openhpc_slurm_conf.location != '/etc/slurm.conf'
+  register: set_slurm_conf_location
 
-- name: Set slurm.conf location for slurmd
-  TODO:
-  
-  # TODO: need to prevent daemon start until mount if true
-  # TODO: need to tell daemons where it is
-  # TODO: restart daemon if changing location??
+- name: Wait for network filesystem mount before daemon start
+  block:
+    - debug:
+        msg: ok
+    - name: Generate systemd mount unit name for slurm.conf mountpoint
+      shell:
+        cmd: "systemd-escape -p --suffix=mount $(df -P {{ openhpc_slurm_conf.location }} | tail -1 | awk '{ print $6 }')"
+      register: slurmconf_unit
+    - debug:
+        msg: "unit {{ slurmconf_unit }}"
+    - name: check if mount unit exists # won't for exporting node
+      shell:
+        cmd: "systemctl list-units --type=mount {{ slurmconf_unit.stdout }}"
+      register: slurmconf_unit_exists
+      ignore_errors: true
+    - name: create drop-in for systemd unit
+      lineinfile:
+        path: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/slurmconf.conf"
+        line: "After={{ slurmconf_unit.stdout }}"
+        regexp: "After={{ slurmconf_unit.stdout }}"
+        create: yes
+      when: slurmconf_unit_exists is succeeded
+    - name: reload systemd configuration
+      systemd:
+        daemon_reload: yes
+  when: openhpc_slurm_conf.shared_fs # NB won't be network fs on the exporting node!
 
 # tasks in runtime.yml which aren't here:
 # - name: Ensure selected OpenHPC packages are installed => done by install action now
