@@ -8,15 +8,6 @@
     openhpc_cluster_name == none or
     openhpc_slurm_partitions | length == 0
 
-- name: Install OpenHPC runtime Slurm packages # TODO: move this to install.yml
-  yum:
-    name:
-      - "slurm-ohpc"
-      - "munge-ohpc"
-      - "slurm-slurmd-ohpc"
-      - "slurm-example-configs-ohpc"
-    state: present
-
 - name: Ensure the Slurm spool directory exists
   file:
     path: /var/spool/slurm
@@ -88,14 +79,10 @@
 
 - name: Wait for network filesystem mount before daemon start
   block:
-    - debug:
-        msg: ok
     - name: Generate systemd mount unit name for slurm.conf mountpoint
       shell:
         cmd: "systemd-escape -p --suffix=mount $(df -P {{ openhpc_slurm_conf.location }} | tail -1 | awk '{ print $6 }')"
       register: slurmconf_unit
-    - debug:
-        msg: "unit {{ slurmconf_unit }}"
     - name: check if mount unit exists # won't for exporting node
       shell:
         cmd: "systemctl list-units --type=mount {{ slurmconf_unit.stdout }}"
