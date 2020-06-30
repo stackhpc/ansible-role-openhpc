@@ -88,6 +88,10 @@
         cmd: "systemctl list-units --type=mount {{ slurmconf_unit.stdout }}"
       register: slurmconf_unit_exists
       ignore_errors: true
+    - name: make drop-in directory
+      file:
+        path: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/"
+        state: directory
     - name: Add drop-in to modify slurm daemon unit parameters
       copy:
         dest: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/slurmconf.conf"
