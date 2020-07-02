@@ -41,11 +41,13 @@ Role Variables
 * `resume`: bool, whether to resume compute nodes
 
 `openhpc_slurm_conf`: (optional) mapping possibly containing:
-  `location`: Path for slurm configuration file (default: /etc/slurm/slurm.conf). The parent directory will be created if required.
-  `shared_fs`: bool, whether this is a filesystem shared (writably) across the cluster (default: false)
+  
+  * `location`: Path for slurm configuration file (default: /etc/slurm/slurm.conf). The parent directory will be created if required.
+  * `shared_fs`: bool, whether this is a filesystem shared (writably) across the cluster (default: false)
+
 NB: Daemons will **not** automatically be restarted if the location is changed.
 
-Optionally, you may also provide `openhpc_actions` with one of the following values or a list with one or more of the following values:
+`openhpc_actions`: (optional) string or list of strings containing one or more of the following values:
 - `install` to install packages only
 - `configure` to configure slurm (requires `openhpc_enable.runtime`)
 - `start` to start slurm and munge daemons (requires `openhpc_enable.runtime`)
