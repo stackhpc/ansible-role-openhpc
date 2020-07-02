@@ -1,6 +1,6 @@
 ---
 language: python
-python: "2.7"
+python: "3.6"
 
 # Use the new container infrastructure
 sudo: false
