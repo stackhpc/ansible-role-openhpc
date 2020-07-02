@@ -4,8 +4,8 @@
   gather_facts: false
   vars:
     mock_groups:
-      - mock-group-0
-      - mock-group-1
+      - mock_group_0
+      - mock_group_1
     grouped_hosts: "{{ mock_groups | group_hosts }}"
   tasks:
     - name: Hosts
@@ -13,7 +13,7 @@
     - name: Test filter
       assert:
         that:
-          - "['localhost-0-[0-3,5]', 'localhost-non-numerical'] == grouped_hosts['mock-group-0']"
-          - "['localhost-1-[1-2,4-5,10]', 'localhost-2-[1-3]'] == grouped_hosts['mock-group-1']"
+          - "['localhost-0-[0-3,5]', 'localhost-non-numerical'] == grouped_hosts['mock_group_0']"
+          - "['localhost-1-[1-2,4-5,10]', 'localhost-2-[1-3]'] == grouped_hosts['mock_group_1']"
         msg: "Some assertions did not pass" # alias for fail_msg in 2.7+
 ...
