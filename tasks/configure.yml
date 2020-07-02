@@ -104,6 +104,14 @@
         daemon_reload: yes
   when: openhpc_slurm_conf.shared_fs # NB won't be network fs on the exporting node!
 
+- name: symlink slurm.conf so slurm commands work
+  file:
+    force: true # `path` will already exist from package install
+    state: link
+    path: "/etc/slurm/slurm.conf"
+    src: "{{ openhpc_slurm_conf.location }}"
+  when: openhpc_slurm_conf.location != '/etc/slurm.conf'
+
 # tasks in runtime.yml which aren't here:
 # - name: Ensure selected OpenHPC packages are installed => done by install action now
 # - name: Install OpenHPC LMOD => done by install (separate task not in package list - why??)
