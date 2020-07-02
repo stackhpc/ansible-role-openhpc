@@ -8,7 +8,7 @@
   yum:
     name: "{{ item }}"
   loop: "{{ openhpc_slurm_pkglist }}"
-  
+
 - name: Install packages from openhpc_packages variable
   yum:
     name: "{{ item }}"
