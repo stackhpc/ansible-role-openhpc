@@ -60,8 +60,18 @@ Munge daemons will automatically be restarted if changes are made.
 - `start` to start slurm and munge daemons (requires `openhpc_enable.runtime == True`)
 - `drain` to drain selected nodes (set `openhpc_enable.drain == True` on relevant nodes)
 - `resume` to resume selected nodes (set `openhpc_enable.resume == True` on relevant nodes)
+- `soft_reconfigure` to reconfigure slurm without restarting daemons (requires no other role variables to be set)
+- `hard_reconfigure` to reconfigure slurm by restarting all daemons
 
-The order in which they are specified is ignored. The default is to run all these actions.
+The order in which these actions is specified is ignored. The default is to run all these actions.
+
+Note that a soft reconfiguration avoids disrupting the scheduler, but the following situations require a hard reconfiguration:
+- Addition or removal of nodes from the cluster
+- Loss of communications between daemons e.g. due to misconfiguration
+- Changes to AuthType, ControlMach, PluginDir, StateSaveLocation, SlurmctldHost, SlurmctldPort, or SlurmdPort in `slurm.conf`
+
+Running and queued jobs should be unaffected by either type of reconfiguration.
+
 
 Example Inventory
 -----------------
