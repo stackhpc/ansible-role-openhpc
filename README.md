@@ -56,8 +56,10 @@ Munge daemons will automatically be restarted if changes are made.
 
 `openhpc_actions`: (optional) string or list of strings containing one or more of the following values:
 - `install` to install packages only
-- `configure` to configure slurm (requires `openhpc_enable.runtime`)
-- `start` to start slurm and munge daemons (requires `openhpc_enable.runtime`)
+- `configure` to configure slurm (requires `openhpc_enable.runtime == True`)
+- `start` to start slurm and munge daemons (requires `openhpc_enable.runtime == True`)
+- `drain` to drain selected nodes (set `openhpc_enable.drain == True` on relevant nodes)
+- `resume` to resume selected nodes (set `openhpc_enable.resume == True` on relevant nodes)
 
 The order in which they are specified is ignored. The default is to run all these actions.
 
