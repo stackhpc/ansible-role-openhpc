@@ -42,6 +42,7 @@
     owner: munge
     group: munge
     mode: 0400
+  when: false # Disabled as this is going to come from NFS server
   notify:
     - Restart Munge service
 
