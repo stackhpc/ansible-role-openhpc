@@ -58,7 +58,7 @@
     - not openhpc_munge_key.shared_fs | bool
   notify: Restart Munge service
 
-- name: Wait for network filesystem mount before munge daemon start
+- name: Modify munge daemon startup
   block:
     - name: make drop-in directory
       file:
@@ -76,7 +76,7 @@
       notify:
         - Reload systemd config
         - Restart Munge service
-  when: openhpc_munge_key.shared_fs
+  when: "openhpc_munge_key.shared_fs or (openhpc_munge_key.location != '/etc/munge/munge.key')"
 
 
 # NB: Think this is correct, but should disable before doing things which cause a reboot.
