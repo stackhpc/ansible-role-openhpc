@@ -58,6 +58,24 @@
     - not openhpc_munge_key.shared_fs | bool
   notify: Restart Munge service
 
+- name: Symlink Munge key for daemon if not in default location
+  # NB: have to link directory, not file, else daemon complains
+  block:
+    - stat:
+        path: "{{ openhpc_munge_key.location | dirname }}"
+      register: munge_key_dir
+    - file:
+        path: "{{ openhpc_munge_key.location | dirname }}"
+        state: absent
+      when: not munge_key_dir.stat.islnk
+    - file:
+        force: true # `path` will already exist from package install
+        state: link
+        path: "/etc/munge"
+        src: "{{ openhpc_munge_key.location | dirname }}"
+  when:
+  - openhpc_munge_key.location != '/etc/munge/munge.key'
+
 - name: Wait for network filesystem mount before munge daemon start
   block:
     - name: make drop-in directory
@@ -73,7 +91,7 @@
       notify:
         - Reload systemd config
         - Restart Munge service
-  when: openhpc_munge_key.shared_fs # NB won't be network fs on the exporting node!
+  when: openhpc_munge_key.shared_fs | bool # NB won't be network fs on the exporting node!
 
 
 # NB: Think this is correct, but should disable before doing things which cause a reboot.
@@ -123,7 +141,7 @@
           [Unit]
           RequiresMountsFor={{ openhpc_slurm_conf.location }}
       notify: Reload systemd config
-  when: openhpc_slurm_conf.shared_fs # NB won't be network fs on the exporting node!
+  when: openhpc_slurm_conf.shared_fs | bool # NB won't be network fs on the exporting node!
 
 - name: symlink slurm.conf so slurm commands work
   file:
