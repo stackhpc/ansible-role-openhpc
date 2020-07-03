@@ -70,10 +70,13 @@
         content: |
           [Unit]
           RequiresMountsFor={{ openhpc_munge_key.location }}
+          [System]
+          ExecStart=
+          ExecStart=/usr/sbin/munged --syslog --key-file {{ openhpc_munge_key.location }}
       notify:
         - Reload systemd config
         - Restart Munge service
-  when: openhpc_munge_key.shared_fs # NB won't be network fs on the exporting node!
+  when: openhpc_munge_key.shared_fs
 
 
 # NB: Think this is correct, but should disable before doing things which cause a reboot.
