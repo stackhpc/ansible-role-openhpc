@@ -70,7 +70,7 @@
         content: |
           [Unit]
           RequiresMountsFor={{ openhpc_munge_key.location }}
-          [System]
+          [Service]
           ExecStart=
           ExecStart=/usr/sbin/munged --syslog --key-file {{ openhpc_munge_key.location }}
       notify:
