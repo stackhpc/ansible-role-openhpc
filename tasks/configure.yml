@@ -24,26 +24,57 @@
     - Restart Munge service
 
 - name: Generate a Munge key for the platform
-  command: "dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024"
+  command: "dd if=/dev/urandom of={{ openhpc_munge_key.location }} bs=1 count=1024"
   args:
-    creates: "/etc/munge/munge.key"
+    creates: "{{ openhpc_munge_key.location }}"
   when: inventory_hostname == openhpc_slurm_control_host
+  notify: Restart Munge service
+  register: write_munge_key
 
 - name: Retrieve Munge key from Slurm control host
   slurp:
-    src: "/etc/munge/munge.key"
+    src: "{{ openhpc_munge_key.location }}"
   register: slurm_munge_key
   when: inventory_hostname == openhpc_slurm_control_host
 
-- name: Write Munge key
+- name: Ensure munge config directory exists & world-readable
+  file:
+    path: "{{ openhpc_munge_key.location | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  run_once: "{{ openhpc_munge_key.shared_fs | bool }}"
+
+- name: Write Munge key (if not networked)
   copy:
     content: "{{ hostvars[openhpc_slurm_control_host]['slurm_munge_key']['content'] | b64decode }}"
-    dest: "/etc/munge/munge.key"
+    dest: "{{ openhpc_munge_key.location }}"
     owner: munge
     group: munge
     mode: 0400
-  notify:
-    - Restart Munge service
+  when:
+    - inventory_hostname != openhpc_slurm_control_host
+    - not openhpc_munge_key.shared_fs | bool
+  notify: Restart Munge service
+
+- name: Wait for network filesystem mount before munge daemon start
+  block:
+    - name: make drop-in directory
+      file:
+        path: "/etc/systemd/system/munge.service.d/"
+        state: directory
+    - name: Add drop-in to modify munge daemon unit parameters
+      copy:
+        dest: "/etc/systemd/system/munge.service.d/slurmconf.conf"
+        content: |
+          [Unit]
+          RequiresMountsFor={{ openhpc_munge_key.location }}
+      notify:
+        - Reload systemd config
+        - Restart Munge service
+  when: openhpc_munge_key.shared_fs # NB won't be network fs on the exporting node!
+
 
 # NB: Think this is correct, but should disable before doing things which cause a reboot.
 - name: Ensure Slurm services are enabled
@@ -58,6 +89,7 @@
     owner: root
     group: root
     mode: 0755
+  run_once: "{{ openhpc_slurm_conf.shared_fs | bool }}"
 
 - name: Apply customised SLURM configuration
   template:
@@ -66,7 +98,8 @@
     owner: root
     group: root
     mode: 0644
-  run_once: "{{ openhpc_slurm_conf.shared_fs }}"
+  when: "(inventory_hostname == openhpc_slurm_control_host) or (not openhpc_slurm_conf.shared_fs | bool)"
+  # i.e. always on control node, only on others if not networked
 
 - name: Set slurm.conf location for slurm daemons
   lineinfile:
@@ -77,17 +110,8 @@
   when: openhpc_slurm_conf.location != '/etc/slurm/slurm.conf'
   register: set_slurm_conf_location
 
-- name: Wait for network filesystem mount before daemon start
+- name: Wait for network filesystem mount before slurm daemon start
   block:
-    - name: Generate systemd mount unit name for slurm.conf mountpoint
-      shell:
-        cmd: "systemd-escape -p --suffix=mount $(df -P {{ openhpc_slurm_conf.location }} | tail -1 | awk '{ print $6 }')"
-      register: slurmconf_unit
-    - name: check if mount unit exists # won't for exporting node
-      shell:
-        cmd: "systemctl list-units --type=mount {{ slurmconf_unit.stdout }}"
-      register: slurmconf_unit_exists
-      ignore_errors: true
     - name: make drop-in directory
       file:
         path: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/"
@@ -97,11 +121,8 @@
         dest: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/slurmconf.conf"
         content: |
           [Unit]
-          After={{ slurmconf_unit.stdout }}
-          ConditionPathExists={{ openhpc_slurm_conf.location }}
-    - name: reload systemd configuration
-      systemd:
-        daemon_reload: yes
+          RequiresMountsFor={{ openhpc_slurm_conf.location }}
+      notify: Reload systemd config
   when: openhpc_slurm_conf.shared_fs # NB won't be network fs on the exporting node!
 
 - name: symlink slurm.conf so slurm commands work

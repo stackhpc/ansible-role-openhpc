@@ -35,4 +35,6 @@ openhpc_slurm_services:
 openhpc_slurm_conf:
   location: /etc/slurm/slurm.conf
   shared_fs: false
-  
+openhpc_munge_key:
+  location: /etc/munge/munge.key
+  shared_fs: false

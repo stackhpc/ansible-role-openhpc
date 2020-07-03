@@ -1,5 +1,9 @@
 ---
-- name: Restart SLURM service
+- name: Reload systemd config
+  systemd:
+    daemon_reload: yes
+    
+- name: Reload SLURM service
   service:
     name: "{{ openhpc_slurm_service }}"
     state: reloaded

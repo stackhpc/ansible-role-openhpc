@@ -42,10 +42,17 @@ Role Variables
 
 `openhpc_slurm_conf`: (optional) mapping possibly containing:
   
-  * `location`: Path for slurm configuration file (default: /etc/slurm/slurm.conf). The parent directory will be created if required.
+  * `location`: Path for slurm configuration file (default: /etc/slurm/slurm.conf) - parent directories will be created if required.
   * `shared_fs`: bool, whether this is a filesystem shared (writably) across the cluster (default: false)
 
-NB: Daemons will **not** automatically be restarted if the location is changed.
+Note that slurm daemons will **not** automatically be restarted if the location is changed as this affects the scheduler loop.
+
+`openhpc_munge_key`: (optional) mapping possibly containing:
+
+  * `location`: Path for munge key (default: /etc/munge/munge.key) - parent directories will be created if required.
+  * `shared_fs`: bool, whether this is a filesystem shared (writably) across the cluster (default: false)
+
+Munge daemons will automatically be restarted if changes are made.
 
 `openhpc_actions`: (optional) string or list of strings containing one or more of the following values:
 - `install` to install packages only
