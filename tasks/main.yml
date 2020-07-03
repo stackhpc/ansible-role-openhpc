@@ -2,7 +2,7 @@
 - name: Select slurm service to control # TODO: handle multiple (don't think existing role doesn't) and none?
   set_fact:
     openhpc_slurm_service: "{{ openhpc_slurm_services[item] }}"
-  loop: "{{ openhpc_slurm_services.keys() }}"
+  loop: "{{ openhpc_slurm_services.keys() | list }}"
   when: "openhpc_enable[item]"
 # alternative non-loop implementation:
 # openhpc_slurm_service: "{{ openhpc_enable | dict2items | selectattr('value') | map(attribute='key') | list | intersect(openhpc_slurm_services.keys()) | first }}"
