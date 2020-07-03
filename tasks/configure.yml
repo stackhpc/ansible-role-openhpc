@@ -23,6 +23,15 @@
   notify:
     - Restart Munge service
 
+- name: Ensure munge config directory exists & world-readable
+  file:
+    path: "{{ openhpc_munge_key.location | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  run_once: "{{ openhpc_munge_key.shared_fs | bool }}"
+
 - name: Generate a Munge key for the platform
   command: "dd if=/dev/urandom of={{ openhpc_munge_key.location }} bs=1 count=1024"
   args:
@@ -36,15 +45,6 @@
     src: "{{ openhpc_munge_key.location }}"
   register: slurm_munge_key
   when: inventory_hostname == openhpc_slurm_control_host
-
-- name: Ensure munge config directory exists & world-readable
-  file:
-    path: "{{ openhpc_munge_key.location | dirname }}"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  run_once: "{{ openhpc_munge_key.shared_fs | bool }}"
 
 - name: Write Munge key (if not networked)
   copy:
