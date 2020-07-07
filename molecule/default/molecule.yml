@@ -1,0 +1,43 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: testohpc-login-0
+    image: docker.io/pycontribs/centos:7
+    pre_build_image: true
+    groups:
+      - testohpc_login
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - name: testohpc-compute-0
+    image: docker.io/pycontribs/centos:7
+    pre_build_image: true
+    groups:
+      - testohpc_compute
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  - name: testohpc-compute-1
+    image: docker.io/pycontribs/centos:7
+    pre_build_image: true
+    groups:
+      - testohpc_compute
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
