@@ -104,33 +104,32 @@ AccountingStorageType=accounting_storage/filetxt
 Epilog=/etc/slurm/slurm.epilog.clean
 {% for part in openhpc_slurm_partitions %}
 {% for group in part.get('groups', [part]) %}
-{% if group.num_nodes > 1 %}
-NodeName={{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-[0-{{group.num_nodes|int-1}}] \
-{% else %}
-NodeName={{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-0 \
-{% endif %}
-{% if 'ram_mb' in group %}
-    RealMemory={{group.ram_mb}} \
-{% endif %}
 {% set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
 {# If using --limit, the first host in each group may not have facts available. Find one that does. #}
 {% set group_hosts = groups[group_name] | intersect(play_hosts) %}
-{% if group_hosts | length > 0 %}
+
+NodeName=DEFAULT State=UNKNOWN {% if 'ram_mb' in group %} RealMemory={{group.ram_mb}}{% endif %}{% if group_hosts | length > 0 %}\
 {% set first_host_hv = hostvars[group_hosts | first] %}
     Sockets={{first_host_hv['ansible_processor_count']}} \
     CoresPerSocket={{first_host_hv['ansible_processor_cores']}} \
-    ThreadsPerCore={{first_host_hv['ansible_processor_threads_per_core']}} \
-{% endif %}
-    State=UNKNOWN
-{% endfor %}
-{% endfor %}
-{% for part in openhpc_slurm_partitions %}
+    ThreadsPerCore={{first_host_hv['ansible_processor_threads_per_core']}}
+{% endif %}{# group_hosts has a length #}
+{% for node in groups[group_name] %}
+NodeName={{ node }}
+{% endfor %}{# nodes #}
+{% endfor %}{# group #}
 PartitionName={{part.name}} \
-    Nodes={% for group in part.get('groups', [part]) %}{{group.cluster_name|default(openhpc_cluster_name)}}-{{group.name}}-{% if group.num_nodes > 1 %}[0-{{group.num_nodes|int-1}}]{% else %}0{% endif %}{% if not loop.last %},{% endif %}{% endfor %} \
     Default={% if 'default' in part %}{{ part.default }}{% else %}YES{% endif %} \
     MaxTime={% if 'maxtime' in part %}{{ part.maxtime }}{% else %}{{ openhpc_job_maxtime }}{% endif %} \
-    State=UP
-{% endfor %}
+    State=UP \
+    Nodes=\
+{% for group in part.get('groups', [part]) %}
+{% set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
+{{ groups[group_name] | join(",\\\n") }}{% if not loop.last %},\
+{% endif %}
+{% endfor %}{# group #}
+{% endfor %}{# partitions #}
+
 # Want nodes that drop out of SLURM's configuration to be automatically 
 # returned to service when they come back.
 ReturnToService=2
