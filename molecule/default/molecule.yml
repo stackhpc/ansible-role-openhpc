@@ -15,6 +15,8 @@ platforms:
       - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    networks:
+      - name: net1
   - name: testohpc-compute-0
     image: docker.io/pycontribs/centos:7
     pre_build_image: true
@@ -26,6 +28,8 @@ platforms:
       - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    networks:
+      - name: net1
   - name: testohpc-compute-1
     image: docker.io/pycontribs/centos:7
     pre_build_image: true
@@ -37,6 +41,8 @@ platforms:
       - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    networks:
+      - name: net1
 provisioner:
   name: ansible
 verifier:
