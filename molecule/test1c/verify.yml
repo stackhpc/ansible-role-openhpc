@@ -1,0 +1,11 @@
+---
+- name: Check slurm hostlist
+  hosts: testohpc_login
+  tasks:
+  - name: Get slurm partition info
+    command: sinfo -h sinfo --Node -S "+N" # 1 line per node, sort by increasing node name
+    register: sinfo
+  - name: 
+    assert:
+      that: "sinfo.stdout_lines == ['compute-a      1  compute* idle  ', 'compute10      1  compute* idle  ']"
+      fail_msg: "FAILED - actual value: {{ sinfo.stdout_lines }}"
