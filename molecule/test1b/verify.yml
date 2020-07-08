@@ -1,5 +1,4 @@
 ---
-# This is an example playbook to execute Ansible tests.
 
 - name: Check slurm hostlist
   hosts: testohpc_login
@@ -9,5 +8,5 @@
     register: sinfo
   - name: 
     assert:                        # PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
-      that: "sinfo.stdout_lines == ['compute*     up 60-00:00:0      2   idle testohpc-compute-[0-1]']"
+      that: "sinfo.stdout_lines == ['compute*     up 60-00:00:0      1   idle testohpc-compute-0']"
       fail_msg: "FAILED - actual value: {{ sinfo.stdout_lines }}"

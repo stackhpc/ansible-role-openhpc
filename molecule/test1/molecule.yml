@@ -1,6 +1,5 @@
 ---
-dependency:
-  name: galaxy
+name: single partition, group is partition
 driver:
   name: docker
 platforms:

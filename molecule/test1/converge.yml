@@ -2,9 +2,6 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: show ip?
-      debug:
-        var: hostvars[inventory_hostname]
     - name: Install OpenHPC repository
       yum:
         name: "https://github.com/openhpc/ohpc/releases/download/v1.3.GA/ohpc-release-1.3-1.el7.x86_64.rpm"
@@ -20,6 +17,6 @@
         openhpc_slurm_service_enabled: true
         openhpc_slurm_control_host: "{{ groups['testohpc_login'] | first }}"
         openhpc_slurm_partitions:
-          - name: "compute" # test 1: single partition, group is partition
+          - name: "compute"
         openhpc_cluster_name: testohpc
 
