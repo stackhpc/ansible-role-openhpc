@@ -161,3 +161,13 @@ To drain nodes, for example, before scaling down the cluster to 6 nodes:
             resume: "{{ inventory_hostname in desired_state }}"
     ...
 
+
+CentOS 8 and OpenHPC 2
+----------------------
+
+To deploy OpenHPC 2 on CentOS 8, you must first enable the CentOS PowerTools repo
+(this ships as standard, but disabled).  To enable PowerTools:
+
+```
+sudo dnf config-manager --set-enabled PowerTools
+```
