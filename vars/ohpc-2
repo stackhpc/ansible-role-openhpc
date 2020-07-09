@@ -1,0 +1,18 @@
+---
+# OpenHPC 2 on CentOS 8
+
+ohpc_slurm_control_packages:
+  - ohpc-slurm-server
+  - slurm-slurmctld-ohpc
+  - slurm-example-configs-ohpc
+  - lmod-ohpc
+  - munge
+
+ohpc_slurm_compute_packages:
+  - ohpc-base-compute
+  - ohpc-slurm-client
+  - munge
+
+ohpc_slurm_database_packages:
+  - slurm-slurmdbd-ohpc
+...
