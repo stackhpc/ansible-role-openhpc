@@ -21,11 +21,8 @@ Local installation on a Centos7 machine looks like:
     sudo yum install -y yum-utils
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     sudo yum install -y docker-ce docker-ce-cli containerd.io
-    python3 -m pip install --upgrade --user pip
-    python3 -m pip install --upgrade --user setuptools
-    python3 -m pip install --upgrade --user "molecule[lint]"
-    python3 -m pip install --upgrade --user docker
-
+    pip3 install -r molecule/requirements.txt --user
+    
     sudo systemctl start docker
     sudo usermod -aG docker ${USER}
     newgrp docker
