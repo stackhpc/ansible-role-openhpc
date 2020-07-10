@@ -10,8 +10,6 @@
     fail_msg: |
       "The OpenHPC distro package should be installed in the image.
        Please see http://openhpc.community/downloads/"
-- debug:
-    msg: "{{ ansible_facts.packages['ohpc-release'][0] }}"
 - include_vars:
     file: "ohpc-{{ ansible_facts.packages['ohpc-release'][0]['version'] }}"
 
