@@ -18,10 +18,9 @@ Role Variables
   Otherwise, `groups` can be omitted and the following attributes can be defined in the partition object:
   * `name`: The name of the nodes within this group.
   * `cluster_name`: Optional.  An override for the top-level definition `openhpc_cluster_name`.
-  * `num_nodes`: Nodes within the group are assumed to number `0:num_nodes-1`.
-  * `ram_mb`: Optional.  The physical RAM available in each server of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`).
+  * `ram_mb`: Optional.  The physical RAM available in each server of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`). This is set to the Slurm default of `1` if not defined.
   
-  For each group (if used) or partition there must be an ansible inventory group `{cluster_name}_{group_name}`. The compute nodes in this group must have hostnames in the form `{cluster_name}-{group_name}-{0..num_nodes-1}`. Note the inventory group uses "_" and the instances use "-".
+  For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`. All nodes in this inventory group will be added to the group/partition. Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
   
 * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
 * `maxtime`: Optional.  A partition-specific time limit in hours, minutes and seconds ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`).  The default value is
@@ -82,15 +81,9 @@ To deploy, create a playbook which looks like this:
           openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
           openhpc_slurm_partitions:
             - name: "compute"
-              num_nodes: 8
           openhpc_cluster_name: openhpc
           openhpc_packages: []
     ...
-
-Note that the "compute" of the openhpc_slurm_partition name and the
-openhpc_cluster_name are used to generate the compute node in the
-slurm config of openhpc-compute-[0:7]. Your inventory entries
-for that partition must match that convention.
 
 To drain nodes, for example, before scaling down the cluster to 6 nodes:
 
