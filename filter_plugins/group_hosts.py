@@ -45,7 +45,7 @@ def _group_hosts(hosts):
             r.append(int(suffix))
         else:
             unmatchable.append(v)
-    return ['{}[{}]'.format(k, _group_numbers(v)) for k, v in results.iteritems()] + unmatchable
+    return ['{}[{}]'.format(k, _group_numbers(v)) for k, v in results.items()] + unmatchable
 
 def _group_numbers(numbers):
     units = []

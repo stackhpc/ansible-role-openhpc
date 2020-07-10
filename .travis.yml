@@ -1,20 +1,18 @@
 ---
 language: python
-python: "2.7"
 
 # Use the new container infrastructure
-sudo: false
-
-# Install ansible
-addons:
-  apt:
-    packages:
-    - python-pip
-    
+sudo: required
+services:
+  - docker
+before_install:
+  - sudo apt-get -qq update
 install:
-  # Install ansible
-  - pip install ansible ansible-lint
-
+  - python3 -m pip install ansible
+  - python3 -m pip install ansible-lint
+  - python3 -m pip install molecule
+  - python3 -m pip install docker
+  
   # Check ansible version
   - ansible --version
 
@@ -33,6 +31,9 @@ script:
   
   # Test the custom filters
   - ansible-playbook tests/filter.yml -i tests/inventory -i tests/inventory-mock-groups
+
+  # Run molecule tests
+  - molecule test
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
