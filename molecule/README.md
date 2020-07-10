@@ -2,15 +2,15 @@ Molecule tests for the role.
 
 # Test Matrix
 
-Test options "flow down" thro table unless changed.
+Test options "flow down" through table unless changed.
 
-test   | # partitions | # groups in partitions? | other
+Test   | # Partitions | Groups in partitions?   | Other
 ---    | ---          | ---                     | ---
 test1  | 1            | N                       | 2x compute node, sequential names (default test)
 test1b | 1            | N                       | 1x compute node
 test1c | 1            | N                       | 2x compute nodes, nonsequential names
 test2  | 2            | N                       | 4x compute node, sequential names
-test3  | 1            | Y                       |
+test3  | 1            | Y                       | -
 
 # Local Installation & Running
 

@@ -108,7 +108,7 @@ Epilog=/etc/slurm/slurm.epilog.clean
 {# If using --limit, the first host in each group may not have facts available. Find one that does. #}
 {% set group_hosts = groups[group_name] | intersect(play_hosts) %}
 
-NodeName=DEFAULT State=UNKNOWN {% if 'ram_mb' in group %} RealMemory={{group.ram_mb}}{% endif %}{% if group_hosts | length > 0 %}\
+NodeName=DEFAULT State=UNKNOWN RealMemory={% if 'ram_mb' in group %}{{group.ram_mb}}{% else %}1{% endif %}{% if group_hosts | length > 0 %}\
 {% set first_host_hv = hostvars[group_hosts | first] %}
     Sockets={{first_host_hv['ansible_processor_count']}} \
     CoresPerSocket={{first_host_hv['ansible_processor_cores']}} \
