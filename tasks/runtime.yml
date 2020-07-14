@@ -8,12 +8,8 @@
     openhpc_slurm_partitions | length == 0
 
 - name: Install OpenHPC runtime Slurm packages
-  yum:
-    name:
-      - "slurm-ohpc"
-      - "munge-ohpc"
-      - "slurm-slurmd-ohpc"
-      - "slurm-example-configs-ohpc"
+  package:
+    name: "{{ ohpc_slurm_runtime_packages }}"
     state: present
 
 - name: Ensure the Slurm spool directory exists
@@ -73,12 +69,12 @@
 
 # Install OpenHPC runtime
 - name: Ensure selected OpenHPC packages are installed
-  yum:
+  package:
     name: "{{ openhpc_packages }}"
     state: present
 
 - name: Install OpenHPC LMOD
-  yum:
+  package:
     name: "lmod-ohpc"
     state: present
 

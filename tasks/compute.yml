@@ -1,12 +1,7 @@
 ---
 - name: Install OpenHPC compute image packages
-  yum:
-    name: "@ohpc-base-compute"
-    state: present
-
-- name: Install OpenHPC SLURM client packages
-  yum:
-    name: "@ohpc-slurm-client"
+  package:
+    name: "{{ ohpc_slurm_compute_packages }}"
     state: present
 
 - name: Select the SLURM service to control
