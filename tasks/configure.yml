@@ -36,7 +36,6 @@
   command: "dd if=/dev/urandom of={{ openhpc_munge_key.location }} bs=1 count=1024"
   args:
     creates: "{{ openhpc_munge_key.location }}"
-  become_user: munge
   when: inventory_hostname == openhpc_slurm_control_host
   notify: Restart Munge service
   register: write_munge_key
@@ -47,6 +46,17 @@
   register: slurm_munge_key
   when: inventory_hostname == openhpc_slurm_control_host
 
+- name: Fix Munge key permissions on the control host
+  copy:
+    content: "{{ hostvars[openhpc_slurm_control_host]['slurm_munge_key']['content'] | b64decode }}"
+    dest: "{{ openhpc_munge_key.location }}"
+    owner: munge
+    group: munge
+    mode: 0400
+  when:
+    - inventory_hostname == openhpc_slurm_control_host
+    - openhpc_munge_key.shared_fs | bool
+
 - name: Write Munge key (if not networked)
   copy:
     content: "{{ hostvars[openhpc_slurm_control_host]['slurm_munge_key']['content'] | b64decode }}"
@@ -55,7 +65,6 @@
     group: munge
     mode: 0400
   when:
-    - inventory_hostname != openhpc_slurm_control_host
     - not openhpc_munge_key.shared_fs | bool
   notify: Restart Munge service
 
@@ -79,6 +88,14 @@
         - Restart Munge service
   when: openhpc_munge_key.shared_fs
 
+- name: Ensure the Munge service is running (if networked)
+  service:
+    name: munge
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
+    state: started
+  when:
+    - openhpc_munge_key.shared_fs
+    - openhpc_slurm_service_enabled | bool
 
 # NB: Think this is correct, but should disable before doing things which cause a reboot.
 - name: Ensure Slurm services are enabled
