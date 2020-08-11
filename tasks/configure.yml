@@ -36,6 +36,7 @@
   command: "dd if=/dev/urandom of={{ openhpc_munge_key.location }} bs=1 count=1024"
   args:
     creates: "{{ openhpc_munge_key.location }}"
+  become_user: munge
   when: inventory_hostname == openhpc_slurm_control_host
   notify: Restart Munge service
   register: write_munge_key
