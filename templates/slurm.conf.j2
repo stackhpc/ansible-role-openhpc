@@ -91,7 +91,7 @@ JobAcctGatherFrequency={{ openhpc_slurm_job_acct_gather_frequency }}
 AccountingStorageType={{ openhpc_slurm_accounting_storage_type }}
 AccountingStorageHost={{ openhpc_slurm_accounting_storage_host }}
 AccountingStoragePort={{ openhpc_slurm_accounting_storage_port }}
-AccountingStorageLoc=slurm_acct_db
+AccountingStorageLoc={{ openhpc_slurm_accounting_storage_loc }}
 {% set storage_pass = openhpc_slurm_accounting_storage_pass | mandatory('You must set openhpc_slurm_accounting_storage_pass') if openhpc_slurm_accounting_storage_type in ['accounting_storage/mysql'] else '' %}
 {%- if storage_pass -%}
 AccountingStoragePass={{ storage_pass }}
