@@ -1,4 +1,21 @@
 ---
+# NOTE: We need this running before slurmdbd
+- name: Restart Munge service
+  service:
+    name: "munge"
+    state: restarted
+  when: openhpc_slurm_service_enabled | bool
+
+# NOTE: we need this running before slurmctld start
+- name: Restart slurmdbd service
+  service:
+    name: "slurmdbd"
+    state: restarted
+  delegate_to: "{{ openhpc_slurmdbd_host }}"
+  run_once: true
+  become: true
+  when: openhpc_slurmdbd_enabled | bool
+
 - name: Restart SLURM service
   service:
     name: "{{ openhpc_slurm_service }}"
@@ -7,8 +24,13 @@
     - openhpc_slurm_service is not none
     - openhpc_slurm_service_enabled | bool
 
-- name: Restart Munge service
+# NOTE: Allows you to restart slurmctld from another host
+- name: Restart slurmctld service
   service:
-    name: "munge"
+    name: "slurmctld"
     state: restarted
-  when: openhpc_slurm_service_enabled | bool
+  become: true
+  delegate_to: "{{ openhpc_slurm_control_host }}"
+  run_once: true
+  when:
+    - openhpc_slurm_service_enabled | bool

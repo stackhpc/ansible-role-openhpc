@@ -19,8 +19,15 @@
 - include: compute.yml
   when: openhpc_enable.batch | default(false) | bool
 
+- include: database.yml
+  when: openhpc_enable.database | default(false) | bool
+
 - include: runtime.yml
   when: openhpc_enable.runtime | default(false) | bool
+
+- include: post.yml
+  when: openhpc_enable.runtime | default(false) | bool
+  delegate_to: "{{ openhpc_slurm_control_host }}"
 
 - include: drain.yml
   when: openhpc_enable.drain | default(false) | bool

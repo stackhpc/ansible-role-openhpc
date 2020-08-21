@@ -9,9 +9,35 @@ openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
 openhpc_job_maxtime: 24:00:00
+
+# Accounting
+openhpc_slurm_accounting_storage_host: "{{ openhpc_slurmdbd_host }}"
+openhpc_slurm_accounting_storage_port: 6819
+openhpc_slurm_accounting_storage_type: accounting_storage/none
+# NOTE: You only need to set these if using accounting_storage/mysql
+openhpc_slurm_accounting_storage_loc: slurm_acct_db
+openhpc_slurm_accounting_storage_user: slurm
+#openhpc_slurm_accounting_storage_pass:
+
+# Job accounting
+openhpc_slurm_job_acct_gather_type: jobacct_gather/linux
+openhpc_slurm_job_acct_gather_frequency: 30
+openhpc_slurm_job_comp_type: jobcomp/filetxt
+openhpc_slurm_job_comp_loc: /var/log/slurm_jobacct.log
+
+# slurmdbd configuration
+openhpc_slurmdbd_enabled: "{{ openhpc_slurm_accounting_storage_type == 'accounting_storage/slurmdbd' }}"
+openhpc_slurmdbd_host: "{{ openhpc_slurm_control_host }}"
+openhpc_slurmdbd_port: "{{ openhpc_slurm_accounting_storage_port }}"
+openhpc_slurmdbd_mysql_host: "{{ openhpc_slurm_control_host }}"
+openhpc_slurmdbd_mysql_database: slurm_acct_db
+#openhpc_slurmdbd_mysql_password:
+openhpc_slurmdbd_mysql_username: slurm
+
 openhpc_enable:
   control: false
   batch: false
-  runtime: false 
-  drain: false 
-  resume: false 
+  database: false
+  runtime: false
+  drain: false
+  resume: false

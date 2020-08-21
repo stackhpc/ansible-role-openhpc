@@ -6,12 +6,30 @@ This Ansible role installs packages and performs configuration to provide a full
 
 As a role it must be used from a playbook, for which a simple example is given below. This approach means it is totally modular with no assumptions about available networks or any cluster features except for some hostname conventions. Any desired cluster fileystem or other required functionality may be freely integrated using additional Ansible roles or other approaches.
 
-Role Variables
---------------
+## Role Variables
 
 `openhpc_slurm_service_enabled`: boolean, whether to enable the appropriate slurm service (slurmd/slurmctld)
 
 `openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`
+
+`openhpc_packages`: additional OpenHPC packages to install
+
+`openhpc_slurmdbd_enabled`: boolean, Whether or not install slurmdbd.
+
+`openhpc_slurmdbd_host`: Where to deploy slurmdbd if `openhpc_slurmdbd_enabled` is `true`, otherwise where
+an existing slurmdbd is running. This should be the name of a host in your inventory.
+
+`openhpc_enable`:
+* `control`: whether to enable control host
+* `database`: whether to enable slurmdbd
+* `batch`: whether to enable compute nodes
+* `runtime`: whether to enable OpenHPC runtime
+* `drain`: whether to drain compute nodes
+* `resume`: whether to resume compute nodes
+
+### slurm.conf
+
+The following options affect `slurm.conf`. Please see the slurm (documentation)[https://slurm.schedmd.com/slurm.conf.html] for more details.
 
 `openhpc_slurm_partitions`: list of one or more slurm partitions.  Each partition may contain the following values:
 * `groups`: If there are multiple node groups that make up the partition, a list of group objects can be defined here.
@@ -19,9 +37,9 @@ Role Variables
   * `name`: The name of the nodes within this group.
   * `cluster_name`: Optional.  An override for the top-level definition `openhpc_cluster_name`.
   * `ram_mb`: Optional.  The physical RAM available in each server of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`). This is set to the Slurm default of `1` if not defined.
-  
+
   For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`. All nodes in this inventory group will be added to the group/partition. Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
-  
+
 * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
 * `maxtime`: Optional.  A partition-specific time limit in hours, minutes and seconds ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`).  The default value is
   given by `openhpc_job_maxtime`.
@@ -30,14 +48,51 @@ Role Variables
 
 `openhpc_cluster_name`: name of the cluster
 
-`openhpc_packages`: additional OpenHPC packages to install
+#### Accounting
 
-`openhpc_enable`:
-* `control`: whether to enable control host
-* `batch`: whether to enable compute nodes
-* `runtime`: whether to enable OpenHPC runtime
-* `drain`: whether to drain compute nodes
-* `resume`: whether to resume compute nodes
+`openhpc_slurm_accounting_storage_host`: Where the accouting storage service is running i.e where
+ is mysql or slurmdbd running.
+
+`openhpc_slurm_accounting_storage_port`: Which port to use to connect to the accounting storage
+
+`openhpc_slurm_accounting_storage_type`: How accounting records are stored. Can be one of `accounting_storage/none`,
+ `accounting_storage/slurmdbd` or  `accounting_storage/mysql`.
+
+You only need to set these if using `accounting_storage/mysql`:
+
+`openhpc_slurm_accounting_storage_loc`: database to store the accounting records
+
+`openhpc_slurm_accounting_storage_user`: username for authenticating with the accounting storage
+
+`openhpc_slurm_accounting_storage_pass`: mungekey or database password to use for authenticating
+with the accounting storage
+
+#### Job accounting
+
+`openhpc_slurm_job_acct_gather_type`: Mechanism for collecting job accounting data. Can be one
+ of `jobacct_gather/linux`, `jobacct_gather/cgroup` and `jobacct_gather/none`
+
+`openhpc_slurm_job_acct_gather_frequency`: Sampling period for job accounting (seconds)
+
+`openhpc_slurm_job_comp_type`: Logging mechanism for job accounting. Can be one of
+`jobcomp/filetxt`, `jobcomp/none`, `jobcomp/elasticsearch`.
+
+`openhpc_slurm_job_comp_loc`: Location to store the job accounting records. Depends on value of
+`openhpc_slurm_job_comp_type`, e.g for `jobcomp/filetxt` represents a path on disk.
+
+### slurmdbd.conf
+
+The following options affect `slurmdbd.conf`. Please see the slurm (documentation)[https://slurm.schedmd.com/slurmdbd.conf.html] for more details.
+
+`openhpc_slurmdbd_port`: Port for slurmdb to listen on
+
+`openhpc_slurmdbd_mysql_host`: Hostname or IP Where mariadb is running
+
+`openhpc_slurmdbd_mysql_database`: Database to use for accounting
+
+`openhpc_slurmdbd_mysql_password`: Password for authenticating with the database
+
+`openhpc_slurmdbd_mysql_username`: Username for authenticating with the database
 
 Example Inventory
 -----------------

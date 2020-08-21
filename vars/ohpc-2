@@ -16,4 +16,7 @@ ohpc_slurm_runtime_packages:
   - "slurm-slurmd-ohpc"
   - "slurm-example-configs-ohpc"
 
+ohpc_slurm_database_packages:
+  - "slurm-slurmdbd-ohpc"
+
 ...
