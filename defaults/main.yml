@@ -26,7 +26,6 @@ openhpc_slurm_job_comp_type: jobcomp/filetxt
 openhpc_slurm_job_comp_loc: /var/log/slurm_jobacct.log
 
 # slurmdbd configuration
-openhpc_slurmdbd_enabled: "{{ openhpc_slurm_accounting_storage_type == 'accounting_storage/slurmdbd' }}"
 openhpc_slurmdbd_host: "{{ openhpc_slurm_control_host }}"
 openhpc_slurmdbd_port: "{{ openhpc_slurm_accounting_storage_port }}"
 openhpc_slurmdbd_mysql_host: "{{ openhpc_slurm_control_host }}"

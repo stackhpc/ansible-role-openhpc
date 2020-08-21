@@ -35,5 +35,5 @@ PidFile=/var/run/slurmdbd.pid
 StorageType=accounting_storage/mysql
 StorageHost={{ openhpc_slurmdbd_mysql_host }}
 StorageUser={{ openhpc_slurmdbd_mysql_username }}
-StoragePass={{ openhpc_slurmdbd_mysql_password | mandatory('You must set openhpc_slurmdbd_mysql_password') if openhpc_slurmdbd_enabled else '' }}
+StoragePass={{ openhpc_slurmdbd_mysql_password | mandatory('You must set openhpc_slurmdbd_mysql_password') }}
 StorageLoc={{ openhpc_slurmdbd_mysql_database }}

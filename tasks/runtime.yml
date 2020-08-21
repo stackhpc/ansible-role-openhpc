@@ -92,7 +92,7 @@
 - name: Ensure slurmdbd is started and running
   service:
     name: slurmdbd
-    enabled: "{{ openhpc_slurmdbd_enabled  | bool }}"
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
   when: openhpc_enable.database | default(false) | bool
   become: true

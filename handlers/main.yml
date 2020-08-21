@@ -12,9 +12,9 @@
     name: "slurmdbd"
     state: restarted
   delegate_to: "{{ openhpc_slurmdbd_host }}"
+  when: openhpc_slurmdbd_host
   run_once: true
   become: true
-  when: openhpc_slurmdbd_enabled | bool
 
 - name: Restart SLURM service
   service:

@@ -14,10 +14,9 @@ As a role it must be used from a playbook, for which a simple example is given b
 
 `openhpc_packages`: additional OpenHPC packages to install
 
-`openhpc_slurmdbd_enabled`: boolean, Whether or not install slurmdbd.
-
-`openhpc_slurmdbd_host`: Where to deploy slurmdbd if `openhpc_slurmdbd_enabled` is `true`, otherwise where
-an existing slurmdbd is running. This should be the name of a host in your inventory.
+`openhpc_slurmdbd_host`: Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where
+an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to
+prevent the role from managing slurmdbd.
 
 `openhpc_enable`:
 * `control`: whether to enable control host
