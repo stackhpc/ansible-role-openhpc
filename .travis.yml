@@ -28,6 +28,7 @@ env:
   - SCENARIO=test1c
   - SCENARIO=test2
   - SCENARIO=test3
+  - SCENARIO=test4
 
 script:
   # Run molecule tests
