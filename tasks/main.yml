@@ -4,13 +4,17 @@
 - name: Gather package facts
   package_facts:
     manager: rpm
-- assert:
+
+- name: Check ohpc-release package is installed
+  assert:
     that: "'ohpc-release' in ansible_facts.packages"
     quiet: yes
     fail_msg: |
       "The OpenHPC distro package should be installed in the image.
        Please see http://openhpc.community/downloads/"
-- include_vars:
+
+- name: Include variables for OpenHPC version
+  include_vars:
     file: "ohpc-{{ ansible_facts.packages['ohpc-release'][0]['version'] }}"
 
 - include: control.yml
