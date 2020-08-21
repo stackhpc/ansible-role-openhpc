@@ -1,3 +1,4 @@
+---
 - name: Build host-specific list of required slurm packages
   set_fact:
     openhpc_slurm_pkglist: "{{ openhpc_slurm_pkglist | default([]) + item.value }}"
@@ -13,4 +14,3 @@
   yum:
     name: "{{ item }}"
   loop: "{{ openhpc_packages }}"
-  when: "openhpc_enable.runtime  | default(false) | bool"

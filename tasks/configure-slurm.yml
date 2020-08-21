@@ -1,0 +1,61 @@
+- name: Ensure {{ openhpc_slurm_service }} is enabled
+  service:
+    name: "{{ openhpc_slurm_service }}"
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
+
+- name: Ensure slurm config directory exists & world-readable
+  file:
+    path: "{{ openhpc_slurm_conf.location | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  run_once: "{{ openhpc_slurm_conf.shared_fs | bool }}"
+
+- name: Apply customised SLURM configuration
+  template:
+    src: slurm.conf.j2
+    dest: "{{ openhpc_slurm_conf.location }}"
+    owner: root
+    group: root
+    mode: 0644
+  when: "(inventory_hostname == openhpc_slurm_control_host) or (not openhpc_slurm_conf.shared_fs | bool)"
+  notify: Restart {{ openhpc_slurm_service }} service
+  # i.e. always on control node, only on others if not networked
+
+- name: Set slurm.conf location for slurm daemons
+  lineinfile:
+    path: "/etc/sysconfig/{{ openhpc_slurm_service }}"
+    line: '{{ openhpc_slurm_service | upper }}_OPTIONS="-f {{ openhpc_slurm_conf.location }}"'
+    regexp: '^{{ openhpc_slurm_service | upper }}\w+D_OPTIONS'
+    create: yes
+  when:
+    - openhpc_slurm_conf.location != '/etc/slurm/slurm.conf'
+  notify: Restart {{ openhpc_slurm_service }} service
+
+- name: Wait for network filesystem mount before slurm daemon start
+  block:
+    - name: make drop-in directory
+      file:
+        path: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/"
+        state: directory
+    - name: Add drop-in to modify slurm daemon unit parameters
+      copy:
+        dest: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/slurmconf.conf"
+        content: |
+          [Unit]
+          RequiresMountsFor={{ openhpc_slurm_conf.location }}
+      notify:
+        - Reload systemd config
+        - Restart {{ openhpc_slurm_service }} service
+
+  when: openhpc_slurm_conf.shared_fs # NB won't be network fs on the exporting node!
+
+- name: symlink slurm.conf so slurm commands work
+  file:
+    force: true # `path` will already exist from package install
+    state: link
+    path: "/etc/slurm/slurm.conf"
+    src: "{{ openhpc_slurm_conf.location }}"
+  when: openhpc_slurm_conf.location != '/etc/slurm/slurm.conf'
+  notify: Restart {{ openhpc_slurm_service }} service

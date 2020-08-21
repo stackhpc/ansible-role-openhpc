@@ -81,18 +81,20 @@ SlurmctldDebug=3
 #SlurmctldLogFile=
 SlurmdDebug=3
 #SlurmdLogFile=
-JobCompType=jobcomp/none
-#JobCompLoc=
+JobCompType={{ openhpc_slurm_job_comp_type }}
+JobCompLoc={{ openhpc_slurm_job_comp_loc }}
 #
 # ACCOUNTING
-#JobAcctGatherType=jobacct_gather/linux
-#JobAcctGatherFrequency=30
+JobAcctGatherType={{ openhpc_slurm_job_acct_gather_type }}
+JobAcctGatherFrequency={{ openhpc_slurm_job_acct_gather_frequency }}
 #
-#AccountingStorageType=accounting_storage/slurmdbd
-#AccountingStorageHost=
-#AccountingStorageLoc=
-#AccountingStoragePass=
-#AccountingStorageUser=
+AccountingStorageType={{ openhpc_slurm_accounting_storage_type }}
+AccountingStorageHost={{ openhpc_slurm_accounting_storage_host }}
+AccountingStoragePort={{ openhpc_slurm_accounting_storage_port }}
+{%- if openhpc_slurm_accounting_storage_pass | default(false, true) -%}
+AccountingStoragePass={{ openhpc_slurm_accounting_storage_pass }}
+{%- endif -%}
+AccountingStorageUser={{ openhpc_slurm_accounting_storage_user }}
 #
 # COMPUTE NODES
 # OpenHPC default configuration

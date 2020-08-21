@@ -1,0 +1,32 @@
+---
+
+- include_tasks: "install.yml"
+  when:
+    - "'install' in openhpc_actions" # ensures a list even if passed a single item
+
+- include_tasks: "configure.yml"
+  when:
+    - "'configure' in openhpc_actions"
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- include: start.yml
+  when: "'start' in openhpc_actions"
+
+- include: post.yml
+  when: "'post' in openhpc_actions"
+
+- include: drain.yml
+  when:
+    - "'drain' in openhpc_actions"
+    - openhpc_enable.drain | default(false) | bool
+  delegate_to: "{{ openhpc_slurm_control_host }}"
+
+- include: resume.yml
+  when:
+    - "'resume' in openhpc_actions"
+    - openhpc_enable.resume | default(false) | bool
+  delegate_to: "{{ openhpc_slurm_control_host }}"
+
+...
