@@ -15,7 +15,7 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = """
 ---
 module: sacct_cluster
-short_description: Manages clusters in the accouting database
+short_description: Manages clusters in the accounting database
 version_added: "2.9"
 description:
     - "Adds/removes a cluster from the accounting database"

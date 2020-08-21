@@ -49,21 +49,21 @@ The following options affect `slurm.conf`. Please see the slurm (documentation)[
 
 #### Accounting
 
-`openhpc_slurm_accounting_storage_host`: Where the accouting storage service is running i.e where
+`openhpc_slurm_accounting_storage_host`: Where the accounting storage service is running i.e where
  is mysql or slurmdbd running.
 
 `openhpc_slurm_accounting_storage_port`: Which port to use to connect to the accounting storage
 
 `openhpc_slurm_accounting_storage_type`: How accounting records are stored. Can be one of `accounting_storage/none`,
- `accounting_storage/slurmdbd` or  `accounting_storage/mysql`.
+ `accounting_storage/slurmdbd` or  `accounting_storage/filetxt.
 
 You only need to set these if using `accounting_storage/mysql`:
 
-`openhpc_slurm_accounting_storage_loc`: database to store the accounting records
+`openhpc_slurm_accounting_storage_loc`: Database to store the accounting records. Only required when using `AccountingStorageType=accounting_storagefiletxt`
 
-`openhpc_slurm_accounting_storage_user`: username for authenticating with the accounting storage
+`openhpc_slurm_accounting_storage_user`: Username for authenticating with the accounting storage
 
-`openhpc_slurm_accounting_storage_pass`: mungekey or database password to use for authenticating
+`openhpc_slurm_accounting_storage_pass`: Mungekey or database password to use for authenticating
 with the accounting storage
 
 #### Job accounting

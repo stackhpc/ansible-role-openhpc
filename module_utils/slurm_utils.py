@@ -4,7 +4,7 @@
 # Apache 2 License
 
 def slurm_parse(output):
-    """Parse sacct parsable output"""
+    """Parse sacct parsable output(i.e. using -p)"""
     # Example input:
     # Cluster|ControlHost|ControlPort|RPC|Share|GrpJobs|GrpTRES|GrpSubmit|MaxJobs|MaxTRES|MaxSubmit|MaxWall|QOS|Def QOS|
     # testohpc|172.20.0.2|6817|8448|1||||||||normal||
