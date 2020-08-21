@@ -12,7 +12,7 @@
     name: "slurmdbd"
     state: restarted
   delegate_to: "{{ openhpc_slurmdbd_host }}"
-  when: openhpc_slurmdbd_host
+  when: openhpc_slurmdbd_host is defined
   run_once: true
   become: true
 
