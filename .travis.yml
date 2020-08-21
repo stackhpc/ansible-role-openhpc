@@ -12,7 +12,7 @@ install:
   - python3 -m pip install ansible-lint
   - python3 -m pip install molecule
   - python3 -m pip install docker
-  
+
   # Check ansible version
   - ansible --version
 
@@ -22,18 +22,27 @@ install:
   # Compensate for repo name being different to the role
   - ln -s $(pwd) ../stackhpc.openhpc
 
-script:
-  # Basic role syntax check
-  - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
-  
-  # Run Ansible lint against the role
-  - ansible-lint tasks/main.yml  
-  
-  # Test the custom filters
-  - ansible-playbook tests/filter.yml -i tests/inventory -i tests/inventory-mock-groups
+env:
+  - SCENARIO=test1
+  - SCENARIO=test1b
+  - SCENARIO=test1c
+  - SCENARIO=test2
+  - SCENARIO=test3
 
+script:
   # Run molecule tests
-  - molecule test
+  - molecule test -s $SCENARIO
+
+jobs:
+  include:
+    - stage: checks
+      # Basic role syntax check
+      script:
+        - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+        # Run Ansible lint against the role
+        - ansible-lint .
+        # Test the custom filters
+        - ansible-playbook tests/filter.yml -i tests/inventory -i tests/inventory-mock-groups
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
