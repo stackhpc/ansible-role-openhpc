@@ -92,9 +92,8 @@ AccountingStorageType={{ openhpc_slurm_accounting_storage_type }}
 AccountingStorageHost={{ openhpc_slurm_accounting_storage_host }}
 AccountingStoragePort={{ openhpc_slurm_accounting_storage_port }}
 AccountingStorageLoc={{ openhpc_slurm_accounting_storage_loc }}
-{% set storage_pass = openhpc_slurm_accounting_storage_pass | mandatory('You must set openhpc_slurm_accounting_storage_pass') if openhpc_slurm_accounting_storage_type in ['accounting_storage/mysql'] else '' %}
-{%- if storage_pass -%}
-AccountingStoragePass={{ storage_pass }}
+{%- if openhpc_slurm_accounting_storage_pass | default(false, true) -%}
+AccountingStoragePass={{ openhpc_slurm_accounting_storage_pass }}
 {%- endif -%}
 AccountingStorageUser={{ openhpc_slurm_accounting_storage_user }}
 #
