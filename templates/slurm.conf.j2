@@ -81,12 +81,12 @@ SlurmctldDebug=3
 #SlurmctldLogFile=
 SlurmdDebug=3
 #SlurmdLogFile=
-JobCompType=jobcomp/filetxt
-JobCompLoc=/var/log/slurm_jobacct.log
+JobCompType={{ openhpc_slurm_job_comp_type }}
+JobCompLoc={{ openhpc_slurm_job_comp_loc }}
 #
 # ACCOUNTING
-JobAcctGatherType=jobacct_gather/linux
-JobAcctGatherFrequency=30
+JobAcctGatherType={{ openhpc_slurm_job_acct_gather_type }}
+JobAcctGatherFrequency={{ openhpc_slurm_job_acct_gather_frequency }}
 #
 AccountingStorageType={{ openhpc_slurm_accounting_storage_type }}
 AccountingStorageHost={{ openhpc_slurm_accounting_storage_host }}
