@@ -33,6 +33,9 @@
   run_once: "{{ openhpc_munge_key.shared_fs | bool }}"
 
 - name: Generate a Munge key for the platform
+  # FIXME: munge key is shipped in munge-ohpc - need to either remove the
+  # package shipped one or update location. Possible to detect using a checksum
+  # but that could be fragile. Updating the location seems like a better option.
   command: "dd if=/dev/urandom of={{ openhpc_munge_key.location }} bs=1 count=1024"
   args:
     creates: "{{ openhpc_munge_key.location }}"
