@@ -50,6 +50,8 @@ openhpc_slurm_conf:
   location: /etc/slurm/slurm.conf
   shared_fs: false
 openhpc_munge_key:
+  # /etc/munge/munge.key is shipped in RPM which means that we don't
+  # generate a new one if we use that path
   location: /etc/munge/ansible-managed-munge.key
   shared_fs: false
 

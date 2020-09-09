@@ -40,6 +40,25 @@
   notify: Restart Munge service
   register: write_munge_key
 
+- name: Set fact to trigger restart of munged on all hosts
+  set_fact:
+    restart_munged: true
+  delegate_to: "{{ item }}"
+  delegate_facts: True
+  with_items: "{{ groups['openhpc_enable_batch_True'] }}"
+  when:
+    - write_munge_key is defined
+    - write_munge_key is changed
+    - openhpc_slurm_conf.shared_fs | bool
+
+- name: Restart all daemons using networked configuration
+  command: /bin/true
+  changed_when: true
+  notify: Restart Munge service
+  when:
+    - restart_munged is defined
+    - restart_munged | bool
+
 - name: Retrieve Munge key from Slurm control host
   slurp:
     src: "{{ openhpc_munge_key.location }}"

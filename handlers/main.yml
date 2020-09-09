@@ -11,9 +11,6 @@
   service:
     name: "munge"
     state: restarted
-  delegate_to: "{{ item }}"
-  with_items: "{{ groups['all'] }}"
-  run_once: true
   become: true
   when:
     - openhpc_slurm_service_enabled | bool
@@ -24,11 +21,12 @@
   service:
     name: "slurmdbd"
     state: restarted
+  # This one is called from the control host so needs to delegate to the
+  # database
   delegate_to: "{{ item }}"
   with_items: "{{ groups['openhpc_enable_database_True'] }}"
   when:
     - "'start' in openhpc_actions"
-  run_once: true
   become: true
 
 # NOTE: Allows you to restart slurmctld from another host
@@ -37,9 +35,6 @@
     name: "slurmctld"
     state: restarted
   become: true
-  delegate_to: "{{ item }}"
-  with_items: "{{ groups['openhpc_enable_control_True'] }}"
-  run_once: true
   when:
     - openhpc_slurm_service_enabled | bool
     - openhpc_reconfigure_mode == "hard"
@@ -49,19 +44,14 @@
   service:
     name: "slurmd"
     state: restarted
-  delegate_to: "{{ item }}"
-  with_items: "{{ groups['openhpc_enable_batch_True'] }}"
-  run_once: True
   when:
     - openhpc_reconfigure_mode == "hard"
     - "'start' in openhpc_actions"
+    - openhpc_enable.batch
   become: true
 
 - name: Reconfigure slurm
   command: scontrol reconfigure
-  run_once: true
-  delegate_to: "{{ item }}"
-  with_items: "{{ groups['openhpc_enable_control_True'] + groups['openhpc_enable_batch_True'] }}"
   listen:
     - Restart slurmd service
     - Restart slurmctld service
