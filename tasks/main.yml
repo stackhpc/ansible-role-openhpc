@@ -6,13 +6,16 @@
 - name: Group batch hosts
   group_by:
     key: openhpc_enable_batch_{{ openhpc_enable.batch }}
+  changed_when: false
 
 - name: Group control hosts
   group_by:
     key: openhpc_enable_control_{{ openhpc_enable.control }}
+  changed_when: false
 
 - name: Group database hosts
   group_by:
     key: openhpc_enable_database_{{ openhpc_enable.database }}
+  changed_when: false
 
 - include: "{{ openhpc_tasks | default('default') }}.yml"
