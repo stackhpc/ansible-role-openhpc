@@ -28,6 +28,7 @@
     path: "/etc/sysconfig/{{ openhpc_slurm_service }}"
     line: '{{ openhpc_slurm_service | upper }}_OPTIONS="-f {{ openhpc_slurm_conf.location }}"'
     regexp: '^{{ openhpc_slurm_service | upper }}\w+D_OPTIONS'
+    mode: 0600
     create: yes
   when:
     - openhpc_slurm_conf.location != '/etc/slurm/slurm.conf'
@@ -39,12 +40,14 @@
       file:
         path: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/"
         state: directory
+        mode: 0700
     - name: Add drop-in to modify slurm daemon unit parameters
       copy:
         dest: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/slurmconf.conf"
         content: |
           [Unit]
           RequiresMountsFor={{ openhpc_slurm_conf.location }}
+        mode: 0600
       notify:
         - Reload systemd config
         - Restart {{ openhpc_slurm_service }} service
@@ -57,5 +60,6 @@
     state: link
     path: "/etc/slurm/slurm.conf"
     src: "{{ openhpc_slurm_conf.location }}"
+    mode: 0644
   when: openhpc_slurm_conf.location != '/etc/slurm/slurm.conf'
   notify: Restart {{ openhpc_slurm_service }} service

@@ -64,6 +64,7 @@
       file:
         path: "/etc/systemd/system/munge.service.d/"
         state: directory
+        mode: 0700
     - name: Add drop-in to modify munge daemon unit parameters
       copy:
         dest: "/etc/systemd/system/munge.service.d/slurmconf.conf"
@@ -73,6 +74,7 @@
           [Service]
           ExecStart=
           ExecStart=/usr/sbin/munged --syslog --key-file {{ openhpc_munge_key.location }}
+        mode: 0600
       notify:
         - Reload systemd config
         - Restart Munge service
