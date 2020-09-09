@@ -8,7 +8,8 @@ services:
 before_install:
   - sudo apt-get -qq update
 install:
-  - python3 -m pip install ansible
+  # Ansible pinned, waiting on: https://github.com/ansible/ansible/pull/70919
+  - python3 -m pip install ansible==2.9.10
   - python3 -m pip install ansible-lint
   - python3 -m pip install molecule
   - python3 -m pip install docker
