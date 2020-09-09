@@ -25,6 +25,20 @@ openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
 openhpc_job_maxtime: 24:00:00
 
+# Choose one of:
+# hard:
+#  Perform a reconfigure of slurm which requires restart of daemons, i.e.
+#   - changes to AuthType, ControlMach, PluginDir, StateSaveLocation, SlurmctldHost, SlurmctldPort, or SlurmdPort
+#   - addition or removal of nodes from the cluster
+#  This does not rewrite slurm.conf - do that first
+#  NB this deliberately does not use `scontrol shutdown` as a bad config may mean slurmctld cannot contact the slurmds
+# soft:
+#   Perform a reconfigure of slurm which does not requires restart of daemons, i.e. any changes except
+#   those listed in tasks/hard_reconfigure.yml. This avoids interrupting the scheduler.
+#   This does not rewrite slurm.conf - do that first
+#   NB: This requires communication between the daemons so if that is broken use hard reconfigure
+openhpc_reconfigure_mode: hard
+
 openhpc_enable:
   control: false
   batch: false
@@ -36,7 +50,7 @@ openhpc_slurm_conf:
   location: /etc/slurm/slurm.conf
   shared_fs: false
 openhpc_munge_key:
-  location: /etc/munge/munge.key
+  location: /etc/munge/ansible-managed-munge.key
   shared_fs: false
 
 # Accounting
