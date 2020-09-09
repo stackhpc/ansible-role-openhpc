@@ -43,7 +43,6 @@
   service:
     name: "slurmd"
     state: restarted
-  delegate_to: "{{ openhpc_slurmdbd_host }}"
   when:
     - openhpc_enable.batch
     - openhpc_reconfigure_mode == "hard"
@@ -54,8 +53,8 @@
   command: scontrol reconfigure
   run_once: true
   listen:
-    - Restart slurmdbd service
     - Restart slurmd service
+    - Restart slurmctld service
   when:
     - openhpc_reconfigure_mode == "soft"
     - "'start' in openhpc_actions"
