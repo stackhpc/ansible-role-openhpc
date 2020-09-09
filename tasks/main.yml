@@ -1,3 +1,18 @@
 ---
 
+# These groups allow us to restart the service across the cluster. This is useful
+# if a network mounted configration file is changed (this only affects one host).
+
+- name: Group batch hosts
+  group_by:
+    key: openhpc_enable_batch_{{ openhpc_enable.batch }}
+
+- name: Group control hosts
+  group_by:
+    key: openhpc_enable_control_{{ openhpc_enable.control }}
+
+- name: Group database hosts
+  group_by:
+    key: openhpc_enable_database_{{ openhpc_enable.database }}
+
 - include: "{{ openhpc_tasks | default('default') }}.yml"
