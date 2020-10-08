@@ -1,0 +1,8 @@
+---
+
+- name: Set fact to trigger restart of munged on all hosts
+  set_fact:
+    restart_munged: true
+  delegate_to: "{{ item }}"
+  delegate_facts: True
+  with_items: "{{ groups['openhpc_enable_batch_True'] }}"

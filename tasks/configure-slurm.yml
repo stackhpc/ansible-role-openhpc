@@ -25,13 +25,7 @@
   # i.e. always on control node, only on others if not networked
 
 - name: Set fact to trigger restart of slurmd on all hosts
-  set_fact:
-    restart_slurmd: true
-  delegate_to: "{{ host }}"
-  delegate_facts: True
-  with_items: "{{ groups['openhpc_enable_batch_True'] }}"
-  loop_control:
-    loop_var: host
+  include_tasks: trigger-restart-slurmd.yml
   when:
     - slurm_conf is defined
     - slurm_conf is changed

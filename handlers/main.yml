@@ -58,3 +58,4 @@
   when:
     - openhpc_reconfigure_mode == "soft"
     - "'start' in openhpc_actions"
+    - inventory_hostname == openhpc_slurm_control_host

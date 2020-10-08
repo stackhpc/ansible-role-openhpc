@@ -41,15 +41,12 @@
   register: write_munge_key
 
 - name: Set fact to trigger restart of munged on all hosts
-  set_fact:
-    restart_munged: true
-  delegate_to: "{{ item }}"
-  delegate_facts: True
-  with_items: "{{ groups['openhpc_enable_batch_True'] }}"
+  include_tasks: trigger-restart-munged.yml
   when:
     - write_munge_key is defined
     - write_munge_key is changed
     - openhpc_slurm_conf.shared_fs | bool
+    - inventory_hostname == openhpc_slurm_control_host
 
 - name: Restart all daemons using networked configuration
   command: /bin/true
