@@ -15,6 +15,7 @@
   when:
     - openhpc_slurm_service_enabled | bool
     - "'start' in openhpc_actions"
+    - openhpc_allow_restart
 
 # NOTE: we need this running before slurmctld start
 - name: Restart slurmdbd service
