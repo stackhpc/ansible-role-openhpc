@@ -28,6 +28,7 @@ openhpc_job_maxtime: 24:00:00
 #   This does not rewrite slurm.conf - do that first
 #   NB: This requires communication between the daemons so if that is broken use hard reconfigure
 openhpc_reconfigure_mode: hard
+openhpc_allow_restart: true
 
 openhpc_enable:
   control: false

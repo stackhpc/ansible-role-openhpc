@@ -27,6 +27,7 @@
   with_items: "{{ groups['openhpc_enable_database_True'] }}"
   when:
     - "'start' in openhpc_actions"
+    - openhpc_allow_restart
   become: true
 
 # NOTE: Allows you to restart slurmctld from another host
@@ -39,6 +40,7 @@
     - openhpc_slurm_service_enabled | bool
     - openhpc_reconfigure_mode == "hard"
     - "'start' in openhpc_actions"
+    - openhpc_allow_restart
 
 - name: Restart slurmd service
   service:
@@ -48,6 +50,7 @@
     - openhpc_reconfigure_mode == "hard"
     - "'start' in openhpc_actions"
     - openhpc_enable.batch
+    - openhpc_allow_restart
   become: true
 
 - name: Reconfigure slurm

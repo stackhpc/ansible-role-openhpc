@@ -36,6 +36,9 @@ prevent the role from managing slurmdbd.
     those listed in hard. This avoids interrupting the scheduler.
     NB: This requires communication between the daemons so if that is broken use hard reconfigure
 
+`openhpc_allow_restart`: Flag to prevent daemon restarts. You can use this in conjunction with `scontrol reconfigure` to
+perform a more graceful config reload.
+
 `openhpc_slurm_conf`: (optional) mapping possibly containing:
 
   * `location`: Path for slurm configuration file (default: /etc/slurm/slurm.conf) - parent directories will be created if required.
