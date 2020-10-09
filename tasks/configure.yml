@@ -81,8 +81,8 @@
     owner: munge
     group: munge
     mode: 0400
-  run_once: "{{ openhpc_munge_key.shared_fs | bool }}"
-  tags: requires_network
+  when:
+    - not openhpc_munge_key.shared_fs | bool or inventory_hostname == openhpc_slurm_control_host
 
 - name: Wait for network filesystem mount before munge daemon start
   block:
