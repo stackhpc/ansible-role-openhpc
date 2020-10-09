@@ -8,6 +8,7 @@
   when:
     - openhpc_slurm_accounting_storage_type == 'accounting_storage/slurmdbd'
     - openhpc_enable["database"]
+    - openhpc_slurm_control_host in play_hosts
   # We need to restart to create the database table
   notify:
     - Restart slurmdbd service
