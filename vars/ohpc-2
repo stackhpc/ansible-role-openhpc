@@ -11,6 +11,7 @@ ohpc_slurm_control_packages:
 ohpc_slurm_compute_packages:
   - ohpc-base-compute
   - ohpc-slurm-client
+  - lmod-ohpc
   - munge
 
 ohpc_slurm_database_packages:
