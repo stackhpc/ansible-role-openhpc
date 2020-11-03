@@ -6,19 +6,9 @@ openhpc_slurm_partitions: []
 openhpc_cluster_name:
 openhpc_packages: []
 openhpc_slurm_packages: # NB some of the individual ones duplicate metapackages contents!
-  control:
-    - "@ohpc-slurm-server"
-    - "slurm-slurmctld-ohpc" # in @ohpc-slurm-server
-    - "slurm-example-configs-ohpc" # in @ohpc-slurm-client
-  batch: # "compute" really but keeping old name
-    - "@ohpc-base-compute"
-    - "@ohpc-slurm-client" # I think this + lmod is all a login node "needs"?
-  runtime:
-    - "slurm-ohpc" # in @ohpc-slurm-client, @ohpc-slurm-server (provides scontro, sinfo)
-    - "munge-ohpc" # in @ohpc-slurm-client, @ohpc-slurm-server
-    - "slurm-slurmd-ohpc" # in @ohpc-slurm-client
-    - "slurm-example-configs-ohpc" # in @ohpc-slurm-client, @ohpc-slurm-server
-    - "lmod-ohpc" # TODO: check that doing this before openhpc_packages install is ok?
+  control: "{{ ohpc_slurm_control_packages }}"
+  batch: "{{ ohpc_slurm_compute_packages }}"
+  runtime: "{{ ohpc_slurm_runtime_packages }}"
 openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
