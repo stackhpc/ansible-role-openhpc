@@ -40,25 +40,6 @@
   notify: Restart Munge service
   register: write_munge_key
 
-- name: Set fact to trigger restart of munged on all hosts
-  set_fact:
-    restart_munged: true
-  delegate_to: "{{ item }}"
-  delegate_facts: True
-  with_items: "{{ groups['openhpc_enable_batch_True'] }}"
-  when:
-    - write_munge_key is defined
-    - write_munge_key is changed
-    - openhpc_slurm_conf.shared_fs | bool
-
-- name: Restart all daemons using networked configuration
-  command: /bin/true
-  changed_when: true
-  notify: Restart Munge service
-  when:
-    - restart_munged is defined
-    - restart_munged | bool
-
 - name: Retrieve Munge key from Slurm control host
   slurp:
     src: "{{ openhpc_munge_key.location }}"
@@ -77,22 +58,12 @@
     - not openhpc_munge_key.shared_fs | bool
   notify: Restart Munge service
 
-- name: Assert Munge key permissions
-  # This is necessary if the key was generated using dd
-  file:
-    path: "{{ openhpc_munge_key.location }}"
-    owner: munge
-    group: munge
-    mode: 0400
-  run_once: "{{ openhpc_munge_key.shared_fs | bool }}"
-
-- name: Wait for network filesystem mount before munge daemon start
+- name: Modify munge daemon startup
   block:
     - name: make drop-in directory
       file:
         path: "/etc/systemd/system/munge.service.d/"
         state: directory
-        mode: 0700
     - name: Add drop-in to modify munge daemon unit parameters
       copy:
         dest: "/etc/systemd/system/munge.service.d/slurmconf.conf"
@@ -102,26 +73,68 @@
           [Service]
           ExecStart=
           ExecStart=/usr/sbin/munged --syslog --key-file {{ openhpc_munge_key.location }}
-        mode: 0600
       notify:
         - Reload systemd config
         - Restart Munge service
   when: "openhpc_munge_key.shared_fs or (openhpc_munge_key.location != '/etc/munge/munge.key')"
 
-- name: Configure the slurm daemons
-  include_tasks: configure-slurm.yml
-  when: item.enabled
-  vars:
-    openhpc_slurm_service: "{{ item.service }}"
-  with_items:
-    - service: slurmctld
-      enabled: "{{ openhpc_enable.control }}"
-    - service: slurmd
-      enabled: "{{ openhpc_enable.batch }}"
 
-- name: Configure the slurm database service
-  include_tasks: configure-slurmdbd.yml
-  when: openhpc_enable.database
+# NB: Think this is correct, but should disable before doing things which cause a reboot.
+- name: Ensure Slurm services are enabled
+  service:
+    name: "{{ openhpc_slurm_service }}"
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
+
+- name: Ensure slurm config directory exists & world-readable
+  file:
+    path: "{{ openhpc_slurm_conf.location | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  run_once: "{{ openhpc_slurm_conf.shared_fs | bool }}"
+
+- name: Apply customised SLURM configuration
+  template:
+    src: slurm.conf.j2
+    dest: "{{ openhpc_slurm_conf.location }}"
+    owner: root
+    group: root
+    mode: 0644
+  when: "(inventory_hostname == openhpc_slurm_control_host) or (not openhpc_slurm_conf.shared_fs | bool)"
+  # i.e. always on control node, only on others if not networked
+
+- name: Set slurm.conf location for slurm daemons
+  lineinfile:
+    path: "/etc/sysconfig/{{ openhpc_slurm_service }}"
+    line: '{{ openhpc_slurm_service | upper }}_OPTIONS="-f {{ openhpc_slurm_conf.location }}"'
+    regexp: '^{{ openhpc_slurm_service | upper }}\w+D_OPTIONS'
+    create: yes
+  when: openhpc_slurm_conf.location != '/etc/slurm/slurm.conf'
+  register: set_slurm_conf_location
+
+- name: Wait for network filesystem mount before slurm daemon start
+  block:
+    - name: make drop-in directory
+      file:
+        path: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/"
+        state: directory
+    - name: Add drop-in to modify slurm daemon unit parameters
+      copy:
+        dest: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/slurmconf.conf"
+        content: |
+          [Unit]
+          RequiresMountsFor={{ openhpc_slurm_conf.location }}
+      notify: Reload systemd config
+  when: openhpc_slurm_conf.shared_fs # NB won't be network fs on the exporting node!
+
+- name: symlink slurm.conf so slurm commands work
+  file:
+    force: true # `path` will already exist from package install
+    state: link
+    path: "/etc/slurm/slurm.conf"
+    src: "{{ openhpc_slurm_conf.location }}"
+  when: openhpc_slurm_conf.location != '/etc/slurm/slurm.conf'
 
 # tasks in runtime.yml which aren't here:
 # - name: Ensure selected OpenHPC packages are installed => done by install action now

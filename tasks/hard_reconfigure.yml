@@ -1,0 +1,20 @@
+---
+# Perform a reconfigure of slurm which requires restart of daemons, i.e.
+# - changes to AuthType, ControlMach, PluginDir, StateSaveLocation, SlurmctldHost, SlurmctldPort, or SlurmdPort
+# - addition or removal of nodes from the cluster
+# This does not rewrite slurm.conf - do that first
+# NB this deliberately does not use `scontrol shutdown` as a bad config may mean slurmctld cannot contact the slurmds
+- name: shutdown daemons
+  service:
+    name: "{{ openhpc_slurm_service }}"
+    state: stopped
+- name: restart slurmd
+  service:
+    name: slurmd
+    state: restarted
+  when: "openhpc_slurm_service == 'slurmd'"
+- name: start slurmctl again
+  service:
+    name: slurmctld
+    state: started
+  when: "openhpc_slurm_service == 'slurmctld'"

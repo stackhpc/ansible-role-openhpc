@@ -1,21 +1,40 @@
 ---
+- name: Select slurm service to control # TODO: handle multiple (don't think existing role doesn't) and none?
+  set_fact:
+    openhpc_slurm_service: "{{ openhpc_slurm_services[item] }}"
+  loop: "{{ openhpc_slurm_services.keys() | list }}"
+  when: "openhpc_enable[item]"
+# alternative non-loop implementation:
+# openhpc_slurm_service: "{{ openhpc_enable | dict2items | selectattr('value') | map(attribute='key') | list | intersect(openhpc_slurm_services.keys()) | first }}"
+# python equivalent: set([openhpc_slurm_services[k] for (k, v) in openhpc_enable.items() if v]).intersect(openhpc_slurm_services.keys())[0]
 
-# These groups allow us to restart the service across the cluster. This is useful
-# if a network mounted configration file is changed (this only affects one host).
+# NB: below approach means user cannot choose order of actions, but we can control delegate to/run once etc
+- include_tasks: "install.yml"
+  when:
+    - "'install' in query('items', openhpc_actions)" # ensures a list even if passed a single item
+  
+- include_tasks: "configure.yml"
+  when:
+    - "'configure' in query('items', openhpc_actions)"
+    - openhpc_enable.runtime | default(false) | bool # TODO: clear up what `runtime` is supposed to be and ditch this
 
-- name: Group batch hosts
-  group_by:
-    key: openhpc_enable_batch_{{ openhpc_enable.batch }}
-  changed_when: false
+- include_tasks: "start.yml"
+  when:
+    - "'start' in query('items', openhpc_actions)"
+    - openhpc_enable.runtime | default(false) | bool # TODO: clear up what `runtime` is supposed to be and ditch this
 
-- name: Group control hosts
-  group_by:
-    key: openhpc_enable_control_{{ openhpc_enable.control }}
-  changed_when: false
+- include: drain.yml
+  when: openhpc_enable.drain | default(false) | bool
+  delegate_to: "{{ openhpc_slurm_control_host }}"
 
-- name: Group database hosts
-  group_by:
-    key: openhpc_enable_database_{{ openhpc_enable.database }}
-  changed_when: false
+- include: resume.yml
+  when: openhpc_enable.resume | default(false) | bool
+  delegate_to: "{{ openhpc_slurm_control_host }}"
 
-- include: "{{ openhpc_tasks | default('default') }}.yml"
+- include_tasks: "hard_reconfigure.yml"
+  when: "'hard_reconfigure' in query('items', openhpc_actions)"
+
+- include_tasks: "soft_reconfigure.yml"
+  when: "'soft_reconfigure' in query('items', openhpc_actions)"
+
+...
