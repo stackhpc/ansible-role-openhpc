@@ -1,0 +1,88 @@
+- name: Ensure {{ openhpc_slurm_service }} is enabled
+  service:
+    name: "{{ openhpc_slurm_service }}"
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
+
+- name: Ensure slurm config directory exists & world-readable
+  file:
+    path: "{{ openhpc_slurm_conf.location | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  run_once: "{{ openhpc_slurm_conf.shared_fs | bool }}"
+
+- name: Apply customised SLURM configuration
+  template:
+    src: slurm.conf.j2
+    dest: "{{ openhpc_slurm_conf.location }}"
+    owner: root
+    group: root
+    mode: 0644
+  when: "(inventory_hostname == openhpc_slurm_control_host) or (not openhpc_slurm_conf.shared_fs | bool)"
+  notify: Restart {{ openhpc_slurm_service }} service
+  register: slurm_conf
+  # i.e. always on control node, only on others if not networked
+
+- name: Set fact to trigger restart of slurmd on all hosts
+  set_fact:
+    restart_slurmd: true
+  delegate_to: "{{ host }}"
+  delegate_facts: True
+  with_items: "{{ groups['openhpc_enable_batch_True'] }}"
+  loop_control:
+    loop_var: host
+  when:
+    - slurm_conf is defined
+    - slurm_conf is changed
+    - openhpc_slurm_conf.shared_fs | bool
+    - inventory_hostname == openhpc_slurm_control_host
+
+- name: Restart all daemons using networked configuration
+  command: /bin/true
+  changed_when: true
+  notify: Restart slurmd service
+  when:
+    - restart_slurmd is defined
+    - restart_slurmd | bool
+
+- name: Set slurm.conf location for slurm daemons
+  lineinfile:
+    path: "/etc/sysconfig/{{ openhpc_slurm_service }}"
+    line: '{{ openhpc_slurm_service | upper }}_OPTIONS="-f {{ openhpc_slurm_conf.location }}"'
+    regexp: '^{{ openhpc_slurm_service | upper }}\w+D_OPTIONS'
+    mode: 0600
+    create: yes
+  when:
+    - openhpc_slurm_conf.location != '/etc/slurm/slurm.conf'
+  notify: Restart {{ openhpc_slurm_service }} service
+
+- name: Wait for network filesystem mount before slurm daemon start
+  block:
+    - name: make drop-in directory
+      file:
+        path: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/"
+        state: directory
+        mode: 0700
+    - name: Add drop-in to modify slurm daemon unit parameters
+      copy:
+        dest: "/etc/systemd/system/{{ openhpc_slurm_service }}.service.d/slurmconf.conf"
+        content: |
+          [Unit]
+          RequiresMountsFor={{ openhpc_slurm_conf.location }}
+        mode: 0600
+      notify:
+        - Reload systemd config
+        - Restart {{ openhpc_slurm_service }} service
+
+  when: openhpc_slurm_conf.shared_fs # NB won't be network fs on the exporting node!
+
+- name: symlink slurm.conf so slurm commands work
+  file:
+    force: true # `path` will already exist from package install
+    state: link
+    path: "/etc/slurm/slurm.conf"
+    src: "{{ openhpc_slurm_conf.location }}"
+    mode: 0644
+  when: openhpc_slurm_conf.location != '/etc/slurm/slurm.conf'
+  notify: Restart {{ openhpc_slurm_service }} service

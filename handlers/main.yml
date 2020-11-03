@@ -2,17 +2,59 @@
 - name: Reload systemd config
   systemd:
     daemon_reload: yes
-    
-- name: Reload SLURM service
-  service:
-    name: "{{ openhpc_slurm_service }}"
-    state: reloaded
+  become: true
   when:
-    - openhpc_slurm_service is not none
-    - openhpc_slurm_service_enabled | bool
+    - "'start' in openhpc_actions"
 
+# NOTE: We need this running before slurmdbd
 - name: Restart Munge service
   service:
     name: "munge"
     state: restarted
-  when: openhpc_slurm_service_enabled | bool
+  become: true
+  when:
+    - openhpc_slurm_service_enabled | bool
+    - "'start' in openhpc_actions"
+
+# NOTE: we need this running before slurmctld start
+- name: Restart slurmdbd service
+  service:
+    name: "slurmdbd"
+    state: restarted
+  # This one is called from the control host so needs to delegate to the
+  # database
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['openhpc_enable_database_True'] }}"
+  when:
+    - "'start' in openhpc_actions"
+  become: true
+
+# NOTE: Allows you to restart slurmctld from another host
+- name: Restart slurmctld service
+  service:
+    name: "slurmctld"
+    state: restarted
+  become: true
+  when:
+    - openhpc_slurm_service_enabled | bool
+    - openhpc_reconfigure_mode == "hard"
+    - "'start' in openhpc_actions"
+
+- name: Restart slurmd service
+  service:
+    name: "slurmd"
+    state: restarted
+  when:
+    - openhpc_reconfigure_mode == "hard"
+    - "'start' in openhpc_actions"
+    - openhpc_enable.batch
+  become: true
+
+- name: Reconfigure slurm
+  command: scontrol reconfigure
+  listen:
+    - Restart slurmd service
+    - Restart slurmctld service
+  when:
+    - openhpc_reconfigure_mode == "soft"
+    - "'start' in openhpc_actions"

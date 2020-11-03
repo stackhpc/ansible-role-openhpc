@@ -1,0 +1,14 @@
+---
+
+- name: Ensure the cluster exists in the accounting database
+  sacct_cluster:
+    name: "{{ openhpc_cluster_name }}"
+    state: present
+  delegate_to: "{{ openhpc_slurm_control_host }}"
+  when:
+    - openhpc_slurm_accounting_storage_type == 'accounting_storage/slurmdbd'
+    - openhpc_enable["database"]
+  # We need to restart to create the database table
+  notify:
+    - Restart slurmdbd service
+    - Restart slurmctld service
