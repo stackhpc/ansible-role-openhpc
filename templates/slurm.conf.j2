@@ -81,20 +81,18 @@ SlurmctldDebug=3
 #SlurmctldLogFile=
 SlurmdDebug=3
 #SlurmdLogFile=
-JobCompType={{ openhpc_slurm_job_comp_type }}
-JobCompLoc={{ openhpc_slurm_job_comp_loc }}
+JobCompType=jobcomp/none
+#JobCompLoc=
 #
 # ACCOUNTING
-JobAcctGatherType={{ openhpc_slurm_job_acct_gather_type }}
-JobAcctGatherFrequency={{ openhpc_slurm_job_acct_gather_frequency }}
+#JobAcctGatherType=jobacct_gather/linux
+#JobAcctGatherFrequency=30
 #
-AccountingStorageType={{ openhpc_slurm_accounting_storage_type }}
-AccountingStorageHost={{ openhpc_slurm_accounting_storage_host }}
-AccountingStoragePort={{ openhpc_slurm_accounting_storage_port }}
-{% if openhpc_slurm_accounting_storage_pass | default(false, true) %}
-AccountingStoragePass={{ openhpc_slurm_accounting_storage_pass }}
-{% endif %}
-AccountingStorageUser={{ openhpc_slurm_accounting_storage_user }}
+#AccountingStorageType=accounting_storage/slurmdbd
+#AccountingStorageHost=
+#AccountingStorageLoc=
+#AccountingStoragePass=
+#AccountingStorageUser=
 #
 # COMPUTE NODES
 # OpenHPC default configuration
@@ -102,6 +100,7 @@ PropagateResourceLimitsExcept=MEMLOCK
 # By default, SLURM will log to syslog, which is what we want
 #SlurmdLogFile=/var/log/slurm.log
 #SlurmctldLogFile=/var/log/slurmctld.log
+AccountingStorageType=accounting_storage/filetxt
 Epilog=/etc/slurm/slurm.epilog.clean
 {% for part in openhpc_slurm_partitions %}
 PartitionName={{part.name}} \
@@ -130,6 +129,6 @@ NodeName={{ node }}
 {% endfor %}
 {% endfor %}
 {% endfor %}
-# Want nodes that drop out of SLURM's configuration to be automatically
+# Want nodes that drop out of SLURM's configuration to be automatically 
 # returned to service when they come back.
 ReturnToService=2

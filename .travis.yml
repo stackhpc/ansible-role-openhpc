@@ -1,18 +1,19 @@
 ---
 language: python
+python: "3.6"
 
 # Use the new container infrastructure
-sudo: required
-services:
-  - docker
-before_install:
-  - sudo apt-get -qq update
+sudo: false
+
+# Install ansible
+addons:
+  apt:
+    packages:
+    - python-pip
+    
 install:
-  # Ansible pinned, waiting on: https://github.com/ansible/ansible/pull/70919
-  - python3 -m pip install ansible==2.9.10
-  - python3 -m pip install ansible-lint
-  - python3 -m pip install molecule
-  - python3 -m pip install docker
+  # Install ansible
+  - pip install ansible ansible-lint
 
   # Check ansible version
   - ansible --version
@@ -23,17 +24,15 @@ install:
   # Compensate for repo name being different to the role
   - ln -s $(pwd) ../stackhpc.openhpc
 
-env:
-  - SCENARIO=test4
-
 script:
+  # Basic role syntax check
   - ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+  
   # Run Ansible lint against the role
-  - ansible-lint .
+  - ansible-lint tasks/main.yml  
+  
   # Test the custom filters
   - ansible-playbook tests/filter.yml -i tests/inventory -i tests/inventory-mock-groups
-  # Run molecule tests
-  - molecule test -s $SCENARIO
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/

@@ -1,78 +1,40 @@
 ---
-openhpc_actions: ['install', 'configure', 'start', 'post']
+openhpc_actions: ['install', 'configure', 'start']
 openhpc_slurm_service_enabled: true
 openhpc_slurm_control_host: "{{ inventory_hostname }}"
 openhpc_slurm_partitions: []
 openhpc_cluster_name:
 openhpc_packages: []
-
 openhpc_slurm_packages: # NB some of the individual ones duplicate metapackages contents!
   control:
     - "@ohpc-slurm-server"
     - "slurm-slurmctld-ohpc" # in @ohpc-slurm-server
     - "slurm-example-configs-ohpc" # in @ohpc-slurm-client
-    - lmod-ohpc
   batch: # "compute" really but keeping old name
     - "@ohpc-base-compute"
-    - slurm-slurmd-ohpc
     - "@ohpc-slurm-client" # I think this + lmod is all a login node "needs"?
-    - lmod-ohpc
-  database:
-    - slurm-slurmdbd-ohpc
-
+  runtime:
+    - "slurm-ohpc" # in @ohpc-slurm-client, @ohpc-slurm-server (provides scontro, sinfo)
+    - "munge-ohpc" # in @ohpc-slurm-client, @ohpc-slurm-server
+    - "slurm-slurmd-ohpc" # in @ohpc-slurm-client
+    - "slurm-example-configs-ohpc" # in @ohpc-slurm-client, @ohpc-slurm-server
+    - "lmod-ohpc" # TODO: check that doing this before openhpc_packages install is ok?
 openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
 openhpc_job_maxtime: 24:00:00
-
-# Choose one of:
-# hard:
-#  Perform a reconfigure of slurm which requires restart of daemons, i.e.
-#   - changes to AuthType, ControlMach, PluginDir, StateSaveLocation, SlurmctldHost, SlurmctldPort, or SlurmdPort
-#   - addition or removal of nodes from the cluster
-#  This does not rewrite slurm.conf - do that first
-#  NB this deliberately does not use `scontrol shutdown` as a bad config may mean slurmctld cannot contact the slurmds
-# soft:
-#   Perform a reconfigure of slurm which does not requires restart of daemons, i.e. any changes except
-#   those listed in tasks/hard_reconfigure.yml. This avoids interrupting the scheduler.
-#   This does not rewrite slurm.conf - do that first
-#   NB: This requires communication between the daemons so if that is broken use hard reconfigure
-openhpc_reconfigure_mode: hard
-
 openhpc_enable:
   control: false
   batch: false
-  database: false
-  drain: false
+  runtime: false 
+  drain: false 
   resume: false
-
+openhpc_slurm_services:
+  control: slurmctld
+  batch: slurmd
 openhpc_slurm_conf:
   location: /etc/slurm/slurm.conf
   shared_fs: false
 openhpc_munge_key:
-  # /etc/munge/munge.key is shipped in RPM which means that we don't
-  # generate a new one if we use that path
-  location: /etc/munge/ansible-managed-munge.key
+  location: /etc/munge/munge.key
   shared_fs: false
-
-# Accounting
-openhpc_slurm_accounting_storage_host: "{{ openhpc_slurmdbd_host }}"
-openhpc_slurm_accounting_storage_port: 6819
-openhpc_slurm_accounting_storage_type: accounting_storage/filetxt
-# NOTE: You only need to set these if using accounting_storage/mysql
-openhpc_slurm_accounting_storage_user: slurm
-#openhpc_slurm_accounting_storage_pass:
-
-# Job accounting
-openhpc_slurm_job_acct_gather_type: jobacct_gather/linux
-openhpc_slurm_job_acct_gather_frequency: 30
-openhpc_slurm_job_comp_type: jobcomp/none
-openhpc_slurm_job_comp_loc: /var/log/slurm_jobacct.log
-
-# slurmdbd configuration
-openhpc_slurmdbd_host: "{{ openhpc_slurm_control_host }}"
-openhpc_slurmdbd_port: "{{ openhpc_slurm_accounting_storage_port }}"
-openhpc_slurmdbd_mysql_host: "{{ openhpc_slurm_control_host }}"
-openhpc_slurmdbd_mysql_database: slurm_acct_db
-#openhpc_slurmdbd_mysql_password:
-openhpc_slurmdbd_mysql_username: slurm

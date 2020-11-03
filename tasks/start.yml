@@ -7,15 +7,6 @@
 
 - name: Ensure Slurm services are running
   service:
-    name: "{{ item.service }}"
+    name: "{{ openhpc_slurm_service }}"
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
-  when: item.enabled
-  with_items:
-    # Order is important
-    - service: slurmdbd
-      enabled: "{{ openhpc_enable.database }}"
-    - service: slurmctld
-      enabled: "{{ openhpc_enable.control }}"
-    - service: slurmd
-      enabled: "{{ openhpc_enable.batch }}"
