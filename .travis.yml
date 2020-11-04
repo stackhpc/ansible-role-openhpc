@@ -25,10 +25,10 @@ install:
 env:
   - SCENARIO=test1 MOLECULE_IMAGE=centos:7
   - SCENARIO=test1 MOLECULE_IMAGE=centos:8
-  - SCENARIO=test1b
-  - SCENARIO=test1c
-  - SCENARIO=test2
-  - SCENARIO=test3
+  - SCENARIO=test1b MOLECULE_IMAGE=centos:7
+  - SCENARIO=test1c MOLECULE_IMAGE=centos:7
+  - SCENARIO=test2 MOLECULE_IMAGE=centos:7
+  - SCENARIO=test3 MOLECULE_IMAGE=centos:7
 
 script:
   # Run molecule tests
