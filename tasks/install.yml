@@ -23,7 +23,11 @@
   args:
     warn: false
   when: ansible_distribution_major_version == "8"
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> 7c6c372... add ohpc-release repo and powertools enable
 - name: Build host-specific list of required slurm packages
   set_fact:
     openhpc_slurm_pkglist: "{{ openhpc_slurm_pkglist | default([]) + item.value }}"
