@@ -11,6 +11,9 @@ The minimal image for nodes is a Centos7 or Centos8 cloud image. These use OpenH
 Role Variables
 --------------
 
+`openhpc_release_repo`: Optional. Path to the `ohpc-release` repo to use. Defaults provide v1.3 for Centos 7 and v2 for Centos 8. Or, include this
+package in the image.
+
 `openhpc_slurm_service_enabled`: boolean, whether to enable the appropriate slurm service (slurmd/slurmctld)
 
 `openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`
@@ -134,14 +137,3 @@ To drain nodes, for example, before scaling down the cluster to 6 nodes:
             drain: "{{ inventory_hostname not in desired_state }}"
             resume: "{{ inventory_hostname in desired_state }}"
     ...
-
-
-CentOS 8 and OpenHPC 2
-----------------------
-
-To deploy OpenHPC 2 on CentOS 8, you must first enable the CentOS PowerTools repo
-(this ships as standard, but disabled).  To enable PowerTools:
-
-```
-sudo dnf config-manager --set-enabled PowerTools
-```
