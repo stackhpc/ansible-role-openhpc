@@ -1,22 +1,29 @@
 ---
 
-# Validate package facts and include version-specific config
 - name: Gather package facts
   package_facts:
     manager: rpm
 
-- name: Check ohpc-release package is installed
-  assert:
-    that: "'ohpc-release' in ansible_facts.packages"
-    quiet: yes
-    fail_msg: |
-      "The OpenHPC distro package should be installed in the image.
-       Please see http://openhpc.community/downloads/"
+- name: Install ohpc-release package
+  yum:
+    name: "{{ openhpc_release_repo | default(ohpc_release_repos[ansible_distribution_major_version]) }}"
+    state: present
+  when: "'ohpc-release' not in ansible_facts.packages"
+
+- name: Update package facts
+  package_facts:
+    manager: rpm
 
 - name: Include variables for OpenHPC version
   include_vars:
     file: "ohpc-{{ ansible_facts.packages['ohpc-release'][0]['version'] }}"
 
+- name: Enable CentOS8 PowerTools repo
+  command: dnf config-manager --set-enabled PowerTools
+  args:
+    warn: false
+  when: ansible_distribution_major_version == "8"
+  
 - name: Build host-specific list of required slurm packages
   set_fact:
     openhpc_slurm_pkglist: "{{ openhpc_slurm_pkglist | default([]) + item.value }}"
