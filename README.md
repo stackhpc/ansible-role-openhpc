@@ -2,9 +2,11 @@
 
 # stackhpc.openhpc
 
-This Ansible role installs packages and performs configuration to provide a fully functional OpenHPC cluster. It can also be used to drain and resume nodes.
+This Ansible role installs packages and performs configuration to provide an OpenHPC Slurm cluster. It can also be used to drain and resume nodes.
 
 As a role it must be used from a playbook, for which a simple example is given below. This approach means it is totally modular with no assumptions about available networks or any cluster features except for some hostname conventions. Any desired cluster fileystem or other required functionality may be freely integrated using additional Ansible roles or other approaches.
+
+The minimal image for nodes is a Centos7 or Centos8 cloud image. These use OpenHPC v1 and v2 respectively. Centos8/OpenHPCv2 is generally preferred as it provides additional functionality for Slurm, compilers, MPI and transport libraries.
 
 Role Variables
 --------------
@@ -20,7 +22,7 @@ Role Variables
   * `cluster_name`: Optional.  An override for the top-level definition `openhpc_cluster_name`.
   * `ram_mb`: Optional.  The physical RAM available in each server of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`). This is set to the Slurm default of `1` if not defined.
   
-  For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`. All nodes in this inventory group will be added to the group/partition. Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
+  For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`. All nodes in this inventory group will be added to the group/partition. Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname. Nodes in a group are assumed to be homogenous in terms of processor and memory.
   
 * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
 * `maxtime`: Optional.  A partition-specific time limit in hours, minutes and seconds ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`).  The default value is
