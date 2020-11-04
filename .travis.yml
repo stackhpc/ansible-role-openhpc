@@ -10,7 +10,7 @@ before_install:
 install:
   - python3 -m pip install ansible
   - python3 -m pip install ansible-lint
-  - python3 -m pip install molecule
+  - python3 -m pip install molecule[docker]
   - python3 -m pip install docker
 
   # Check ansible version
