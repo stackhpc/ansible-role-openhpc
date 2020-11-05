@@ -4,8 +4,8 @@ driver:
   name: docker
 platforms:
   - name: testohpc-login-0
-    image: docker.io/pycontribs/${MOLECULE_IMAGE}
-    pre_build_image: true
+    image: ${MOLECULE_IMAGE}
+    #pre_build_image: true
     groups:
       - testohpc_login
     command: /sbin/init
@@ -17,8 +17,8 @@ platforms:
     networks:
       - name: net1
   - name: testohpc-compute-0
-    image: docker.io/pycontribs/${MOLECULE_IMAGE}
-    pre_build_image: true
+    image: ${MOLECULE_IMAGE}
+    #pre_build_image: true
     groups:
       - testohpc_compute
     command: /sbin/init
@@ -30,8 +30,8 @@ platforms:
     networks:
       - name: net1
   - name: testohpc-compute-1
-    image: docker.io/pycontribs/${MOLECULE_IMAGE}
-    pre_build_image: true
+    image: ${MOLECULE_IMAGE}
+    #pre_build_image: true
     groups:
       - testohpc_compute
     command: /sbin/init
