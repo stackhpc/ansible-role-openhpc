@@ -46,6 +46,7 @@ ProctrackType=proctrack/pgid
 #TreeWidth=50
 #TmpFS=
 #UsePAM=
+{% if openhpc_slurm_configless %}SlurmctldParameters=enable_configless{% endif %}
 #
 # TIMERS
 SlurmctldTimeout=300
