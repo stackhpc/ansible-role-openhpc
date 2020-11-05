@@ -4,13 +4,8 @@ driver:
   name: docker
 platforms:
   - name: testohpc-login-0
-<<<<<<< HEAD
     image: ${MOLECULE_IMAGE}
     #pre_build_image: true
-=======
-    image: docker.io/pycontribs/${MOLECULE_IMAGE}
-    pre_build_image: true
->>>>>>> add centos8 travis tests
     groups:
       - testohpc_login
     command: /sbin/init
@@ -22,13 +17,8 @@ platforms:
     networks:
       - name: net1
   - name: testohpc-compute-0
-<<<<<<< HEAD
     image: ${MOLECULE_IMAGE}
     #pre_build_image: true
-=======
-    image: docker.io/pycontribs/${MOLECULE_IMAGE}
-    pre_build_image: true
->>>>>>> add centos8 travis tests
     groups:
       - testohpc_compute
     command: /sbin/init
@@ -40,13 +30,8 @@ platforms:
     networks:
       - name: net1
   - name: testohpc-compute-1
-<<<<<<< HEAD
     image: ${MOLECULE_IMAGE}
     #pre_build_image: true
-=======
-    image: docker.io/pycontribs/${MOLECULE_IMAGE}
-    pre_build_image: true
->>>>>>> add centos8 travis tests
     groups:
       - testohpc_compute
     command: /sbin/init
