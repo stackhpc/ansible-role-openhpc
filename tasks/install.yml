@@ -1,0 +1,35 @@
+---
+
+# Validate package facts and include version-specific config
+- name: Gather package facts
+  package_facts:
+    manager: rpm
+
+- name: Check ohpc-release package is installed
+  assert:
+    that: "'ohpc-release' in ansible_facts.packages"
+    quiet: yes
+    fail_msg: |
+      "The OpenHPC distro package should be installed in the image.
+       Please see http://openhpc.community/downloads/"
+
+- name: Include variables for OpenHPC version
+  include_vars:
+    file: "ohpc-{{ ansible_facts.packages['ohpc-release'][0]['version'] }}"
+
+- name: Build host-specific list of required slurm packages
+  set_fact:
+    openhpc_slurm_pkglist: "{{ openhpc_slurm_pkglist | default([]) + item.value }}"
+  loop: "{{ ohpc_slurm_packages | dict2items }}"
+  when: "openhpc_enable.get(item.key, false)"
+
+- name: Install required slurm packages
+  yum:
+    name: "{{ item }}"
+  loop: "{{ openhpc_slurm_pkglist }}"
+
+- name: Install packages from openhpc_packages variable
+  yum:
+    name: "{{ openhpc_packages }}"
+
+...

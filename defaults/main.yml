@@ -15,3 +15,6 @@ openhpc_enable:
   runtime: false 
   drain: false 
   resume: false 
+ohpc_slurm_services:
+  control: slurmctld
+  batch: slurmd
