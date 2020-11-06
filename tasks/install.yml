@@ -19,9 +19,12 @@
     file: "ohpc-{{ ansible_facts.packages['ohpc-release'][0]['version'] }}"
 
 - name: Enable CentOS8 PowerTools repo
-  command: dnf config-manager --set-enabled PowerTools
-  args:
-    warn: false
+  # NB: doesn't run command  `dnf config-manager --set-enabled PowerTools` as can't make that idempotent
+  lineinfile: 
+    path: /etc/yum.repos.d/CentOS-PowerTools.repo
+    create: false # raises error if not already installed
+    regexp: enabled=
+    line: enabled=1
   when: ansible_distribution_major_version == "8"
 
 - name: Build host-specific list of required slurm packages
