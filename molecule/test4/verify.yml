@@ -7,7 +7,7 @@
     command: sbatch --wrap hostname --parsable
     register: job
 
-  - name: Allow sum time for the job to complete
+  - name: Allow some time for the job to complete
     pause:
       seconds: 10
 
