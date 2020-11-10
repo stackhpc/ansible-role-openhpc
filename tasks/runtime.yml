@@ -35,6 +35,7 @@
   when: inventory_hostname == openhpc_slurm_control_host
 
 - name: Write Munge key
+  # NOTE: this breaks image based deploys
   copy:
     content: "{{ hostvars[openhpc_slurm_control_host]['slurm_munge_key']['content'] | b64decode }}"
     dest: "/etc/munge/munge.key"
@@ -43,6 +44,16 @@
     mode: 0400
   notify:
     - Restart Munge service
+
+- name: Template slurmdbd.conf
+  template:
+    src: slurmdbd.conf.j2
+    dest: /etc/slurm/slurmdbd.conf
+    mode: "0600"
+    owner: root
+    group: root
+  notify: Restart slurmdbd service
+  when: openhpc_enable.database | default(false) | bool
 
 - name: Ensure Slurm services are enabled
   service:
@@ -71,20 +82,19 @@
   service:
     name: munge
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
-    state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
+    state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
 
 - name: Ensure slurmdbd is started and running
   service:
     name: slurmdbd
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
-    state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
+    state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_enable.database | default(false) | bool
-  become: true
 
 # In case the service isn't running and the config hasn't changed to trigger
 # the handler, ensure it's running here.
 - name: Ensure Slurm services are running
   service:
     name: "{{ openhpc_slurm_service }}"
-    state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
+    state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_slurm_service is not none
