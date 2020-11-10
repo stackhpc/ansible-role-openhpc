@@ -17,7 +17,6 @@ test3  | 1            | Y                       | -
 Local installation on a Centos7 machine looks like:
 
     sudo yum install -y gcc python3-pip python3-devel openssl-devel python3-libselinux
-    sudo yum install -y docker-ce docker-ce-cli containerd.io
     sudo yum install -y yum-utils
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     sudo yum install -y docker-ce docker-ce-cli containerd.io
@@ -35,5 +34,5 @@ Local installation on a Centos7 machine looks like:
 Then to run all tests:
 
     cd ansible-role-openhpc/
-    molecule test --all
-
+    MOLECULE_IMAGE=centos:7 molecule test --all
+    MOLECULE_IMAGE=centos:8 molecule test --all

@@ -3,9 +3,9 @@
   hosts: testohpc_login
   tasks:
   - name: Get slurm partition info
-    command: sinfo -h sinfo --Node -S "+N" # 1 line per node, sort by increasing node name
+    command: sinfo --noheader --format="%P,%a,%l,%D,%t,%N" # using --format ensures we control whitespace
     register: sinfo
   - name: 
     assert:
-      that: "sinfo.stdout_lines == ['compute-a      1  compute* idle  ', 'compute10      1  compute* idle  ']"
+      that: "sinfo.stdout_lines == ['compute*,up,60-00:00:00,2,idle,compute10,compute-a']"
       fail_msg: "FAILED - actual value: {{ sinfo.stdout_lines }}"
