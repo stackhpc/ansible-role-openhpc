@@ -1,9 +1,0 @@
----
-- name: Install OpenHPC master SLURM packages
-  package:
-    name: "{{ ohpc_slurm_control_packages }}"
-    state: present
-
-- name: Select the SLURM service to control
-  set_fact:
-    openhpc_slurm_service: slurmctld

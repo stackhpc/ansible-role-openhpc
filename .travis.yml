@@ -10,7 +10,7 @@ before_install:
 install:
   - python3 -m pip install ansible
   - python3 -m pip install ansible-lint
-  - python3 -m pip install molecule
+  - python3 -m pip install molecule[docker]
   - python3 -m pip install docker
 
   # Check ansible version
@@ -23,12 +23,14 @@ install:
   - ln -s $(pwd) ../stackhpc.openhpc
 
 env:
-  - SCENARIO=test1
-  - SCENARIO=test1b
-  - SCENARIO=test1c
-  - SCENARIO=test2
-  - SCENARIO=test3
-  - SCENARIO=test4
+  - SCENARIO=test1 MOLECULE_IMAGE=centos:7
+  - SCENARIO=test1 MOLECULE_IMAGE=centos:8
+  - SCENARIO=test1b MOLECULE_IMAGE=centos:7
+  - SCENARIO=test1c MOLECULE_IMAGE=centos:7
+  - SCENARIO=test2 MOLECULE_IMAGE=centos:7
+  - SCENARIO=test3 MOLECULE_IMAGE=centos:7
+  - SCENARIO=test4 MOLECULE_IMAGE=centos:7
+  - SCENARIO=test4 MOLECULE_IMAGE=centos:8
 
 script:
   # Run molecule tests

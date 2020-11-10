@@ -7,11 +7,6 @@
     openhpc_cluster_name == none or
     openhpc_slurm_partitions | length == 0
 
-- name: Install OpenHPC runtime Slurm packages
-  package:
-    name: "{{ ohpc_slurm_runtime_packages }}"
-    state: present
-
 - name: Ensure the Slurm spool directory exists
   file:
     path: /var/spool/slurm
@@ -66,17 +61,6 @@
     mode: 0644
   notify:
     - Restart SLURM service
-
-# Install OpenHPC runtime
-- name: Ensure selected OpenHPC packages are installed
-  package:
-    name: "{{ openhpc_packages }}"
-    state: present
-
-- name: Install OpenHPC LMOD
-  package:
-    name: "lmod-ohpc"
-    state: present
 
 - name: Flush handlers
   meta: flush_handlers

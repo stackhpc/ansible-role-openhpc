@@ -1,37 +1,32 @@
 ---
 
-# Validate package facts and include version-specific config
-- name: Gather package facts
-  package_facts:
-    manager: rpm
+- name: Select slurm service to control
+  set_fact:
+    openhpc_slurm_service: "{{ ohpc_slurm_services[item] }}"
+  loop: "{{ ohpc_slurm_services.keys() | list }}"
+  when: "openhpc_enable.get(item, false)"
+  tags: always
 
-- name: Check ohpc-release package is installed
-  assert:
-    that: "'ohpc-release' in ansible_facts.packages"
-    quiet: yes
-    fail_msg: |
-      "The OpenHPC distro package should be installed in the image.
-       Please see http://openhpc.community/downloads/"
+- name: Install packages
+  block:
+    - include_tasks: install.yml
+  when: openhpc_enable.runtime | default(false) | bool
+  tags: install
 
-- name: Include variables for OpenHPC version
-  include_vars:
-    file: "ohpc-{{ ansible_facts.packages['ohpc-release'][0]['version'] }}"
-
-- include: control.yml
-  when: openhpc_enable.control | default(false) | bool
-
-- include: compute.yml
-  when: openhpc_enable.batch | default(false) | bool
-
+#FIXME: needs a new home
 - include: database.yml
   when: openhpc_enable.database | default(false) | bool
 
-- include: runtime.yml
+- name: Configure
+  block:
+    - include: runtime.yml
   when: openhpc_enable.runtime | default(false) | bool
+  tags: configure
 
 - include: post.yml
   when: openhpc_enable.runtime | default(false) | bool
   delegate_to: "{{ openhpc_slurm_control_host }}"
+  tags: post
 
 - include: drain.yml
   when: openhpc_enable.drain | default(false) | bool

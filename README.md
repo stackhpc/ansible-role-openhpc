@@ -2,21 +2,22 @@
 
 # stackhpc.openhpc
 
-This Ansible role installs packages and performs configuration to provide a fully functional OpenHPC cluster. It can also be used to drain and resume nodes.
+This Ansible role installs packages and performs configuration to provide an OpenHPC Slurm cluster. It can also be used to drain and resume nodes.
 
 As a role it must be used from a playbook, for which a simple example is given below. This approach means it is totally modular with no assumptions about available networks or any cluster features except for some hostname conventions. Any desired cluster fileystem or other required functionality may be freely integrated using additional Ansible roles or other approaches.
 
+The minimal image for nodes is a Centos7 or Centos8 cloud image. These use OpenHPC v1 and v2 respectively. Centos8/OpenHPCv2 is generally preferred as it provides additional functionality for Slurm, compilers, MPI and transport libraries.
+
 ## Role Variables
+
+`openhpc_release_repo`: Optional. Path to the `ohpc-release` repo to use. Defaults provide v1.3 for Centos 7 and v2 for Centos 8. Or, include this
+package in the image.
 
 `openhpc_slurm_service_enabled`: boolean, whether to enable the appropriate slurm service (slurmd/slurmctld)
 
 `openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`
 
 `openhpc_packages`: additional OpenHPC packages to install
-
-`openhpc_slurmdbd_host`: Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where
-an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to
-prevent the role from managing slurmdbd.
 
 `openhpc_enable`:
 * `control`: whether to enable control host
@@ -26,9 +27,11 @@ prevent the role from managing slurmdbd.
 * `drain`: whether to drain compute nodes
 * `resume`: whether to resume compute nodes
 
-### slurm.conf
+`openhpc_slurmdbd_host`: Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where
+an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to
+prevent the role from managing slurmdbd.
 
-The following options affect `slurm.conf`. Please see the slurm (documentation)[https://slurm.schedmd.com/slurm.conf.html] for more details.
+### slurm.conf
 
 `openhpc_slurm_partitions`: list of one or more slurm partitions.  Each partition may contain the following values:
 * `groups`: If there are multiple node groups that make up the partition, a list of group objects can be defined here.
@@ -36,9 +39,9 @@ The following options affect `slurm.conf`. Please see the slurm (documentation)[
   * `name`: The name of the nodes within this group.
   * `cluster_name`: Optional.  An override for the top-level definition `openhpc_cluster_name`.
   * `ram_mb`: Optional.  The physical RAM available in each server of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`). This is set to the Slurm default of `1` if not defined.
-
-  For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`. All nodes in this inventory group will be added to the group/partition. Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
-
+  
+  For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`. All nodes in this inventory group will be added to the group/partition. Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname. Nodes in a group are assumed to be homogenous in terms of processor and memory.
+  
 * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
 * `maxtime`: Optional.  A partition-specific time limit in hours, minutes and seconds ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`).  The default value is
   given by `openhpc_job_maxtime`.
@@ -106,8 +109,7 @@ You will need to configure these variables if you have set `openhpc_enable.datab
 
 `openhpc_slurmdbd_mysql_username`: Username for authenticating with the database, defaults to `slurm`
 
-Example Inventory
------------------
+## Example Inventory
 
 And an Ansible inventory as this:
 
@@ -127,8 +129,7 @@ And an Ansible inventory as this:
     [cluster_batch:children]
     openhpc_compute
 
-Example Playbooks
-----------------
+## Example Playbooks
 
 To deploy, create a playbook which looks like this:
 
@@ -199,14 +200,3 @@ To drain nodes, for example, before scaling down the cluster to 6 nodes:
             drain: "{{ inventory_hostname not in desired_state }}"
             resume: "{{ inventory_hostname in desired_state }}"
     ...
-
-
-CentOS 8 and OpenHPC 2
-----------------------
-
-To deploy OpenHPC 2 on CentOS 8, you must first enable the CentOS PowerTools repo
-(this ships as standard, but disabled).  To enable PowerTools:
-
-```
-sudo dnf config-manager --set-enabled PowerTools
-```
