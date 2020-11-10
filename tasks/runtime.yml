@@ -7,6 +7,11 @@
     openhpc_cluster_name == none or
     openhpc_slurm_partitions | length == 0
 
+- name: Fail if configless mode selected when not on Centos 8
+  fail:
+    msg: "openhpc_slurm_configless = True requires Centos8 / OpenHPC v2"
+  when: openhpc_slurm_configless and not ansible_distribution_major_version == "8"
+
 - name: Ensure the Slurm spool directory exists
   file:
     path: /var/spool/slurm
@@ -59,7 +64,7 @@
     owner: root
     group: root
     mode: 0644
-  when: openhpc_enable.control or not openhpc_slurm_configless    
+  when: openhpc_enable.control or not openhpc_slurm_configless
   notify:
     - Restart SLURM service
 
