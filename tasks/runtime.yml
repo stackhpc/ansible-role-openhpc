@@ -68,7 +68,6 @@
   notify:
     - Restart SLURM service
 
-# TODO: check using centos8/openhpc v2 if configless
 - name: Set slurmctld location for configless operation
   lineinfile:
     path: /etc/sysconfig/slurmd
