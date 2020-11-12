@@ -1,5 +1,6 @@
 ---
 openhpc_slurm_service_enabled: true
+openhpc_slurm_service_started: "{{ openhpc_slurm_service_enabled }}"
 openhpc_slurm_service:
 openhpc_slurm_control_host: "{{ inventory_hostname }}"
 openhpc_slurm_partitions: []
@@ -12,9 +13,9 @@ openhpc_job_maxtime: 24:00:00
 openhpc_enable:
   control: false
   batch: false
-  runtime: false 
-  drain: false 
-  resume: false 
+  runtime: false
+  drain: false
+  resume: false
 ohpc_slurm_services:
   control: slurmctld
   batch: slurmd
