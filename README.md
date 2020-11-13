@@ -44,6 +44,8 @@ package in the image.
 * `drain`: whether to drain compute nodes
 * `resume`: whether to resume compute nodes
 
+`openhpc_slurm_configless`: Optional, default False. If True then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
+
 Example Inventory
 -----------------
 
