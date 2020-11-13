@@ -55,7 +55,7 @@
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
   when: openhpc_slurm_service is not none
   notify:
-    - Restart SLURM service
+    - Reload SLURM service
 
 - name: Apply customised SLURM configuration
   template:
@@ -66,7 +66,7 @@
     mode: 0644
   when: openhpc_enable.control or not openhpc_slurm_configless
   notify:
-    - Restart SLURM service
+    - Reload SLURM service
 
 - name: Set slurmctld location for configless operation
   lineinfile:
@@ -76,7 +76,7 @@
     create: yes
   when: openhpc_enable.batch and openhpc_slurm_configless
   notify:
-    - Restart SLURM service
+    - Reload SLURM service
 
 - name: Flush handlers
   meta: flush_handlers
@@ -87,12 +87,13 @@
   service:
     name: munge
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
-    state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
+    state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
 
 # In case the service isn't running and the config hasn't changed to trigger
 # the handler, ensure it's running here.
 - name: Ensure Slurm services are running
   service:
     name: "{{ openhpc_slurm_service }}"
-    state: "{{ 'started' if openhpc_slurm_service_enabled | bool else 'stopped' }}"
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
+    state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_slurm_service is not none
