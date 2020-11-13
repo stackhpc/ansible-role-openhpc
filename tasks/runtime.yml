@@ -15,13 +15,6 @@
     mode: 0755
     state: directory
 
-- name: Ensure the Munge service is enabled
-  service:
-    name: munge
-    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
-  notify:
-    - Restart Munge service
-
 - name: Generate a Munge key for the platform
   command: "dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024"
   args:
@@ -44,14 +37,6 @@
   notify:
     - Restart Munge service
 
-- name: Ensure Slurm services are enabled
-  service:
-    name: "{{ openhpc_slurm_service }}"
-    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
-  when: openhpc_slurm_service is not none
-  notify:
-    - Restart SLURM service
-
 - name: Apply customised SLURM configuration
   template:
     src: slurm.conf.j2
@@ -67,7 +52,7 @@
 
 # Munge state could be unchanged but the service is not running.
 # Handle that here.
-- name: Ensure Munge services are enabled and started
+- name: Configure Munge service
   service:
     name: munge
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
@@ -75,8 +60,9 @@
 
 # In case the service isn't running and the config hasn't changed to trigger
 # the handler, ensure it's running here.
-- name: Ensure Slurm services are running
+- name: Configure Slurm service
   service:
     name: "{{ openhpc_slurm_service }}"
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_slurm_service is not none

@@ -16,7 +16,7 @@ package in the image.
 
 `openhpc_slurm_service_enabled`: boolean, whether to enable the appropriate slurm service (slurmd/slurmctld)
 
-`openhpc_slurm_service_started`: boolean, whether to start the appropriate slurm service (slurmd/slurmctld)
+`openhpc_slurm_service_started`: Optional boolean. Whether to start slurm services. If set to false, all services will be stopped. Defaults to `openhpc_slurm_service_enabled`.
 
 `openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`
 
