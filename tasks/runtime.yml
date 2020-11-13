@@ -83,7 +83,7 @@
 
 # Munge state could be unchanged but the service is not running.
 # Handle that here.
-- name: Ensure Munge services are enabled and started
+- name: Set Munge service run state
   service:
     name: munge
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
@@ -91,7 +91,7 @@
 
 # In case the service isn't running and the config hasn't changed to trigger
 # the handler, ensure it's running here.
-- name: Ensure Slurm services are running
+- name: Set Slurm service run state
   service:
     name: "{{ openhpc_slurm_service }}"
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
