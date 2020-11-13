@@ -39,13 +39,25 @@
   register: slurm_munge_key
   when: inventory_hostname == openhpc_slurm_control_host
 
-- name: Write Munge key
+- name: Write Munge key (from control host)
   copy:
     content: "{{ hostvars[openhpc_slurm_control_host]['slurm_munge_key']['content'] | b64decode }}"
     dest: "/etc/munge/munge.key"
     owner: munge
     group: munge
     mode: 0400
+  when: "hostvars[openhpc_slurm_control_host]['slurm_munge_key'] is defined"
+  notify:
+    - Restart Munge service
+
+- name: Write Munge key (from local copy)
+  copy:
+    src: "munge.key"
+    dest: "/etc/munge/munge.key"
+    owner: munge
+    group: munge
+    mode: 0400
+  when: "hostvars[openhpc_slurm_control_host]['slurm_munge_key'] is not defined"
   notify:
     - Restart Munge service
 
