@@ -15,7 +15,7 @@ package in the image.
 
 `openhpc_slurm_service_enabled`: boolean, whether to enable the appropriate slurm service (slurmd/slurmctld)
 
-`openhpc_slurm_service_started`: boolean, whether to start the appropriate slurm service (slurmd/slurmctld)
+`openhpc_slurm_service_started`: Optional boolean. Whether to start slurm services. If set to false, all services will be stopped. Defaults to `openhpc_slurm_service_enabled`.
 
 `openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`
 
@@ -32,6 +32,8 @@ package in the image.
 `openhpc_slurmdbd_host`: Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where
 an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to
 prevent the role from managing slurmdbd.
+
+`openhpc_slurm_configless`: Optional, default False. If True then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
 
 ### slurm.conf
 
