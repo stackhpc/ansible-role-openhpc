@@ -1,0 +1,85 @@
+---
+name: CI
+'on':
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  test:
+    name: Molecule
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image:
+          - 'centos:8'
+          - 'centos:7'
+        scenario:
+          - test1
+          - test1b
+          - test1c
+          - test2
+          - test3
+
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install molecule[docker] docker yamllint ansible-lint
+
+      - name: Display ansible version
+        run:  ansible --version
+
+      - name: Compensate for repo name being different to the role
+        run: ln -s $(pwd) ../stackhpc.openhpc
+
+      - name: Create ansible.cfg with correct roles_path
+        run:  printf '[defaults]\nroles_path=../' >ansible.cfg
+
+      - name: Run Molecule tests.
+        run: molecule test -s ${{ matrix.scenario }}
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_IMAGE: ${{ matrix.image }}
+
+  runonce:
+    name: Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install molecule[docker] docker yamllint ansible-lint
+
+      - name: Display ansible version
+        run:  ansible --version
+
+      - name: Compensate for repo name being different to the role
+        run: ln -s $(pwd) ../stackhpc.openhpc
+
+      - name: Create ansible.cfg with correct roles_path
+        run:  printf '[defaults]\nroles_path=../' >ansible.cfg
+
+      - name: Run Ansible syntax check
+        run:  ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+
+      - name: Run Ansible lint
+        run:  ansible-lint .
+
+      - name: Test custom filters
+        run: ansible-playbook tests/filter.yml -i tests/inventory -i tests/inventory-mock-groups
