@@ -60,7 +60,6 @@ this only supports a subset of `sacct` commands.
 To deploy and configure `slurmdbd`:
 
 * Configure a mariadb or mysql server as described in the slurm accounting [documentation](https://slurm.schedmd.com/accounting.html) on one of the nodes in your inventory and set `openhpc_enable.database `to `true` for this node.
-* Set `openhpc_enable.database` to `true` for one of the nodes in your inventory
 * Set `openhpc_slurm_accounting_storage_type` to `accounting_storage/slurmdbd`.
 * Configure the variables for `slurmdbd.conf` below.
 
