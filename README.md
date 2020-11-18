@@ -98,7 +98,7 @@ accounting data such as start and end times.
 
 ### slurmdbd.conf
 
-The following options affect `slurmdbd.conf`. Please see the slurm (documentation)[https://slurm.schedmd.com/slurmdbd.conf.html] for more details.
+The following options affect `slurmdbd.conf`. Please see the slurm [documentation](https://slurm.schedmd.com/slurmdbd.conf.html) for more details.
 You will need to configure these variables if you have set `openhpc_enable.database` to `true`.
 
 `openhpc_slurmdbd_port`: Port for slurmdb to listen on, defaults to `6819`
