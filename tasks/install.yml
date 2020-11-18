@@ -8,6 +8,7 @@
   yum:
     name: "{{ openhpc_release_repo | default(ohpc_release_repos[ansible_distribution_major_version]) }}"
     state: present
+    disable_gpg_check: True
   when: "'ohpc-release' not in ansible_facts.packages"
 
 - name: Update package facts
