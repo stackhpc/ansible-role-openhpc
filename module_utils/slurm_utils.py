@@ -4,7 +4,12 @@
 # Apache 2 License
 
 def slurm_parse(output):
-    """Parse sacct parsable output(i.e. using -p)"""
+    """Parse sacct parsable output(i.e. using -p)
+
+    :param output: a string containing the full output of sacct or
+        an iterable yielding lines of sacct output
+    :return List of dictionaries which map column headiings to values.
+    """
     # Example input:
     # Cluster|ControlHost|ControlPort|RPC|Share|GrpJobs|GrpTRES|GrpSubmit|MaxJobs|MaxTRES|MaxSubmit|MaxWall|QOS|Def QOS|
     # testohpc|172.20.0.2|6817|8448|1||||||||normal||
