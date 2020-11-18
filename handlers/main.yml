@@ -4,7 +4,7 @@
   service:
     name: "munge"
     state: restarted
-  when: openhpc_slurm_service_enabled | bool
+  when: openhpc_slurm_service_started | bool
 
 - name: Restart SLURM service
   service:
@@ -12,4 +12,4 @@
     state: reloaded
   when:
     - openhpc_slurm_service is not none
-    - openhpc_slurm_service_enabled | bool
+    - openhpc_slurm_service_started | bool
