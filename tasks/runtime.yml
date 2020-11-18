@@ -49,6 +49,7 @@
     owner: root
     group: root
     mode: 0644
+    lstrip_blocks: true
   when: openhpc_enable.control or not openhpc_slurm_configless
   notify:
     - Restart SLURM service
