@@ -29,9 +29,7 @@ package in the image.
 * `drain`: whether to drain compute nodes
 * `resume`: whether to resume compute nodes
 
-`openhpc_slurmdbd_host`: Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where
-an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to
-prevent the role from managing slurmdbd.
+`openhpc_slurmdbd_host`: Optional. Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to prevent the role from managing slurmdbd. Defaults to `openhpc_slurm_control_host`.
 
 `openhpc_slurm_configless`: Optional, default False. If True then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
 
@@ -61,7 +59,7 @@ this only supports a subset of `sacct` commands.
 
 To deploy and configure `slurmdbd`:
 
-* Configure a mariadb or mysql server as documented in the slurm accounting (documentation)[https://slurm.schedmd.com/accounting.html]
+* Configure a mariadb or mysql server as described in the slurm accounting [documentation](https://slurm.schedmd.com/accounting.html) on one of the nodes in your inventory and set `openhpc_enable.database `to `true` for this node.
 * Set `openhpc_enable.database` to `true` for one of the nodes in your inventory
 * Set `openhpc_slurm_accounting_storage_type` to `accounting_storage/slurmdbd`.
 * Configure the variables for `slurmdbd.conf` below.
