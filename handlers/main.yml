@@ -6,7 +6,7 @@
     state: restarted
   when: openhpc_slurm_service_started | bool
 
-- name: Restart SLURM service
+- name: Reload SLURM service
   service:
     name: "{{ openhpc_slurm_service }}"
     state: reloaded
