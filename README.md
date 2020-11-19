@@ -1,4 +1,4 @@
-![Build Status](https://github.com/stackhpc/ansible-role-openhpc/workflows/CI/badge.svg)
+[![Build Status](https://github.com/stackhpc/ansible-role-openhpc/workflows/CI/badge.svg)](https://github.com/stackhpc/ansible-role-openhpc/actions)
 
 # stackhpc.openhpc
 
