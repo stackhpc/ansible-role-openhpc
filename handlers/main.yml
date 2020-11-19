@@ -18,7 +18,7 @@
     - openhpc_slurmdbd_host in play_hosts
   run_once: true
 
-- name: Restart SLURM service
+- name: Reload SLURM service
   service:
     name: "{{ openhpc_slurm_service }}"
     state: reloaded

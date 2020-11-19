@@ -62,7 +62,7 @@
     lstrip_blocks: true
   when: openhpc_enable.control or not openhpc_slurm_configless
   notify:
-    - Restart SLURM service
+    - Reload SLURM service
 
 - name: Set slurmctld location for configless operation
   lineinfile:
@@ -75,7 +75,7 @@
     mode: 0644
   when: openhpc_enable.batch and openhpc_slurm_configless
   notify:
-    - Restart SLURM service
+    - Reload SLURM service
 
 - name: Flush handlers
   meta: flush_handlers
