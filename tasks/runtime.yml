@@ -59,6 +59,7 @@
     owner: root
     group: root
     mode: 0644
+    lstrip_blocks: true
   when: openhpc_enable.control or not openhpc_slurm_configless
   notify:
     - Restart SLURM service
@@ -69,6 +70,9 @@
     line: "SLURMD_OPTIONS='--conf-server {{ openhpc_slurm_control_host }}'"
     regexp: "^SLURMD_OPTIONS="
     create: yes
+    owner: root
+    group: root
+    mode: 0644
   when: openhpc_enable.batch and openhpc_slurm_configless
   notify:
     - Restart SLURM service
