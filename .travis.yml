@@ -29,6 +29,8 @@ env:
   - SCENARIO=test1c MOLECULE_IMAGE=centos:7
   - SCENARIO=test2 MOLECULE_IMAGE=centos:7
   - SCENARIO=test3 MOLECULE_IMAGE=centos:7
+  - SCENARIO=test4 MOLECULE_IMAGE=centos:7
+  - SCENARIO=test4 MOLECULE_IMAGE=centos:8
 
 script:
   # Run molecule tests

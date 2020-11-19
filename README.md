@@ -8,8 +8,7 @@ As a role it must be used from a playbook, for which a simple example is given b
 
 The minimal image for nodes is a Centos7 or Centos8 cloud image. These use OpenHPC v1 and v2 respectively. Centos8/OpenHPCv2 is generally preferred as it provides additional functionality for Slurm, compilers, MPI and transport libraries.
 
-Role Variables
---------------
+## Role Variables
 
 `openhpc_release_repo`: Optional. Path to the `ohpc-release` repo to use. Defaults provide v1.3 for Centos 7 and v2 for Centos 8. Or, include this
 package in the image.
@@ -19,6 +18,22 @@ package in the image.
 `openhpc_slurm_service_started`: Optional boolean. Whether to start slurm services. If set to false, all services will be stopped. Defaults to `openhpc_slurm_service_enabled`.
 
 `openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`
+
+`openhpc_packages`: additional OpenHPC packages to install
+
+`openhpc_enable`:
+* `control`: whether to enable control host
+* `database`: whether to enable slurmdbd
+* `batch`: whether to enable compute nodes
+* `runtime`: whether to enable OpenHPC runtime
+* `drain`: whether to drain compute nodes
+* `resume`: whether to resume compute nodes
+
+`openhpc_slurmdbd_host`: Optional. Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to prevent the role from managing slurmdbd. Defaults to `openhpc_slurm_control_host`.
+
+`openhpc_slurm_configless`: Optional, default False. If True then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
+
+### slurm.conf
 
 `openhpc_slurm_partitions`: list of one or more slurm partitions.  Each partition may contain the following values:
 * `groups`: If there are multiple node groups that make up the partition, a list of group objects can be defined here.
@@ -37,19 +52,65 @@ package in the image.
 
 `openhpc_cluster_name`: name of the cluster
 
-`openhpc_packages`: additional OpenHPC packages to install
+#### Accounting
 
-`openhpc_enable`:
-* `control`: whether to enable control host
-* `batch`: whether to enable compute nodes
-* `runtime`: whether to enable OpenHPC runtime
-* `drain`: whether to drain compute nodes
-* `resume`: whether to resume compute nodes
+By default, the accounting plugin will use the `accounting_storage/filetxt` storage type. However,
+this only supports a subset of `sacct` commands.
 
-`openhpc_slurm_configless`: Optional, default False. If True then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
+To deploy and configure `slurmdbd`:
 
-Example Inventory
------------------
+* Configure a mariadb or mysql server as described in the slurm accounting [documentation](https://slurm.schedmd.com/accounting.html) on one of the nodes in your inventory and set `openhpc_enable.database `to `true` for this node.
+* Set `openhpc_slurm_accounting_storage_type` to `accounting_storage/slurmdbd`.
+* Configure the variables for `slurmdbd.conf` below.
+
+The role will take care of configuring the following variables for you:
+
+`openhpc_slurm_accounting_storage_host`: Where the accounting storage service is running i.e where slurmdbd running.
+
+`openhpc_slurm_accounting_storage_port`: Which port to use to connect to the accounting storage.
+
+`openhpc_slurm_accounting_storage_type`: How accounting records are stored. Can be one of `accounting_storage/none`,
+ `accounting_storage/slurmdbd` or  `accounting_storage/filetxt`.
+
+`openhpc_slurm_accounting_storage_user`: Username for authenticating with the accounting storage.
+
+`openhpc_slurm_accounting_storage_pass`: Mungekey or database password to use for authenticating.
+with the accounting storage
+
+For more advanced customisation or to configure another storage type, you might want to modify these values manually.
+
+#### Job accounting
+
+This is largely redundant if you are using the accounting plugin above, but will give you basic
+accounting data such as start and end times.
+
+`openhpc_slurm_job_acct_gather_type`: Mechanism for collecting job accounting data. Can be one
+ of `jobacct_gather/linux`, `jobacct_gather/cgroup` and `jobacct_gather/none`
+
+`openhpc_slurm_job_acct_gather_frequency`: Sampling period for job accounting (seconds)
+
+`openhpc_slurm_job_comp_type`: Logging mechanism for job accounting. Can be one of
+`jobcomp/filetxt`, `jobcomp/none`, `jobcomp/elasticsearch`.
+
+`openhpc_slurm_job_comp_loc`: Location to store the job accounting records. Depends on value of
+`openhpc_slurm_job_comp_type`, e.g for `jobcomp/filetxt` represents a path on disk.
+
+### slurmdbd.conf
+
+The following options affect `slurmdbd.conf`. Please see the slurm [documentation](https://slurm.schedmd.com/slurmdbd.conf.html) for more details.
+You will need to configure these variables if you have set `openhpc_enable.database` to `true`.
+
+`openhpc_slurmdbd_port`: Port for slurmdb to listen on, defaults to `6819`
+
+`openhpc_slurmdbd_mysql_host`: Hostname or IP Where mariadb is running, defaults to `openhpc_slurm_control_host`.
+
+`openhpc_slurmdbd_mysql_database`: Database to use for accounting, defaults to `slurm_acct_db`
+
+`openhpc_slurmdbd_mysql_password`: Password for authenticating with the database. You must set this variable.
+
+`openhpc_slurmdbd_mysql_username`: Username for authenticating with the database, defaults to `slurm`
+
+## Example Inventory
 
 And an Ansible inventory as this:
 
@@ -69,8 +130,7 @@ And an Ansible inventory as this:
     [cluster_batch:children]
     openhpc_compute
 
-Example Playbooks
-----------------
+## Example Playbooks
 
 To deploy, create a playbook which looks like this:
 
