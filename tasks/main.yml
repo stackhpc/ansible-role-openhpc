@@ -19,6 +19,13 @@
   when: openhpc_enable.runtime | default(false) | bool
   tags: configure
 
+- include: post-configure.yml
+  when:
+    - openhpc_enable.runtime | default(false) | bool
+    # Requires operational slurm cluster
+    - openhpc_slurm_service_started | bool
+  tags: post-configure
+
 - include: drain.yml
   when: openhpc_enable.drain | default(false) | bool
   delegate_to: "{{ openhpc_slurm_control_host }}"

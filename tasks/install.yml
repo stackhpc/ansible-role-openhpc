@@ -36,8 +36,8 @@
 
 - name: Install required slurm packages
   yum:
-    name: "{{ item }}"
-  loop: "{{ openhpc_slurm_pkglist }}"
+    name: "{{ openhpc_slurm_pkglist }}"
+  when: openhpc_slurm_pkglist | default(false, true)
 
 - name: Install packages from openhpc_packages variable
   yum:

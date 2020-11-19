@@ -42,6 +42,16 @@
   notify:
     - Restart Munge service
 
+- name: Template slurmdbd.conf
+  template:
+    src: slurmdbd.conf.j2
+    dest: /etc/slurm/slurmdbd.conf
+    mode: "0600"
+    owner: root
+    group: root
+  notify: Restart slurmdbd service
+  when: openhpc_enable.database | default(false) | bool
+
 - name: Apply customised SLURM configuration
   template:
     src: slurm.conf.j2
@@ -77,6 +87,13 @@
     name: munge
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
+
+- name: Ensure slurmdbd is started and running
+  service:
+    name: slurmdbd
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
+    state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
+  when: openhpc_enable.database | default(false) | bool
 
 # In case the service isn't running and the config hasn't changed to trigger
 # the handler, ensure it's running here.
