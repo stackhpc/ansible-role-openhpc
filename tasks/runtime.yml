@@ -102,5 +102,3 @@
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_slurm_service is not none
-  retries: 3
-  delay: 20
