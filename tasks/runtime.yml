@@ -25,6 +25,8 @@
   args:
     creates: "/etc/munge/munge.key"
   when: inventory_hostname == openhpc_slurm_control_host
+  notify:
+    - Restart Munge service
 
 - name: Retrieve Munge key from Slurm control host
   slurp:
@@ -77,9 +79,6 @@
   notify:
     - Reload SLURM service
 
-- name: Flush handlers
-  meta: flush_handlers
-
 # Munge state could be unchanged but the service is not running.
 # Handle that here.
 - name: Configure Munge service
@@ -103,3 +102,5 @@
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_slurm_service is not none
+  retries: 3
+  delay: 20
