@@ -62,6 +62,7 @@
     lstrip_blocks: true
   when: openhpc_enable.control or not openhpc_slurm_configless
   notify:
+    - Restart Munge service
     - Reload SLURM service
 
 - name: Set slurmctld location for configless operation
