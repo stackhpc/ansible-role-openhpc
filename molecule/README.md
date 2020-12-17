@@ -38,3 +38,7 @@ Then to run all tests:
     cd ansible-role-openhpc/
     MOLECULE_IMAGE=centos:7 molecule test --all
     MOLECULE_IMAGE=centos:8 molecule test --all
+
+Note that to see some debugging information you may want to prepend:
+
+    MOLECULE_NO_LOG="false" ...
