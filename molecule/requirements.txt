@@ -1,4 +1,3 @@
 pip
 setuptools
-molecule[lint]
-docker
+molecule[docker,lint]
