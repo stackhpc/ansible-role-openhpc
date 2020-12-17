@@ -25,6 +25,9 @@ jobs:
           - test3
           - test4
           - test5
+        exclude:
+          - image: 'centos:7'
+          - scenario: test5
 
     steps:
       - name: Check out the codebase.
