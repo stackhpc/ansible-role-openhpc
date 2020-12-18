@@ -33,6 +33,9 @@ package in the image.
 
 `openhpc_slurm_configless`: Optional, default False. If True then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
 
+`openhpc_openhpc_munge_key`: Optional. Define a path for a local file containing a munge key to use, otherwise one will be generated. If the play only contains a single host the munge key will be saved on the ansible control 
+host for later reuse with this variable when defining the rest of the cluster - see stdout for location.
+
 ### slurm.conf
 
 `openhpc_slurm_partitions`: list of one or more slurm partitions.  Each partition may contain the following values:

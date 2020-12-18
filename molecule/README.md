@@ -13,6 +13,7 @@ test2  | 2            | N                       | 4x compute node, sequential na
 test3  | 1            | Y                       | -
 test4  | 1            | N                       | 2x compute node, accounting enabled
 test5  | 1            | N                       | As for #1 but configless
+test6  | 1            | N                       | 0x compute nodes, configless
 
 # Local Installation & Running
 

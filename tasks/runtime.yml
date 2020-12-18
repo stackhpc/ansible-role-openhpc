@@ -20,21 +20,48 @@
     mode: 0755
     state: directory
 
-- name: Generate a Munge key for the platform
-  command: "dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024"
-  args:
-    creates: "/etc/munge/munge.key"
-  when: inventory_hostname == openhpc_slurm_control_host
+# Munge key handling is slightly complex as trying to cover cases with the following in the play:
+# a. entire cluster (standard ansible deployment)
+# b. only control node (part of image-based deploy)
+# c. only single compute node (for image building)
+# Therefore cannot depend on being able to generate a key on the control node and slurp + redistribute.
+# A local key can be generated from the path {{ openhpc_munge_key }}, 
+
+- name: Write Munge key from local disk
+  copy:
+    src: "{{ openhpc_munge_key }}"
+    dest: "/etc/munge/munge.key"
+    owner: munge
+    group: munge
+    mode: 0400
+  when: openhpc_munge_key is defined
   notify:
     - Restart Munge service
 
-- name: Retrieve Munge key from Slurm control host
+- name: Generate a Munge key
+  # NB this is usually a no-op as the package install actually generates a (node-unique) one, so won't usually trigger handler
+  command: "dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024"
+  args:
+    creates: "/etc/munge/munge.key"
+  notify:
+    - Restart Munge service
+
+- name: Retrieve Munge key
   slurp:
     src: "/etc/munge/munge.key"
   register: slurm_munge_key
-  when: inventory_hostname == openhpc_slurm_control_host
 
-- name: Write Munge key (from control host)
+- name: Save Munge key locally if single node play
+  fetch:
+    src: "/etc/munge/munge.key"
+    dest: '.'
+  register: output_munge_key
+  when: play_hosts | length == 1
+- debug:
+    msg: "Generated munge key written to: {{ output_munge_key.dest }}"
+  when: play_hosts | length == 1
+
+- name: Write Munge key from control host, if available
   copy:
     content: "{{ hostvars[openhpc_slurm_control_host]['slurm_munge_key']['content'] | b64decode }}"
     dest: "/etc/munge/munge.key"
@@ -42,17 +69,6 @@
     group: munge
     mode: 0400
   when: "hostvars[openhpc_slurm_control_host]['slurm_munge_key'] is defined"
-  notify:
-    - Restart Munge service
-
-- name: Write Munge key (from local copy)
-  copy:
-    src: "munge.key"
-    dest: "/etc/munge/munge.key"
-    owner: munge
-    group: munge
-    mode: 0400
-  when: "hostvars[openhpc_slurm_control_host]['slurm_munge_key'] is not defined"
   notify:
     - Restart Munge service
 
