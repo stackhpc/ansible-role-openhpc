@@ -1,7 +1,7 @@
 ---
 - name: Fail if openhpc_slurm_control_host or openhpc_cluster_name or openhpc_slurm_partitions are undefined
   fail:
-    msg: "Undefined openhpc_slurm_control_host or openhpc_cluster_name or openhpc_slurm_partitions."
+    msg: "Undefined openhpc_slurm_control_host or openhpc_cluster_name or openhpc_slurm_partitions, or latter is empty."
   when:
     openhpc_slurm_control_host == none or
     openhpc_cluster_name == none or
