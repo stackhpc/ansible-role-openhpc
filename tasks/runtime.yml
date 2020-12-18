@@ -74,7 +74,7 @@
     group: root
     mode: 0644
     lstrip_blocks: true
-  when: openhpc_enable.control or not openhpc_slurm_configless
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   notify:
     - Reload SLURM service
 
@@ -87,7 +87,9 @@
     owner: root
     group: root
     mode: 0644
-  when: openhpc_enable.batch and openhpc_slurm_configless
+  when:
+    - openhpc_enable.batch | default(false) | bool
+    - openhpc_slurm_configless
   notify:
     - Reload SLURM service
 
