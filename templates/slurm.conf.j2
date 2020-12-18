@@ -132,13 +132,8 @@ PartitionName={{part.name}} \
     Nodes=\
         {% for group in part.get('groups', [part]) %}
             {% set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
-            {% if groups[group_name] | length > 0 %}
-{{ groups[group_name] | join(",\\\n") }}{% if not loop.last %}{{ ",\\\n" }}{% endif %}
-            {% else %}
--nonesuch
-            {% endif %}            
+            {% if groups[group_name] | length > 0 %}{{ groups[group_name] | join(",\\\n") }}{% if not loop.last %}{{ ",\\\n" }}{% endif %}{% else %}-nonesuch{% endif %}
         {% endfor %}{# group #}
-
 {% endfor %}{# partitions #}
 
 # Want nodes that drop out of SLURM's configuration to be automatically
