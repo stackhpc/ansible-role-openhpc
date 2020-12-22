@@ -31,10 +31,9 @@ package in the image.
 
 `openhpc_slurmdbd_host`: Optional. Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to prevent the role from managing slurmdbd. Defaults to `openhpc_slurm_control_host`.
 
-`openhpc_slurm_configless`: Optional, default False. If True then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
+`openhpc_slurm_configless`: Optional, default false. If True then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
 
-`openhpc_openhpc_munge_key`: Optional. Define a path for a local file containing a munge key to use, otherwise one will be generated. If the play only contains a single host the munge key will be saved on the ansible control 
-host for later reuse with this variable when defining the rest of the cluster - see stdout for location.
+`openhpc_munge_key`: Optional, default false. Define a path for a local file containing a munge key to use, otherwise one will be generated. If the play only contains a single host the munge key will be saved on the ansible control host for later reuse with this variable when defining the rest of the cluster - see stdout for location.
 
 ### slurm.conf
 
