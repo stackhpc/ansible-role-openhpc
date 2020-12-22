@@ -34,7 +34,7 @@
     owner: munge
     group: munge
     mode: 0400
-  when: openhpc_munge_key | default(false) != false
+  when: openhpc_munge_key | default('')
   notify:
     - Restart Munge service
 
