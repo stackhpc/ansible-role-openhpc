@@ -13,6 +13,8 @@ test2  | 2            | N                       | 4x compute node, sequential na
 test3  | 1            | Y                       | -
 test4  | 1            | N                       | 2x compute node, accounting enabled
 test5  | 1            | N                       | As for #1 but configless
+test6  | 1            | N                       | 0x compute nodes, configless
+test7  | 1            | N                       | 1x compute node, no login node, configless
 
 # Local Installation & Running
 
@@ -37,7 +39,7 @@ Then to run all tests:
 
     cd ansible-role-openhpc/
     MOLECULE_IMAGE=centos:7 molecule test --all
-    MOLECULE_IMAGE=centos:8 molecule test --all
+    MOLECULE_IMAGE=centos:8.2.2004 molecule test --all
 
 Note that to see some debugging information you may want to prepend:
 

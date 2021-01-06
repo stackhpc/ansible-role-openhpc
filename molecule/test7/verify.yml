@@ -1,0 +1,12 @@
+---
+
+# NB this isn't a very good test but with only a compute node there's not much which can be checked!
+- name: Check slurmd configuration
+  hosts: all
+  tasks:
+  - name: Get slurmd config
+    command: systemctl show slurmd
+    register: systemctl_slurmd
+  - assert:
+      that: "'EnvironmentFiles=/etc/sysconfig/slurmd' in systemctl_slurmd.stdout"
+      fail_msg: "FAILED - no reference to /etc/sysconfig/slurmd in slurmd config"

@@ -31,7 +31,9 @@ package in the image.
 
 `openhpc_slurmdbd_host`: Optional. Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to prevent the role from managing slurmdbd. Defaults to `openhpc_slurm_control_host`.
 
-`openhpc_slurm_configless`: Optional, default False. If True then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
+`openhpc_slurm_configless`: Optional, default false. If True then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
+
+`openhpc_munge_key_path`: Optional, default ''. Define a path for a local file containing a munge key to use, otherwise one will be generated on the slurm control node.
 
 ### slurm.conf
 
@@ -42,7 +44,10 @@ package in the image.
   * `cluster_name`: Optional.  An override for the top-level definition `openhpc_cluster_name`.
   * `ram_mb`: Optional.  The physical RAM available in each server of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`). This is set to the Slurm default of `1` if not defined.
 
-  For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`. All nodes in this inventory group will be added to the group/partition. Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname. Nodes in a group are assumed to be homogenous in terms of processor and memory.
+  For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`, with all nodes in this inventory group added to the group/partition. Note that:
+  - Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
+  - Nodes in a group are assumed to be homogenous in terms of processor and memory.
+  - An inventory group may be empty, but if it is not then the play must contain at least one node from it (used to set processor information).
 
 * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
 * `maxtime`: Optional.  A partition-specific time limit in hours, minutes and seconds ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`).  The default value is
