@@ -47,7 +47,7 @@
   # needed b/c openhpc_enable doesn't end up in hostvars
   set_fact:
     openhpc_login_only: "{{ openhpc_enable.login | default(false) | bool }}"
-  
+
 - name: Template slurmdbd.conf
   template:
     src: slurmdbd.conf.j2
