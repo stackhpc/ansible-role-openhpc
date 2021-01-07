@@ -38,6 +38,7 @@ openhpc_slurmdbd_mysql_username: slurm
 openhpc_enable:
   control: false
   batch: false
+  login: true
   database: false
   runtime: false
   drain: false
@@ -45,6 +46,7 @@ openhpc_enable:
 ohpc_slurm_services:
   control: slurmctld
   batch: slurmd
+  login: slurmd
 ohpc_release_repos:
   "7": "https://github.com/openhpc/ohpc/releases/download/v1.3.GA/ohpc-release-1.3-1.el7.x86_64.rpm" # ohpc v1.3 for Centos 7
   "8": "http://repos.openhpc.community/OpenHPC/2/CentOS_8/x86_64/ohpc-release-2-1.el8.x86_64.rpm" # ohpc v2 for Centos 8

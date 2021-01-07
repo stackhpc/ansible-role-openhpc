@@ -137,6 +137,14 @@ PartitionName={{part.name}} \
         {% endfor %}{# group #}
 {% endfor %}{# partitions #}
 
+
+# Define slurmd nodes not in partitions for configless login-only nodes:
+{% for node in hostvars %}
+    {% if hostvars[node].openhpc_login_only %}
+NodeName={{ node }}
+    {% endif %}
+{% endfor %}{# configless login-only #}
+
 # Want nodes that drop out of SLURM's configuration to be automatically
 # returned to service when they come back.
 ReturnToService=2

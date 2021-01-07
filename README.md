@@ -25,6 +25,7 @@ package in the image.
 * `control`: whether to enable control host
 * `database`: whether to enable slurmdbd
 * `batch`: whether to enable compute nodes
+* `login`: whether to enable login-only nodes in configless mode (for combined control/login nodes this can be left false)
 * `runtime`: whether to enable OpenHPC runtime
 * `drain`: whether to drain compute nodes
 * `resume`: whether to resume compute nodes
