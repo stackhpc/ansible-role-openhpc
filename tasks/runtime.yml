@@ -43,11 +43,6 @@
   notify:
     - Restart Munge service
 
-- name: Set fact for login-only nodes
-  # needed b/c openhpc_enable doesn't end up in hostvars
-  set_fact:
-    openhpc_login_only: "{{ openhpc_enable.login | default(false) | bool }}"
-
 - name: Template slurmdbd.conf
   template:
     src: slurmdbd.conf.j2
@@ -80,7 +75,7 @@
     group: root
     mode: 0644
   when:
-    - (openhpc_enable.batch | default(false) | bool) or (openhpc_enable.login | default(false) | bool)
+    - openhpc_slurm_service == 'slurmd'
     - openhpc_slurm_configless
   notify:
     - Reload SLURM service

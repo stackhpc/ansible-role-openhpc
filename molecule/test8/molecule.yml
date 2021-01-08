@@ -73,5 +73,7 @@ platforms:
       - name: net1
 provisioner:
   name: ansible
+  # ansible_args:
+  #   - --limit=testohpc-control,testohpc-compute-0
 verifier:
   name: ansible

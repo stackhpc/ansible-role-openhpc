@@ -25,16 +25,17 @@ package in the image.
 * `control`: whether to enable control host
 * `database`: whether to enable slurmdbd
 * `batch`: whether to enable compute nodes
-* `login`: whether to enable login-only nodes in configless mode (for combined control/login nodes this can be left false)
 * `runtime`: whether to enable OpenHPC runtime
 * `drain`: whether to drain compute nodes
 * `resume`: whether to resume compute nodes
 
 `openhpc_slurmdbd_host`: Optional. Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to prevent the role from managing slurmdbd. Defaults to `openhpc_slurm_control_host`.
 
-`openhpc_slurm_configless`: Optional, default false. If True then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
+`openhpc_slurm_configless`: Optional, default false. If true then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
 
 `openhpc_munge_key_path`: Optional, default ''. Define a path for a local file containing a munge key to use, otherwise one will be generated on the slurm control node.
+
+`openhpc_login_only_nodes`: Optional. If using "configless" mode specify the name of an ansible group containing nodes which are login-only nodes (i.e. not also control nodes), if required. These nodes will run `slurmd` to contact the control node for config.
 
 ### slurm.conf
 
