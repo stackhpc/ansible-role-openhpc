@@ -7,6 +7,11 @@
   when: "openhpc_enable.get(item, false)"
   tags: always
 
+- name: Set slurmd as service for openhpc_login_only_nodes
+  set_fact:
+    openhpc_slurm_service: "slurmd"
+  when: openhpc_login_only_nodes and (openhpc_login_only_nodes in group_names)
+
 - name: Install packages
   block:
     - include_tasks: install.yml

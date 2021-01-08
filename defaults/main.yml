@@ -50,3 +50,4 @@ ohpc_release_repos:
   "8": "http://repos.openhpc.community/OpenHPC/2/CentOS_8/x86_64/ohpc-release-2-1.el8.x86_64.rpm" # ohpc v2 for Centos 8
 openhpc_slurm_configless: false
 openhpc_munge_key: ''
+openhpc_login_only_nodes: ''

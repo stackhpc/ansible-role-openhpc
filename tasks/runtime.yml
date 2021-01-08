@@ -75,7 +75,7 @@
     group: root
     mode: 0644
   when:
-    - openhpc_enable.batch | default(false) | bool
+    - openhpc_slurm_service == 'slurmd'
     - openhpc_slurm_configless
   notify:
     - Reload SLURM service
