@@ -16,6 +16,7 @@ test5  | 1            | N                       | As for #1 but configless
 test6  | 1            | N                       | 0x compute nodes, configless
 test7  | 1            | N                       | 1x compute node, no login node, configless
 test8  | 1            | N                       | 2x compute node, 2x login-only nodes, configless
+test9  | 1            | N                       | As test8 but uses `--limit=testohpc-control,testohpc-compute-0` and checks login nodes still end up in slurm.conf
 
 # Local Installation & Running
 
