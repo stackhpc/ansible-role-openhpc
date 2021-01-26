@@ -18,14 +18,6 @@
     - openhpc_slurmdbd_host in play_hosts
   run_once: true
 
-- name: Reload SLURM service
-  service:
-    name: "{{ openhpc_slurm_service }}"
-    state: reloaded
-  when:
-    - openhpc_slurm_service is not none
-    - openhpc_slurm_service_started | bool
-
 # NOTE: Allows you to restart slurmctld from another host
 - name: Restart slurmctld service
   service:
@@ -36,3 +28,22 @@
   when:
     - openhpc_slurm_service_started | bool
     - openhpc_slurm_control_host in play_hosts
+  listen: Restart SLURM service
+
+- name: Restart slurmd service
+  service:
+    name: "slurmd"
+    state: restarted
+  when:
+    - openhpc_slurm_service == 'slurmd'
+    - openhpc_slurm_service_started | bool
+  listen: Restart SLURM service
+
+# NOTE: has to be after restarting slurmctld if latter happens
+- name: Reload SLURM service
+  service:
+    name: "{{ openhpc_slurm_service }}"
+    state: reloaded
+  when:
+    - openhpc_slurm_service is not none
+    - openhpc_slurm_service_started | bool

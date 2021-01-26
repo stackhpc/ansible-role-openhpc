@@ -63,7 +63,7 @@
     lstrip_blocks: true
   when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   notify:
-    - Reload SLURM service
+    - Restart SLURM service # as number of nodes might have changed
 
 - name: Set slurmctld location for configless operation
   lineinfile:
@@ -94,6 +94,8 @@
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_enable.database | default(false) | bool
+
+- meta: flush_handlers # guarantees slurmctld (re)started before trying to run slurmd
 
 # In case the service isn't running and the config hasn't changed to trigger
 # the handler, ensure it's running here.
