@@ -15,12 +15,17 @@
           - name: "compute"
         openhpc_cluster_name: testohpc
         openhpc_slurm_configless: true
+
+- name: Debug initial cluster # separate play so handlers run BEFORE we inspect state
+  hosts: initial
+  tasks:
     - name: Get cluster info
       shell:
         cmd: sinfo
       register:
         original_sinfo
       run_once: true
+      changed_when: false
     - debug:
         msg: "{{ original_sinfo.stdout_lines }}"
       run_once: true
@@ -55,6 +60,7 @@
       register:
         original_sinfo
       run_once: true
+      changed_when: false
     - debug:
         msg: "{{ original_sinfo.stdout_lines }}"
       run_once: true
