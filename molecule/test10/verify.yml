@@ -12,9 +12,7 @@
       success_msg: "OK - 2x nodes idle"
 
 - name: Add new host(s) to cluster
-  hosts:
-    - testohpc_login
-    - new
+  hosts: all
   tasks:
     - name: Add new host(s) to group for slurm partition
       add_host:
