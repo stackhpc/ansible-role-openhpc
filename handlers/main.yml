@@ -28,16 +28,16 @@
   when:
     - openhpc_slurm_service_started | bool
     - openhpc_slurm_control_host in play_hosts
-  listen: Restart SLURM service
+  listen: Restart all slurm daemons
 
-- name: Restart slurmd service
-  service:
-    name: "slurmd"
-    state: restarted
+- name: Mark slurmd as needing restart
+  set_fact:
+    openhpc_slurm_restart: true
+  delegate_to: "{{ ansible_play_hosts | first }}" # just need a predictable location
+  run_once: true
   when:
-    - openhpc_slurm_service == 'slurmd'
     - openhpc_slurm_service_started | bool
-  listen: Restart SLURM service
+  listen: Restart all slurm daemons
 
 # NOTE: has to be after restarting slurmctld if latter happens
 - name: Reload SLURM service
