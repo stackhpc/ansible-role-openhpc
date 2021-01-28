@@ -71,7 +71,7 @@
   debug:
     msg: "notifying handlers" # meta: noop doesn't support 'when'
   changed_when: true
-  when: ohpc_slurm_conf.changed
+  when: ohpc_slurm_conf.changed # noqa 503
   notify:
     - Restart slurmd service
 
