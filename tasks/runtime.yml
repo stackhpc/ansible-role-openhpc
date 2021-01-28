@@ -63,7 +63,17 @@
     lstrip_blocks: true
   when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   notify:
-    - Restart all slurm daemons # as number of nodes might have changed
+    - Restart slurmctld service
+  register: ohpc_slurm_conf
+  # NB uses restart rather than reload as number of nodes might have changed
+
+- name: Notify handler for slurmd restart
+  debug:
+    msg: "notifying handlers" # meta: noop doesn't support 'when'
+  changed_when: true
+  when: ohpc_slurm_conf.changed
+  notify:
+    - Restart slurmd service
 
 - name: Set slurmctld location for configless operation
   lineinfile:
@@ -78,7 +88,8 @@
     - openhpc_slurm_service == 'slurmd'
     - openhpc_slurm_configless
   notify:
-    - Reload SLURM service
+    - Restart slurmd service
+  # Reloading is sufficent, but using a single handler means no bounce. Realistically this won't regularly change on a running slurmd so restarting is ok.
 
 # Munge state could be unchanged but the service is not running.
 # Handle that here.
@@ -95,15 +106,10 @@
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_enable.database | default(false) | bool
 
-- meta: flush_handlers # guarantees order
+- meta: flush_handlers # as then subsequent "ensure" is a no-op if slurm services bounced
 
-# Ensure service is running or restarted
-- name: Configure Slurm service
+- name: Ensure Slurm service state
   service:
     name: "{{ openhpc_slurm_service }}"
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
-    state: |-
-      {% if hostvars[ansible_play_hosts | first]['openhpc_slurm_restart'] | bool -%}restarted
-      {%- elif openhpc_slurm_service_started | bool -%}started
-      {%- else %}stopped{% endif %}
-  when: openhpc_slurm_service is not none
+    state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"

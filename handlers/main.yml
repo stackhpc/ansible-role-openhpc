@@ -18,7 +18,8 @@
     - openhpc_slurmdbd_host in play_hosts
   run_once: true
 
-# NOTE: Allows you to restart slurmctld from another host
+# NOTE: we need this running before slurmd
+# Allows you to reconfigure slurmctld from another host
 - name: Restart slurmctld service
   service:
     name: "slurmctld"
@@ -28,22 +29,11 @@
   when:
     - openhpc_slurm_service_started | bool
     - openhpc_slurm_control_host in play_hosts
-  listen: Restart all slurm daemons
 
-- name: Mark slurmd as needing restart
-  set_fact:
-    openhpc_slurm_restart: true
-  delegate_to: "{{ ansible_play_hosts | first }}" # just need a predictable location
-  run_once: true
-  when:
-    - openhpc_slurm_service_started | bool
-  listen: Restart all slurm daemons
-
-# NOTE: has to be after restarting slurmctld if latter happens
-- name: Reload SLURM service
+- name: Restart slurmd service
   service:
-    name: "{{ openhpc_slurm_service }}"
-    state: reloaded
+    name: "slurmd"
+    state: restarted
   when:
-    - openhpc_slurm_service is not none
     - openhpc_slurm_service_started | bool
+    - openhpc_slurm_service == 'slurmd'
