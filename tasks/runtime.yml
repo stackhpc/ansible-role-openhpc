@@ -71,7 +71,9 @@
   debug:
     msg: "notifying handlers" # meta: noop doesn't support 'when'
   changed_when: true
-  when: ohpc_slurm_conf.changed # noqa 503
+  when:
+    - openhpc_slurm_control_host in ansible_play_hosts
+    - hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed # noqa 503
   notify:
     - Restart slurmd service
 
