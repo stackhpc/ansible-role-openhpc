@@ -37,9 +37,10 @@
 
 - name: Build host-specific list of required slurm packages
   set_fact:
-    openhpc_slurm_pkglist: "{{ openhpc_slurm_pkglist | default([]) + item.value }}"
+    openhpc_slurm_pkglist: "{{ openhpc_slurm_pkglist | default([]) + (item.value | selectattr('install', 'true') | map(attribute='name') | list) }}"
   loop: "{{ ohpc_slurm_packages | dict2items }}"
-  when: "openhpc_enable.get(item.key, false)"
+  when:
+    - openhpc_enable.get(item.key, false)
 
 - name: Install required slurm packages
   yum:

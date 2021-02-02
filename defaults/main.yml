@@ -51,3 +51,4 @@ ohpc_release_repos:
 openhpc_slurm_configless: false
 openhpc_munge_key: ''
 openhpc_login_only_nodes: ''
+openhpc_module_system_install: true
