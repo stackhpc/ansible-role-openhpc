@@ -14,7 +14,7 @@ ohpc_slurm_packages:
     - "munge"
     - "slurm-slurmd-ohpc"
     - "slurm-example-configs-ohpc"
-    - "lmod-ohpc"
+    - "{{ 'lmod-ohpc' if openhpc_module_system_install else '' }}"
   database:
     - "slurm-slurmdbd-ohpc"
 ...

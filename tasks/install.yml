@@ -39,11 +39,11 @@
   set_fact:
     openhpc_slurm_pkglist: "{{ openhpc_slurm_pkglist | default([]) + item.value }}"
   loop: "{{ ohpc_slurm_packages | dict2items }}"
-  when: "openhpc_enable.get(item.key, false)"
+  when: openhpc_enable.get(item.key, false)
 
 - name: Install required slurm packages
   yum:
-    name: "{{ openhpc_slurm_pkglist }}"
+    name: "{{ openhpc_slurm_pkglist | reject('eq', '') }}"
   when: openhpc_slurm_pkglist | default(false, true)
 
 - name: Install packages from openhpc_packages variable
