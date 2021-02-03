@@ -3,29 +3,18 @@
 
 ohpc_slurm_packages:
   control:
-    - name: "@ohpc-slurm-server"
-      install: true
-    - name: "slurm-slurmctld-ohpc"
-      install: true
-    - name: "slurm-example-configs-ohpc"
-      install: true
+    - "@ohpc-slurm-server"
+    - "slurm-slurmctld-ohpc"
+    - "slurm-example-configs-ohpc"
   batch:
-    - name: "@ohpc-base-compute"
-      install: true
-    - name: "@ohpc-slurm-client"
-      install: true
+    - "@ohpc-base-compute"
+    - "@ohpc-slurm-client"
   runtime:
-    - name: "slurm-ohpc"
-      install: true
-    - name: "munge-ohpc"
-      install: true
-    - name: "slurm-slurmd-ohpc"
-      install: true
-    - name: "slurm-example-configs-ohpc"
-      install: true
-    - name: "lmod-ohpc"
-      install: "{{ openhpc_module_system_install }}"
+    - "slurm-ohpc"
+    - "munge-ohpc"
+    - "slurm-slurmd-ohpc"
+    - "slurm-example-configs-ohpc"
+    - "{{ 'lmod-ohpc' if openhpc_module_system_install else '' }}"
   database:
-    - name: "slurm-slurmdbd-ohpc"
-      install: true
+    - "slurm-slurmdbd-ohpc"
 ...
