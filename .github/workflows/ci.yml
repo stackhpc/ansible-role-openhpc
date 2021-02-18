@@ -10,7 +10,8 @@ jobs:
 
   test:
     name: Molecule
-    runs-on: ubuntu-latest
+    # Select an image that uses python3 by default
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -77,7 +78,7 @@ jobs:
 
   runonce:
     name: Checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v2
