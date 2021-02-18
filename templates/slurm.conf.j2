@@ -115,7 +115,7 @@ Epilog=/etc/slurm/slurm.epilog.clean
             {% set first_host_hv = hostvars[first_host] %}
 
 NodeName=DEFAULT State=UNKNOWN \
-    RealMemory={% if 'ram_mb' in group %}{{group.ram_mb}}{% else %}{{ first_host_hv['ansible_memory_mb']['real']['total'] }}{% endif %} \
+    RealMemory={% if 'ram_mb' in group %}{{group.ram_mb}}{% else %}{{ first_host_hv['ansible_memory_mb']['real']['total'] * (group.ram_multiplier | default(openhpc_ram_multiplier)) }}{% endif %} \
     Sockets={{first_host_hv['ansible_processor_count']}} \
     CoresPerSocket={{first_host_hv['ansible_processor_cores']}} \
     ThreadsPerCore={{first_host_hv['ansible_processor_threads_per_core']}}
