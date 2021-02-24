@@ -43,6 +43,16 @@
   notify:
     - Restart Munge service
 
+- name: Get slurmd's view of node configuration
+  command:
+    cmd: slurmd -C
+  when: openhpc_slurm_service == 'slurmd'
+  register: slurmd_conf
+  changed_when: false
+  # stdout is e.g.:
+  # NodeName=nrel-hpc-0 CPUs=16 Boards=1 SocketsPerBoard=2 CoresPerSocket=8 ThreadsPerCore=1 RealMemory=128616
+  # UpTime=0-00:48:14
+  
 - name: Template slurmdbd.conf
   template:
     src: slurmdbd.conf.j2
