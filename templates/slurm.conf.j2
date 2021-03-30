@@ -122,6 +122,9 @@ NodeName=DEFAULT State=UNKNOWN \
             {% for node in groups[group_name] %}
 NodeName={{ node }}
             {% endfor %}{# nodes #}
+            {% if 'cloud_nodes' in group %}{# TODO: document format here! #}
+NodeName={{ group_name | replace('_', '-') }}-cloud-[0-{{ group['cloud_nodes'] - 1 }}] State=CLOUD
+            {% endif %}
         {% else %}
 NodeName=-nonesuch
         {% endif %}{# non-empty group #}
