@@ -53,37 +53,32 @@
   notify: Restart slurmdbd service
   when: openhpc_enable.database | default(false) | bool
 
-- name: Generate base slurm configuration # TODO: not idempotent
+- name: Apply customised SLURM configuration
   template:
     src: slurm.conf.j2
-    dest: /tmp/slurm.conf
-    lstrip_blocks: true
-  delegate_to: localhost
-  run_once: true
-
-- name: Apply additional slurm configuration parameters # TODO: not idempotent
-  ini_file: # note this handily replaces #-commented out parameters with a non-commented line
-    path: /tmp/slurm.conf
-    section: null
-    option: "{{ item.key }}"
-    value: "{{ item.value }}"
-    no_extra_spaces: true
-  loop: "{{ openhpc_slurm_conf | dict2items }}"
-  delegate_to: localhost
-  run_once: true
-
-- name: Apply customised SLURM configuration
-  copy:
-    src: /tmp/slurm.conf
     dest: /etc/slurm/slurm.conf
     owner: root
     group: root
     mode: 0644
+    lstrip_blocks: true
   when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   notify:
     - Restart slurmctld service
   register: ohpc_slurm_conf
   # NB uses restart rather than reload as number of nodes might have changed
+
+- name: Apply additional SLURM configuration parameters # TODO: not idempotent
+  ini_file: # note this handily replaces #-commented out parameters with a non-commented line
+    path: /etc/slurm/slurm.conf
+    section: null
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    no_extra_spaces: true
+  loop: "{{ openhpc_slurm_conf | dict2items }}"
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
+  notify:
+    - Restart slurmctld service
+  register: ohpc_slurm_conf_extra
 
 - name: Notify handler for slurmd restart
   debug:
@@ -91,7 +86,7 @@
   changed_when: true
   when:
     - openhpc_slurm_control_host in ansible_play_hosts
-    - hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed # noqa 503
+    - (hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed) or (hostvars[openhpc_slurm_control_host].ohpc_slurm_conf_extra.changed) # noqa 503
   notify:
     - Restart slurmd service
 
