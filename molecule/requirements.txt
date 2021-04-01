@@ -1,3 +1,4 @@
 pip
 setuptools
 molecule[docker,lint]
+ansible>=2.9.0

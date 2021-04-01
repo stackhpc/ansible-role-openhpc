@@ -14,7 +14,7 @@ test3  | 1            | Y                       | -
 test4  | 1            | N                       | 2x compute node, accounting enabled
 test5  | 1            | N                       | As for #1 but configless
 test6  | 1            | N                       | 0x compute nodes, configless
-test7  | 1            | N                       | 1x compute node, no login node, configless (checks image build should work)
+test7  | 1            | N                       | 1x compute node, no login node so specified munge key, configless (checks image build should work)
 test8  | 1            | N                       | 2x compute node, 2x login-only nodes, configless
 test9  | 1            | N                       | As test8 but uses `--limit=testohpc-control,testohpc-compute-0` and checks login nodes still end up in slurm.conf
 test10 | 1            | N                       | As for #5 but then tries to add an additional node

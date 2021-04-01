@@ -11,7 +11,6 @@ openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
 openhpc_job_maxtime: 24:00:00
-openhpc_munge_key_path: ''
 
 # Accounting
 openhpc_slurm_accounting_storage_host: "{{ openhpc_slurmdbd_host }}"
