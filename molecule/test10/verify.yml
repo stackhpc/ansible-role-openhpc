@@ -22,7 +22,7 @@
       run_once: true
     - name: "Include ansible-role-openhpc"
       include_role:
-        name: "ansible-role-openhpc/"
+        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
       vars:
         openhpc_enable:
           control: "{{ inventory_hostname in groups['testohpc_login'] }}"
