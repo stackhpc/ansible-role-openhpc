@@ -108,7 +108,8 @@
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_enable.database | default(false) | bool
 
-- meta: flush_handlers # as then subsequent "ensure" is a no-op if slurm services bounced
+- name: flush handler
+  meta: flush_handlers # as then subsequent "ensure" is a no-op if slurm services bounced
 
 - name: Ensure Slurm service state
   service:
