@@ -65,10 +65,7 @@ package in the image.
 
 #### Accounting
 
-By default, the accounting plugin will use the `accounting_storage/filetxt` storage type. However,
-this only supports a subset of `sacct` commands.
-
-To deploy and configure `slurmdbd`:
+By default, no accounting storage is configured. OpenHPC v1.x and un-updated OpenHPC v2.0 clusters support file-based accounting storage which can be selected by setting the role variable `openhpc_slurm_accounting_storage_type` to `accounting_storage/filetxt`<sup id="accounting_storage">[1](#slurm_ver_footnote)</sup>. Accounting for OpenHPC v2.1 and updated OpenHPC v2.0 clusters requires the Slurm database daemon, `slurmdbd`. To enable this:
 
 * Configure a mariadb or mysql server as described in the slurm accounting [documentation](https://slurm.schedmd.com/accounting.html) on one of the nodes in your inventory and set `openhpc_enable.database `to `true` for this node.
 * Set `openhpc_slurm_accounting_storage_type` to `accounting_storage/slurmdbd`.
@@ -80,13 +77,9 @@ The role will take care of configuring the following variables for you:
 
 `openhpc_slurm_accounting_storage_port`: Which port to use to connect to the accounting storage.
 
-`openhpc_slurm_accounting_storage_type`: How accounting records are stored. Can be one of `accounting_storage/none`,
- `accounting_storage/slurmdbd` or  `accounting_storage/filetxt`.
-
 `openhpc_slurm_accounting_storage_user`: Username for authenticating with the accounting storage.
 
 `openhpc_slurm_accounting_storage_pass`: Mungekey or database password to use for authenticating.
-with the accounting storage
 
 For more advanced customisation or to configure another storage type, you might want to modify these values manually.
 
@@ -212,3 +205,7 @@ To drain nodes, for example, before scaling down the cluster to 6 nodes:
             drain: "{{ inventory_hostname not in desired_state }}"
             resume: "{{ inventory_hostname in desired_state }}"
     ...
+
+---
+
+<b id="slurm_ver_footnote">1</b> Slurm 20.11 removed `accounting_storage/filetxt` as an option. This version of Slurm was introduced in OpenHPC v2.1 but the OpenHPC repos are common to all OpenHPC v2.x releases. [↩](#accounting_storage)

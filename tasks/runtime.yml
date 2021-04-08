@@ -56,8 +56,8 @@
     src: slurmdbd.conf.j2
     dest: /etc/slurm/slurmdbd.conf
     mode: "0600"
-    owner: root
-    group: root
+    owner: slurm
+    group: slurm
   notify: Restart slurmdbd service
   when: openhpc_enable.database | default(false) | bool
 
