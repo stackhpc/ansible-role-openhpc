@@ -19,6 +19,7 @@ test8  | 1            | N                       | 2x compute node, 2x login-only
 test9  | 1            | N                       | As test8 but uses `--limit=testohpc-control,testohpc-compute-0` and checks login nodes still end up in slurm.conf
 test10 | 1            | N                       | As for #5 but then tries to add an additional node
 test11 | 1            | N                       | As for #5 but then deletes a node (actually changes the partition due to molecule/ansible limitations)
+test12 | 1            | N                       | As for #5 but enabling job completion and testing `sacct -c`
 
 # Local Installation & Running
 

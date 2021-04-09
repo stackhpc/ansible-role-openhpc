@@ -43,6 +43,16 @@
   notify:
     - Restart Munge service
 
+- name: Ensure JobComp logfile exists
+  file:
+    path: "{{ openhpc_slurm_job_comp_loc }}"
+    state: touch
+    owner: slurm
+    group: slurm
+  when: openhpc_slurm_job_comp_type == 'jobcomp/filetxt'
+  register: touch
+  changed_when: "touch.diff.before == 'absent'" # fix for molecule idempotency test - ignore change to timestamps
+
 - name: Template slurmdbd.conf
   template:
     src: slurmdbd.conf.j2
