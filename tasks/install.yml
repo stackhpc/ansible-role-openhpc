@@ -11,6 +11,14 @@
     disable_gpg_check: True
   when: "'ohpc-release' not in ansible_facts.packages"
 
+- name: Disable openhpc updates repo
+  community.general.ini_file:
+    path: /etc/yum.repos.d/OpenHPC.repo
+    section: OpenHPC-updates
+    option: enabled
+    value: 0
+    no_extra_spaces: yes
+
 - name: Update package facts
   package_facts:
     manager: rpm
