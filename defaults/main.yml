@@ -15,7 +15,7 @@ openhpc_job_maxtime: 24:00:00
 # Accounting
 openhpc_slurm_accounting_storage_host: "{{ openhpc_slurmdbd_host }}"
 openhpc_slurm_accounting_storage_port: 6819
-openhpc_slurm_accounting_storage_type: accounting_storage/filetxt
+openhpc_slurm_accounting_storage_type: accounting_storage/none
 # NOTE: You only need to set these if using accounting_storage/mysql
 openhpc_slurm_accounting_storage_user: slurm
 #openhpc_slurm_accounting_storage_pass:
