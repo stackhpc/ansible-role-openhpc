@@ -12,6 +12,13 @@
     msg: "openhpc_slurm_configless = True requires Centos8 / OpenHPC v2"
   when: openhpc_slurm_configless and not ansible_distribution_major_version == "8"
 
+- name: Fail if control host not in play and munge key not specified
+  fail:
+    msg: "Either the slurm control node must be in the play or `openhpc_munge_key` must be set"
+  when:
+    - openhpc_slurm_control_host not in ansible_play_hosts
+    - not openhpc_munge_key
+
 - name: Ensure the Slurm spool directory exists
   file:
     path: /var/spool/slurm
@@ -20,22 +27,23 @@
     mode: 0755
     state: directory
 
-- name: Generate a Munge key
+- name: Generate a Munge key on control host
   # NB this is usually a no-op as the package install actually generates a (node-unique) one, so won't usually trigger handler
   command: "dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024"
   args:
     creates: "/etc/munge/munge.key"
   when: inventory_hostname == openhpc_slurm_control_host
 
-- name: Retrieve Munge key
+- name: Retrieve Munge key from control host
   slurp:
-    src: "{{ '/etc/munge/munge.key' if not (openhpc_munge_key_path | default('')) else openhpc_munge_key_path }}"
-  register: openhpc_munge_key
-  delegate_to: "{{ openhpc_slurm_control_host if not (openhpc_munge_key_path | default('')) else 'localhost' }}"
+    src: "/etc/munge/munge.key"
+  register: openhpc_control_munge_key
+  delegate_to: "{{ openhpc_slurm_control_host }}"
+  when: openhpc_slurm_control_host in ansible_play_hosts
 
 - name: Write Munge key
   copy:
-    content: "{{ openhpc_munge_key.content | b64decode }}"
+    content: "{{ openhpc_munge_key or (openhpc_control_munge_key.content | b64decode) }}"
     dest: "/etc/munge/munge.key"
     owner: munge
     group: munge

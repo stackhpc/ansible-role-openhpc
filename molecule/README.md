@@ -14,7 +14,7 @@ test3  | 1            | Y                       | -
 test4  | 1            | N                       | 2x compute node, accounting enabled
 test5  | 1            | N                       | As for #1 but configless
 test6  | 1            | N                       | 0x compute nodes, configless
-test7  | 1            | N                       | 1x compute node, no login node, configless (checks image build should work)
+test7  | 1            | N                       | 1x compute node, no login node so specified munge key, configless (checks image build should work)
 test8  | 1            | N                       | 2x compute node, 2x login-only nodes, configless
 test9  | 1            | N                       | As test8 but uses `--limit=testohpc-control,testohpc-compute-0` and checks login nodes still end up in slurm.conf
 test10 | 1            | N                       | As for #5 but then tries to add an additional node
@@ -28,6 +28,8 @@ Local installation on a CentOS 8 machine looks like:
     sudo yum install -y yum-utils
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     sudo yum install -y docker-ce docker-ce-cli containerd.io
+    sudo yum install -y iptables
+
     python3 -m venv venv
     . venv/bin/activate
     pip install -U pip
@@ -48,6 +50,12 @@ Then to run all tests:
     MOLECULE_IMAGE=centos:7 molecule test --all
     MOLECULE_IMAGE=centos:8.2.2004 molecule test --all
 
-Note that to see some debugging information you may want to prepend:
+During development you may want to:
 
-    MOLECULE_NO_LOG="false" ...
+- See some debugging information by prepending:
+
+        MOLECULE_NO_LOG="false" ...
+
+- Prevent destroying insstances using:
+
+        molecule test --destroy never
