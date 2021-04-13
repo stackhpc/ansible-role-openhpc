@@ -49,9 +49,11 @@
     state: touch
     owner: slurm
     group: slurm
+    access_time: preserve
+    modification_time: preserve
   when: openhpc_slurm_job_comp_type == 'jobcomp/filetxt'
-  register: touch
-  changed_when: "touch.diff.before == 'absent'" # fix for molecule idempotency test - ignore change to timestamps
+  # register: touch
+  # changed_when: "touch.diff.before == 'absent'" # fix for molecule idempotency test - ignore change to timestamps
 
 - name: Template slurmdbd.conf
   template:
