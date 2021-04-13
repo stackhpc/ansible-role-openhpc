@@ -65,7 +65,7 @@ package in the image.
 
 #### Accounting
 
-By default, no accounting storage is configured. OpenHPC v1.x and un-updated OpenHPC v2.0 clusters support file-based accounting storage which can be selected by setting the role variable `openhpc_slurm_accounting_storage_type` to `accounting_storage/filetxt`<sup id="accounting_storage">[1](#slurm_ver_footnote)</sup>. Accounting for OpenHPC v2.1 and updated OpenHPC v2.0 clusters requires the Slurm database daemon, `slurmdbd`. To enable this:
+By default, no accounting storage is configured. OpenHPC v1.x and un-updated OpenHPC v2.0 clusters support file-based accounting storage which can be selected by setting the role variable `openhpc_slurm_accounting_storage_type` to `accounting_storage/filetxt`<sup id="accounting_storage">[1](#slurm_ver_footnote)</sup>. Accounting for OpenHPC v2.1 and updated OpenHPC v2.0 clusters requires the Slurm database daemon, `slurmdbd` (although job completion may be a limited alternative, see [below](#Job-accounting). To enable accounting:
 
 * Configure a mariadb or mysql server as described in the slurm accounting [documentation](https://slurm.schedmd.com/accounting.html) on one of the nodes in your inventory and set `openhpc_enable.database `to `true` for this node.
 * Set `openhpc_slurm_accounting_storage_type` to `accounting_storage/slurmdbd`.
@@ -86,15 +86,15 @@ For more advanced customisation or to configure another storage type, you might 
 #### Job accounting
 
 This is largely redundant if you are using the accounting plugin above, but will give you basic
-accounting data such as start and end times.
+accounting data such as start and end times. By default no job accounting is configured.
+
+`openhpc_slurm_job_comp_type`: Logging mechanism for job accounting. Can be one of
+`jobcomp/filetxt`, `jobcomp/none`, `jobcomp/elasticsearch`.
 
 `openhpc_slurm_job_acct_gather_type`: Mechanism for collecting job accounting data. Can be one
  of `jobacct_gather/linux`, `jobacct_gather/cgroup` and `jobacct_gather/none`
 
 `openhpc_slurm_job_acct_gather_frequency`: Sampling period for job accounting (seconds)
-
-`openhpc_slurm_job_comp_type`: Logging mechanism for job accounting. Can be one of
-`jobcomp/filetxt`, `jobcomp/none`, `jobcomp/elasticsearch`.
 
 `openhpc_slurm_job_comp_loc`: Location to store the job accounting records. Depends on value of
 `openhpc_slurm_job_comp_type`, e.g for `jobcomp/filetxt` represents a path on disk.

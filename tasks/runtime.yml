@@ -51,6 +51,16 @@
   notify:
     - Restart Munge service
 
+- name: Ensure JobComp logfile exists
+  file:
+    path: "{{ openhpc_slurm_job_comp_loc }}"
+    state: touch
+    owner: slurm
+    group: slurm
+    access_time: preserve
+    modification_time: preserve
+  when: openhpc_slurm_job_comp_type == 'jobcomp/filetxt'
+
 - name: Template slurmdbd.conf
   template:
     src: slurmdbd.conf.j2
