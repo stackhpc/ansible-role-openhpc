@@ -30,26 +30,27 @@ Local installation on a CentOS 8 machine looks like:
     sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
     sudo yum install -y docker-ce docker-ce-cli containerd.io
     sudo yum install -y iptables
-
-    python3 -m venv venv
-    . venv/bin/activate
-    pip install -U pip
-    pip install -r molecule/requirements.txt
-
     sudo systemctl start docker
     sudo usermod -aG docker ${USER}
+    # if not running as centos, also run:
+    sudo usermod -aG docker centos
     newgrp docker
     docker run hello-world # test docker works without sudo
 
     sudo yum install -y git
     git clone git@github.com:stackhpc/ansible-role-openhpc.git
     cd ansible-role-openhpc/
+    python3 -m venv venv
+    . venv/bin/activate
+    pip install -U pip
+    pip install -r molecule/requirements.txt
 
-Then to run all tests:
+Then to run tests, e.g.::
 
     cd ansible-role-openhpc/
-    MOLECULE_IMAGE=centos:7 molecule test --all
+    MOLECULE_IMAGE=centos:7 molecule test --all # NB some won't work as require OpenHPC v2.x (-> CentOS 8.x) features - see `.github/workflows/ci.yml`
     MOLECULE_IMAGE=centos:8.2.2004 molecule test --all
+    MOLECULE_IMAGE=centos:8.3.2011 molecule test --all
 
 During development you may want to:
 
