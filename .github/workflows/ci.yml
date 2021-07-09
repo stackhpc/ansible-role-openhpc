@@ -18,6 +18,7 @@ jobs:
         image:
           - 'centos:8.2.2004'
           - 'centos:8.3.2011'
+          - 'centos:8.4.2105'
           - 'centos:7'
         scenario:
           - test1
