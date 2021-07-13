@@ -72,9 +72,11 @@
   when: openhpc_enable.database | default(false) | bool
 
 - name: Apply customised SLURM configuration
-  template:
-    src: slurm.conf.j2
+  merge_configs:
+    sources: "{{ [ role_path + '/templates/slurm.conf.j2' ] + openhpc_extra_configs }}" # TODO: guarantee this is a list
     dest: /etc/slurm/slurm.conf
+    whitespace: false
+    # remaining args passed to copy module:
     owner: root
     group: root
     mode: 0644
