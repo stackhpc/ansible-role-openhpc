@@ -10,8 +10,11 @@ jobs:
 
   test:
     name: Molecule
-    # Select an image that uses python3 by default
-    runs-on: ubuntu-20.04
+    # Workaround: systemd/kernel compatability issue:
+    #   Failed to parse bus message: Invalid argument
+    # when doing "systemctl", "show", "slurmd" by switching
+    # to an older ubuntu release.
+    runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
       matrix:
