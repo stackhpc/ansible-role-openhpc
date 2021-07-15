@@ -76,7 +76,7 @@
   register: _slurm_conf_tmpfile
   delegate_to: localhost
   run_once: true
-  tags: molecule-idempotence-notest
+  changed_when: false # so molecule doesn't fail
   become: no
 
 - name: Template basic slurm.conf
@@ -86,7 +86,7 @@
     lstrip_blocks: true
   delegate_to: localhost
   run_once: true
-  tags: molecule-idempotence-notest
+  changed_when: false # so molecule doesn't fail
   become: no
 
 - name: Customise slurm.conf
@@ -100,7 +100,7 @@
   loop: "{{ openhpc_extra_config | dict2items}}"
   delegate_to: localhost
   run_once: true
-  tags: molecule-idempotence-notest
+  changed_when: false # so molecule doesn't fail
   become: no
 
 - name: Create slurm.conf on control node
@@ -123,7 +123,7 @@
   when: tempfile_1.path is defined
   delegate_to: localhost
   run_once: true
-  tags: molecule-idempotence-notest
+  changed_when: false # so molecule doesn't fail
   become: no
 
 - name: Notify handler for slurmd restart
