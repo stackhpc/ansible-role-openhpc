@@ -97,7 +97,8 @@
     value: "{{ item.value }}"
     no_extra_spaces: true
     create: no
-  loop: "{{ openhpc_extra_config | dict2items}}"
+    mode: 0644
+  loop: "{{ openhpc_extra_config | dict2items }}"
   delegate_to: localhost
   run_once: true
   changed_when: false # so molecule doesn't fail
