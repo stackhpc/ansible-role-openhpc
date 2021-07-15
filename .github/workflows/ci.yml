@@ -20,20 +20,7 @@ jobs:
           - 'centos:8.3.2011'
           - 'centos:7'
         scenario:
-          - test1
-          - test1b
-          - test1c
-          - test2
-          - test3
-          - test4
-          - test5
-          - test6
           - test7
-          - test8
-          - test9
-          - test10
-          - test11
-          - test12
 
         exclude:
           - image: 'centos:7'
