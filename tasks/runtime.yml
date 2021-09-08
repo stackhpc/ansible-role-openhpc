@@ -71,19 +71,60 @@
   notify: Restart slurmdbd service
   when: openhpc_enable.database | default(false) | bool
 
-- name: Apply customised SLURM configuration
+- name: Make local tempfile for slurm.conf templating # ensures simultaneous runs don't clobber each other
+  ansible.builtin.tempfile:
+  register: _slurm_conf_tmpfile
+  delegate_to: localhost
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
+  changed_when: false # so molecule doesn't fail
+  become: no
+
+- name: Template basic slurm.conf
   template:
     src: slurm.conf.j2
+    dest: "{{ _slurm_conf_tmpfile.path }}"
+    lstrip_blocks: true
+  delegate_to: localhost
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
+  changed_when: false # so molecule doesn't fail
+  become: no
+
+- name: Customise slurm.conf
+  community.general.ini_file:
+    path: "{{ _slurm_conf_tmpfile.path }}"
+    option: "{{ item.key }}"
+    section: null
+    value: "{{ item.value }}"
+    no_extra_spaces: true
+    create: no
+    mode: 0644
+  loop: "{{ openhpc_extra_config | dict2items }}"
+  delegate_to: localhost
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
+  changed_when: false # so molecule doesn't fail
+  become: no
+
+- name: Create slurm.conf on control node
+  copy:
+    src: "{{ _slurm_conf_tmpfile.path }}"
     dest: /etc/slurm/slurm.conf
     owner: root
     group: root
     mode: 0644
-    lstrip_blocks: true
   when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   notify:
     - Restart slurmctld service
   register: ohpc_slurm_conf
   # NB uses restart rather than reload as number of nodes might have changed
+
+- name: Remove local tempfile for slurm.conf templating
+  ansible.builtin.file:
+    path: "{{ _slurm_conf_tmpfile.path }}"
+    state: absent
+  when: _slurm_conf_tmpfile.path is defined
+  delegate_to: localhost
+  changed_when: false # so molecule doesn't fail
+  become: no
 
 - name: Notify handler for slurmd restart
   debug:
