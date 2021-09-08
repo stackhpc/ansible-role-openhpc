@@ -121,7 +121,7 @@
   ansible.builtin.file:
     path: "{{ _slurm_conf_tmpfile.path }}"
     state: absent
-  when: tempfile_1.path is defined
+  when: _slurm_conf_tmpfile.path is defined
   delegate_to: localhost
   changed_when: false # so molecule doesn't fail
   become: no
