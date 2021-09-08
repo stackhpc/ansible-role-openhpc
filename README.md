@@ -49,6 +49,7 @@ package in the image.
   * `name`: The name of the nodes within this group.
   * `cluster_name`: Optional.  An override for the top-level definition `openhpc_cluster_name`.
   * `ram_mb`: Optional.  The physical RAM available in each server of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`) in MiB. This is set using ansible facts if not defined, equivalent to `free --mebi` total * `openhpc_ram_multiplier`.
+  * `cloud_nodes`: Optional. Number of "cloud" or autoscaling nodes in this partition.
 
   For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`, with all nodes in this inventory group added to the group/partition. Note that:
   - Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.

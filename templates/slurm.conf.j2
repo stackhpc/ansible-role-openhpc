@@ -122,6 +122,9 @@ NodeName=DEFAULT State=UNKNOWN \
             {% for node in groups[group_name] %}
 NodeName={{ node }}
             {% endfor %}{# nodes #}
+            {% if 'cloud_nodes' in group %}{# TODO: document format here! #}
+NodeName={{ group_name | replace('_', '-') }}-cloud-[0-{{ group['cloud_nodes'] - 1 }}] State=CLOUD
+            {% endif %}
         {% else %}
 NodeName=-nonesuch
         {% endif %}{# non-empty group #}
@@ -133,6 +136,9 @@ PartitionName={{part.name}} \
     Nodes=\
         {% for group in part.get('groups', [part]) %}
             {% set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
+            {% if 'cloud_nodes' in group %}{# TODO: document format here! #}
+{{ group_name | replace('_', '-') }}-cloud-[0-{{ group['cloud_nodes'] - 1 }}],\
+            {% endif %}
             {% if groups[group_name] | length > 0 %}{{ groups[group_name] | join(",\\\n") }}{% if not loop.last %}{{ ",\\\n" }}{% endif %}{% else %}-nonesuch{% endif %}
         {% endfor %}{# group #}
 {% endfor %}{# partitions #}
