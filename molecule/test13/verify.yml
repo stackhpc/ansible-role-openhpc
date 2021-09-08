@@ -1,0 +1,20 @@
+---
+
+- name: Slurm checks
+  hosts: testohpc_login # NB for this test this is 2x non-control nodes, so tests they can contact slurmctld too
+  tasks:
+  - name: Get slurm partition info
+    command: sinfo --noheader --format="%P,%a,%l,%D,%t,%N" # using --format ensures we control whitespace
+    register: sinfo
+  - assert:                        # PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+      that: "sinfo.stdout_lines == ['compute*,up,60-00:00:00,2,idle,testohpc-compute-[0-1]']"
+      fail_msg: "FAILED - actual value: {{ sinfo.stdout_lines }}"
+  - name: Get slurm config info
+    command: scontrol show config
+    register: slurm_config
+  - assert:
+      that: "item in slurm_config.stdout"
+      fail_msg: "FAILED - {{ item }} not found in slurm config"
+    loop:
+      - SlurmctldSyslogDebug=error
+      - SlurmctldSyFirstJobId=13
