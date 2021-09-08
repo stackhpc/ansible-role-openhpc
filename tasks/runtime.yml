@@ -76,7 +76,7 @@
   ansible.builtin.tempfile:
   register: _slurm_conf_tmpfile
   delegate_to: localhost
-  run_once: true
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   changed_when: false # so molecule doesn't fail
   become: no
 
@@ -86,7 +86,7 @@
     dest: "{{ _slurm_conf_tmpfile.path }}"
     lstrip_blocks: true
   delegate_to: localhost
-  run_once: true
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   changed_when: false # so molecule doesn't fail
   become: no
 
@@ -101,7 +101,7 @@
     mode: 0644
   loop: "{{ openhpc_extra_config | dict2items }}"
   delegate_to: localhost
-  run_once: true
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   changed_when: false # so molecule doesn't fail
   become: no
 
@@ -124,7 +124,6 @@
     state: absent
   when: tempfile_1.path is defined
   delegate_to: localhost
-  run_once: true
   changed_when: false # so molecule doesn't fail
   become: no
 
