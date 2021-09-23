@@ -52,6 +52,7 @@ openhpc_slurm_configless: false
 openhpc_munge_key:
 openhpc_login_only_nodes: ''
 openhpc_module_system_install: true
+openhpc_slurm_files: []
 
 # Auto detection
 openhpc_ram_multiplier: 0.95

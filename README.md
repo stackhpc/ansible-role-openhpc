@@ -41,6 +41,8 @@ package in the image.
 
 `openhpc_ram_multiplier`: Optional, default `0.95`. Multiplier used in the calculation: `total_memory * openhpc_ram_multiplier` when setting `RealMemory` for the partition in slurm.conf. Can be overriden on a per partition basis using `openhpc_slurm_partitions.ram_multiplier`. Has no effect if `openhpc_slurm_partitions.ram_mb` is set.
 
+`openhpc_slurm_dirs`: Optional, default empty list. List of paths of existing directories to change to having owner/group `slurm`. This may be useful in conjuction with `openhpc_extra_config` (see below) to allow defining programs etc for Slurm to use.
+
 ### slurm.conf
 
 `openhpc_slurm_partitions`: list of one or more slurm partitions.  Each partition may contain the following values:
