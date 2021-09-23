@@ -31,8 +31,27 @@ def _get_hostvar(context, var_name, inventory_hostname=None):
     return namespace.get(var_name)
 
 @jinja2.contextfilter
-def group_hosts(context, group_names):
-    return {g:_group_hosts(context["groups"].get(g, [])) for g in sorted(group_names)}
+def group_hosts(context, group_name):
+    """ Group hostnames in specified inventory group using Slurm's hostlist expression format.
+
+        E.g. with an inventory containing:
+
+            [compute]
+            dev-foo-0 ansible_host=localhost
+            dev-foo-3 ansible_host=localhost
+            my-random-host
+            dev-foo-4 ansible_host=localhost
+            dev-foo-5 ansible_host=localhost
+            dev-compute-0 ansible_host=localhost
+            dev-compute-1 ansible_host=localhost
+
+        This will return:
+            
+            ["dev-foo-[0,3-5]", "dev-compute-[0-1]", "my-random-host"]
+    """
+
+    group = context["groups"].get(group_name, [])
+    return _group_hosts(group)
 
 def _group_hosts(hosts):
     results = {}
