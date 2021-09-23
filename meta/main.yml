@@ -1,6 +1,7 @@
 ---
 galaxy_info:
   role_name: openhpc
+  namespace: stackhpc
   author: StackHPC Ltd.
   description: >
     This role provisions an exisiting cluster to support OpenHPC control
