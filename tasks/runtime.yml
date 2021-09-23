@@ -19,13 +19,14 @@
     - openhpc_slurm_control_host not in ansible_play_hosts
     - not openhpc_munge_key
 
-- name: Ensure the Slurm spool directory exists
+- name: Ensure Slurm directories exists
   file:
-    path: /var/spool/slurm
+    path: "{{ item }}"
     owner: slurm
     group: slurm
     mode: 0755
     state: directory
+  loop: "{{ ['/var/spool/slurm'] + ([ openhpc_state_save_location ] if inventory_hostname == openhpc_slurm_control_host else []) }}"
 
 - name: Change owner of pre-existing directories to slurm
   file:
@@ -130,7 +131,7 @@
   ansible.builtin.file:
     path: "{{ _slurm_conf_tmpfile.path }}"
     state: absent
-  when: tempfile_1.path is defined
+  when: _slurm_conf_tmpfile.path is defined
   delegate_to: localhost
   changed_when: false # so molecule doesn't fail
   become: no
