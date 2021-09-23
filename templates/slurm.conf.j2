@@ -77,18 +77,15 @@ PreemptType=preempt/partition_prio
 PreemptMode=SUSPEND,GANG
 #
 # LOGGING
-# Silence warnings about configuration file mismatches.
-DebugFlags=NO_CONF_HASH
-SlurmctldDebug=3
-#SlurmctldLogFile=
-SlurmdDebug=3
-#SlurmdLogFile=
-JobCompType={{ openhpc_slurm_job_comp_type }}
-JobCompLoc={{ openhpc_slurm_job_comp_loc }}
+# By default, SLURM will log to syslog, which is what we want
+SlurmctldSyslogDebug=info
+SlurmdDebugSlurmdSyslogDebug=info
 #
 # ACCOUNTING
 JobAcctGatherType={{ openhpc_slurm_job_acct_gather_type }}
 JobAcctGatherFrequency={{ openhpc_slurm_job_acct_gather_frequency }}
+JobCompType={{ openhpc_slurm_job_comp_type }}
+JobCompLoc={{ openhpc_slurm_job_comp_loc }}
 #
 AccountingStorageType={{ openhpc_slurm_accounting_storage_type }}
 AccountingStorageHost={{ openhpc_slurm_accounting_storage_host }}
@@ -107,9 +104,6 @@ NodeName={{ node }}
 # COMPUTE NODES
 # OpenHPC default configuration
 PropagateResourceLimitsExcept=MEMLOCK
-# By default, SLURM will log to syslog, which is what we want
-#SlurmdLogFile=/var/log/slurm.log
-#SlurmctldLogFile=/var/log/slurmctld.log
 Epilog=/etc/slurm/slurm.epilog.clean
 {% for part in openhpc_slurm_partitions %}
     {% for group in part.get('groups', [part]) %}
