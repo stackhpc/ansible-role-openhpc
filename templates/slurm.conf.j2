@@ -114,7 +114,7 @@ Epilog=/etc/slurm/slurm.epilog.clean
         {% if inventory_group_hosts | length > 0 or 'cloud_nodes' in group %}{# need to template *some* nodes #}
             {% set play_group_hosts = inventory_group_hosts | intersect (play_hosts) %}
             {% set first_host_hv = hostvars[ play_group_hosts | first ] if play_group_hosts | length > 0 else {} %}
-            {% set group_error_msg = 'Either inventory group "' + group_name + '" must have a host with facts in the current play or `openhpc_slurm_partitions` group "' + group.name + '" must specify ' %}
+            {% set group_error_msg = 'Either inventory group "' ~ group_name ~ '" must have a host with facts in the current play or `openhpc_slurm_partitions` group "' ~ group.name ~ '" must specify ' %}
             {% if 'ram_mb' in group %}
                 {% set ram_mb = group.ram_mb %}
             {% elif first_host_hv %}
@@ -126,7 +126,7 @@ Epilog=/etc/slurm/slurm.epilog.clean
             {% set cores_per_socket = group.get('cores_per_socket', first_host_hv.get('ansible_processor_cores', 'ERROR')) %}
             {% set threads_per_core = group.get('threads_per_core', first_host_hv.get('ansible_processor_threads_per_core', 'ERROR')) %}
             {% if 'error' in [ram_mb, sockets, cores_per_socket, threads_per_core] %}
-                {{ false | mandatory(group_error_msg + 'TODO') }}{# TODO: FIXME: #}
+                {{ false | mandatory(group_error_msg ~ 'TODO') }}{# TODO: FIXME: #}
             {% endif %}
             {% if inventory_group_hosts | length > 0 %}{# physical nodes #}
 NodeName=DEFAULT State=UNKNOWN RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }}
@@ -136,14 +136,14 @@ NodeName={{ hostlist }}
                 {% endfor %}{# nodes #}
             {% endif %}{# inventory_group_hosts #}
             {% if 'cloud_nodes' in group %}
-                {% set cloud_hostlist = (group_name | replace('_', '-')) + '-cloud-[0-' + (group['cloud_nodes'] - 1) %}
+                {% set cloud_hostlist = (group_name | replace('_', '-')) ~ '-cloud-[0-' ~ (group['cloud_nodes'] - 1) ~ ']' %}
                 {% set _ = nodelist.append(cloud_hostlist) %}
 NodeName=DEFAULT State=CLOUD RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }}
 NodeName={{ cloud_hostlist }} State=CLOUD
             {% endif %}
         {% endif %}{# non-empty group #}
     {% endfor %}{# group #}
-PartitionName={{part.name}} Default={{ {true:'YES', false:'NO'}[part.get('default', true)] }} MaxTime={{ part.get('maxtime', openhpc_job_maxtime) }} State=UP Nodes={{ nodelist }}
+PartitionName={{part.name}} Default={{ {true:'YES', false:'NO'}[part.get('default', true)] }} MaxTime={{ part.get('maxtime', openhpc_job_maxtime) }} State=UP Nodes={{ nodelist | join(',') }}
 {% endfor %}{# partitions #}
 
 # Want nodes that drop out of SLURM's configuration to be automatically
