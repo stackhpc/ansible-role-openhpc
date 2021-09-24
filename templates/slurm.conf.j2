@@ -135,7 +135,7 @@ NodeName={{ hostlist }}
                 {% endfor %}{# nodes #}
             {% endif %}{# inventory_group_hosts #}
             {% if 'cloud_nodes' in group %}
-NodeName=DEFAULT State=UNKNOWN RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }} State=CLOUD
+NodeName=DEFAULT State=CLOUD RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }}
 NodeName={{ group_name | replace('_', '-') }}-cloud-[0-{{ group['cloud_nodes'] - 1 }}] State=CLOUD
             {% endif %}
         {% endif %}{# non-empty group #}
