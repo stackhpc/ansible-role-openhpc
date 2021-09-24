@@ -3,8 +3,8 @@
   connection: local
   gather_facts: false
   vars:
-    grouped_0: "{{ 'mock_group_0' | group_hosts }}"
-    grouped_1: "{{ 'mock_group_1' | group_hosts }}"
+    grouped_0: "{{ groups['mock_group_0'] | hostlist_expression }}"
+    grouped_1: "{{ groups['mock_group_1'] | hostlist_expression }}"
   tasks:
     - name: Show grouped mock-group-0
       debug: var=grouped_0

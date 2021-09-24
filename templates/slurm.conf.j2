@@ -130,7 +130,7 @@ Epilog=/etc/slurm/slurm.epilog.clean
             {% endif %}
             {% if inventory_group_hosts | length > 0 %}{# physical nodes #}
 NodeName=DEFAULT State=UNKNOWN RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }}
-                {% for hostlist in (group_name | hostlist_expression) %}
+                {% for hostlist in (inventory_group_hosts | hostlist_expression) %}
 NodeName={{ hostlist }}
                     {% set _ = nodelist.append(hostlist) %}
                 {% endfor %}{# nodes #}
@@ -149,3 +149,10 @@ PartitionName={{part.name}} Default={{ {true:'YES', false:'NO'}[part.get('defaul
 # Want nodes that drop out of SLURM's configuration to be automatically
 # returned to service when they come back.
 ReturnToService=2
+
+# Define nodes NOT to be placed in power save mode
+{%if openhpc_suspend_exc_nodes %}
+SuspendExcNodes={{ openhpc_suspend_exc_nodes | hostlist_expression | join(',') }}
+{% endif %}
+
+# Parameters from openhpc_extra_config (which do not override values templated above) will be below here:

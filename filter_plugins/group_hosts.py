@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+# NB: To test this from the repo root run:
+#   ansible-playbook -i tests/inventory -i tests/inventory-mock-groups tests/filter.yml
 
 from ansible import errors
 import jinja2
@@ -30,9 +32,8 @@ def _get_hostvar(context, var_name, inventory_hostname=None):
         namespace = context["hostvars"][inventory_hostname]
     return namespace.get(var_name)
 
-@jinja2.contextfilter
-def hostlist_expression(context, group_name):
-    """ Group hostnames in specified inventory group using Slurm's hostlist expression format.
+def hostlist_expression(hosts):
+    """ Group hostnames using Slurm's hostlist expression format.
 
         E.g. with an inventory containing:
 
@@ -45,15 +46,11 @@ def hostlist_expression(context, group_name):
             dev-compute-0 ansible_host=localhost
             dev-compute-1 ansible_host=localhost
 
-        This will return:
+        Then "{{ groups[compute] | hostlist_expression }}" will return:
             
             ["dev-foo-[0,3-5]", "dev-compute-[0-1]", "my-random-host"]
     """
 
-    group = context["groups"].get(group_name, [])
-    return _group_hosts(group)
-
-def _group_hosts(hosts):
     results = {}
     unmatchable = []
     for v in hosts:
