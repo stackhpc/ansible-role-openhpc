@@ -31,7 +31,7 @@ def _get_hostvar(context, var_name, inventory_hostname=None):
     return namespace.get(var_name)
 
 @jinja2.contextfilter
-def group_hosts(context, group_name):
+def hostlist_expression(context, group_name):
     """ Group hostnames in specified inventory group using Slurm's hostlist expression format.
 
         E.g. with an inventory containing:
@@ -81,5 +81,5 @@ class FilterModule(object):
 
     def filters(self):
         return {
-            'group_hosts': group_hosts
+            'hostlist_expression': hostlist_expression
         }
