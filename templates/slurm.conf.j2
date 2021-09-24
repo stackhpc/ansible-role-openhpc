@@ -106,7 +106,7 @@ NodeName={{ node }}
 PropagateResourceLimitsExcept=MEMLOCK
 Epilog=/etc/slurm/slurm.epilog.clean
 {% for part in openhpc_slurm_partitions %}
-
+    {% set nodelist = [] %}
     {% for group in part.get('groups', [part]) %}
         {% set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
 # openhpc_slurm_partitions: {{ group_name }}
@@ -132,15 +132,18 @@ Epilog=/etc/slurm/slurm.epilog.clean
 NodeName=DEFAULT State=UNKNOWN RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }}
                 {% for hostlist in (group_name | hostlist_expression) %}
 NodeName={{ hostlist }}
+                    {% set _ = nodelist.append(hostlist) %}
                 {% endfor %}{# nodes #}
             {% endif %}{# inventory_group_hosts #}
             {% if 'cloud_nodes' in group %}
+                {% set cloud_hostlist = (group_name | replace('_', '-')) + '-cloud-[0-' + (group['cloud_nodes'] - 1) %}
+                {% set _ = nodelist.append(cloud_hostlist) %}
 NodeName=DEFAULT State=CLOUD RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }}
-NodeName={{ group_name | replace('_', '-') }}-cloud-[0-{{ group['cloud_nodes'] - 1 }}] State=CLOUD
+NodeName={{ cloud_hostlist }} State=CLOUD
             {% endif %}
         {% endif %}{# non-empty group #}
     {% endfor %}{# group #}
-PartitionName={{part.name}} Default={{ {true:'YES', false:'NO'}[part.get('default', true)] }} MaxTime={{ part.get('maxtime', openhpc_job_maxtime) }} State=UP
+PartitionName={{part.name}} Default={{ {true:'YES', false:'NO'}[part.get('default', true)] }} MaxTime={{ part.get('maxtime', openhpc_job_maxtime) }} State=UP Nodes={{ nodelist }}
 {% endfor %}{# partitions #}
 
 # Want nodes that drop out of SLURM's configuration to be automatically
