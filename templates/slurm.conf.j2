@@ -97,7 +97,13 @@ AccountingStoragePort={{ openhpc_slurm_accounting_storage_port }}
 AccountingStoragePass={{ openhpc_slurm_accounting_storage_pass }}
 {% endif %}
 AccountingStorageUser={{ openhpc_slurm_accounting_storage_user }}
-#
+
+# LOGIN-ONLY NODES
+# Define slurmd nodes not in partitions for login-only nodes in "configless" mode:
+{%if openhpc_login_only_nodes %}{% for node in groups[openhpc_login_only_nodes] %}
+NodeName={{ node }}
+{% endfor %}{% endif %}
+
 # COMPUTE NODES
 # OpenHPC default configuration
 PropagateResourceLimitsExcept=MEMLOCK
@@ -136,12 +142,6 @@ PartitionName={{part.name}} \
             {% if groups[group_name] | length > 0 %}{{ groups[group_name] | join(",\\\n") }}{% if not loop.last %}{{ ",\\\n" }}{% endif %}{% else %}-nonesuch{% endif %}
         {% endfor %}{# group #}
 {% endfor %}{# partitions #}
-
-
-# Define slurmd nodes not in partitions for configless login-only nodes:
-{%if openhpc_login_only_nodes %}{% for node in groups[openhpc_login_only_nodes] %}
-NodeName={{ node }}
-{% endfor %}{% endif %}
 
 # Want nodes that drop out of SLURM's configuration to be automatically
 # returned to service when they come back.
