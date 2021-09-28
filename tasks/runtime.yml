@@ -99,7 +99,7 @@
     no_extra_spaces: true
     create: no
     mode: 0644
-  loop: "{{ openhpc_extra_config | dict2items }}"
+  loop: "{{ openhpc_config | dict2items }}"
   delegate_to: localhost
   when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   changed_when: false # so molecule doesn't fail
