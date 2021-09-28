@@ -133,11 +133,12 @@ Epilog=/etc/slurm/slurm.epilog.clean
             {% if not ram_mb %}
                 {% set _ = group_error_msg.append('memory') %}
             {% endif %}
+            {% set features = group.get('features', []) | join(',')%}
             {% if group_error_msg | length > 1 %}
                 {{ false | error(group_error_msg[0] + group_error_msg[1:] | join(' and ')) }}
             {% endif %}
             {% if inventory_group_hosts | length > 0 %}{# physical nodes #}
-NodeName=DEFAULT State=UNKNOWN RealMemory={{ ram_mb }}{{ ' CPUs=' ~ cpus if cpus else '' }}{{ ' Sockets=' ~ sockets if sockets else '' }}{{ ' CoresPerSocket=' ~ cores_per_socket if cores_per_socket else '' }}{{ ' ThreadsPerCore=' ~ threads_per_core if threads_per_core else '' }}
+NodeName=DEFAULT State=UNKNOWN RealMemory={{ ram_mb }}{{ ' CPUs=' ~ cpus if cpus else '' }}{{ ' Sockets=' ~ sockets if sockets else '' }}{{ ' CoresPerSocket=' ~ cores_per_socket if cores_per_socket else '' }}{{ ' ThreadsPerCore=' ~ threads_per_core if threads_per_core else '' }}{{ ' Features=' ~ features if features else '' }}
                 {% for hostlist in (inventory_group_hosts | hostlist_expression) %}
 NodeName={{ hostlist }}
                     {% set _ = nodelist.append(hostlist) %}
@@ -146,7 +147,7 @@ NodeName={{ hostlist }}
             {% if 'cloud_nodes' in group %}
                 {% set cloud_hostlist = (group_name | replace('_', '-')) ~ '-cloud-[0-' ~ (group['cloud_nodes'] - 1) ~ ']' %}
                 {% set _ = nodelist.append(cloud_hostlist) %}
-NodeName=DEFAULT State=CLOUD RealMemory={{ ram_mb }}{{ ' CPUs=' ~ cpus if cpus else '' }}{{ ' Sockets=' ~ sockets if sockets else '' }}{{ ' CoresPerSocket=' ~ cores_per_socket if cores_per_socket else '' }}{{ ' ThreadsPerCore=' ~ threads_per_core if threads_per_core else '' }}
+NodeName=DEFAULT State=CLOUD RealMemory={{ ram_mb }}{{ ' CPUs=' ~ cpus if cpus else '' }}{{ ' Sockets=' ~ sockets if sockets else '' }}{{ ' CoresPerSocket=' ~ cores_per_socket if cores_per_socket else '' }}{{ ' ThreadsPerCore=' ~ threads_per_core if threads_per_core else '' }}{{ ' Features=' ~ features if features else '' }}
 NodeName={{ cloud_hostlist }} State=CLOUD
             {% endif %}
         {% endif %}{# non-empty group #}

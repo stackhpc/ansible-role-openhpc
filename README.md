@@ -59,7 +59,7 @@ package in the image.
 * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
 * `maxtime`: Optional.  A partition-specific time limit in hours, minutes and seconds ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`).  The default value is
   given by `openhpc_job_maxtime`.
-TODO: update this for cloud and processor/memory info
+TODO: update this for cloud, processor/memory info and features.
 
 `openhpc_job_maxtime`: A maximum time job limit in hours, minutes and seconds.  The default is `24:00:00`.
 
