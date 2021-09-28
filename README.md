@@ -65,7 +65,7 @@ TODO: update this for cloud, processor/memory info and features.
 
 `openhpc_cluster_name`: name of the cluster
 
-`openhpc_extra_config`: Mapping of additional parameters and values for `slurm.conf`. Note these will override any included in `templates/slurm.conf.j2`.
+`openhpc_config`: Mapping of additional parameters and values for `slurm.conf`. Note these will override any included in `templates/slurm.conf.j2`.
 
 `openhpc_state_save_location`: Optional. Absolute path for Slurm controller state (`slurm.conf` parameter [StateSaveLocation](https://slurm.schedmd.com/slurm.conf.html#OPT_StateSaveLocation))
 
