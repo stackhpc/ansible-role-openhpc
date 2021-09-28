@@ -20,7 +20,7 @@ test9  | 1            | N                       | As test8 but uses `--limit=tes
 test10 | 1            | N                       | As for #5 but then tries to add an additional node
 test11 | 1            | N                       | As for #5 but then deletes a node (actually changes the partition due to molecule/ansible limitations)
 test12 | 1            | N                       | As for #5 but enabling job completion and testing `sacct -c`
-test13 | 1            | N                       | As for #5 but tests `openhpc_config` variable.
+test13 | 1            | N                       | As for #5 but tests `openhpc_extra_config` variable.
 
 # Local Installation & Running
 

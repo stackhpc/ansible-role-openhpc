@@ -11,7 +11,7 @@ openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
 openhpc_job_maxtime: 24:00:00
-openhpc_config: "{{ openhpc_extra_config | default({}) }}"
+openhpc_extra_config: {}
 openhpc_state_save_location: /var/spool/slurm
 
 # Accounting
