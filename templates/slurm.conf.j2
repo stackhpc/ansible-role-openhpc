@@ -108,28 +108,36 @@ Epilog=/etc/slurm/slurm.epilog.clean
 {% for part in openhpc_slurm_partitions %}
     {% set nodelist = [] %}
     {% for group in part.get('groups', [part]) %}
+        
         {% set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
 # openhpc_slurm_partitions: {{ group_name }}
         {% set inventory_group_hosts = groups.get(group_name, []) %}
         {% if inventory_group_hosts | length > 0 or 'cloud_nodes' in group %}{# need to template *some* nodes #}
             {% set play_group_hosts = inventory_group_hosts | intersect (play_hosts) %}
             {% set first_host_hv = hostvars[ play_group_hosts | first ] if play_group_hosts | length > 0 else {} %}
-            {% set group_error_msg = 'Either inventory group "' ~ group_name ~ '" must have a host with facts in the current play or `openhpc_slurm_partitions` group "' ~ group.name ~ '" must specify ' %}
+            {% set group_error_msg = ['Either inventory group "' ~ group_name ~ '" must have a host with facts in the current play or `openhpc_slurm_partitions` group "' ~ group.name ~ '" must specify '] %}
             {% if 'ram_mb' in group %}
                 {% set ram_mb = group.ram_mb %}
             {% elif first_host_hv %}
                 {% set ram_mb = (first_host_hv['ansible_memory_mb']['real']['total'] * (group.ram_multiplier | default(openhpc_ram_multiplier))) | int %}
             {% else %}
-                {% set ram_mb = 'ERROR' %}
+                {% set ram_mb = false %}
             {% endif %}
-            {% set sockets = group.get('sockets', first_host_hv.get('ansible_processor_count', 'ERROR')) %}
-            {% set cores_per_socket = group.get('cores_per_socket', first_host_hv.get('ansible_processor_cores', 'ERROR')) %}
-            {% set threads_per_core = group.get('threads_per_core', first_host_hv.get('ansible_processor_threads_per_core', 'ERROR')) %}
-            {% if 'error' in [ram_mb, sockets, cores_per_socket, threads_per_core] %}
-                {{ false | mandatory(group_error_msg ~ 'TODO') }}{# TODO: FIXME: #}
+            {% set sockets = group.get('sockets', first_host_hv.get('ansible_processor_count', false)) %}
+            {% set cores_per_socket = group.get('cores_per_socket', first_host_hv.get('ansible_processor_cores', false)) %}
+            {% set threads_per_core = group.get('threads_per_core', first_host_hv.get('ansible_processor_threads_per_core', false)) %}
+            {% set cpus = group.get('cpus', false) %}
+            {% if not cpus and not (sockets and cores_per_socket and threads_per_core) %}
+                {% set _ = group_error_msg.append('processor information') %}
+            {% endif %}
+            {% if not ram_mb %}
+                {% set _ = group_error_msg.append('memory') %}
+            {% endif %}
+            {% if group_error_msg | length > 1 %}
+                {{ false | error(group_error_msg[0] + group_error_msg[1:] | join(' and ')) }}
             {% endif %}
             {% if inventory_group_hosts | length > 0 %}{# physical nodes #}
-NodeName=DEFAULT State=UNKNOWN RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }}
+NodeName=DEFAULT State=UNKNOWN RealMemory={{ ram_mb }}{{ ' CPUs=' ~ cpus if cpus else '' }}{{ ' Sockets=' ~ sockets if sockets else '' }}{{ ' CoresPerSocket=' ~ cores_per_socket if cores_per_socket else '' }}{{ ' ThreadsPerCore=' ~ threads_per_core if threads_per_core else '' }}
                 {% for hostlist in (inventory_group_hosts | hostlist_expression) %}
 NodeName={{ hostlist }}
                     {% set _ = nodelist.append(hostlist) %}
@@ -138,7 +146,7 @@ NodeName={{ hostlist }}
             {% if 'cloud_nodes' in group %}
                 {% set cloud_hostlist = (group_name | replace('_', '-')) ~ '-cloud-[0-' ~ (group['cloud_nodes'] - 1) ~ ']' %}
                 {% set _ = nodelist.append(cloud_hostlist) %}
-NodeName=DEFAULT State=CLOUD RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }}
+NodeName=DEFAULT State=CLOUD RealMemory={{ ram_mb }}{{ ' CPUs=' ~ cpus if cpus else '' }}{{ ' Sockets=' ~ sockets if sockets else '' }}{{ ' CoresPerSocket=' ~ cores_per_socket if cores_per_socket else '' }}{{ ' ThreadsPerCore=' ~ threads_per_core if threads_per_core else '' }}
 NodeName={{ cloud_hostlist }} State=CLOUD
             {% endif %}
         {% endif %}{# non-empty group #}

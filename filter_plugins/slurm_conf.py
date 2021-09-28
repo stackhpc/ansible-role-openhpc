@@ -74,9 +74,16 @@ def _group_numbers(numbers):
         prev = v
     return ','.join(['{}-{}'.format(u[0], u[-1]) if len(u) > 1 else str(u[0]) for u in units])
 
+def error(condition, msg):
+    """ Raise an error if condition is not True """
+    
+    if not condition:
+        raise errors.AnsibleFilterError(msg)
+
 class FilterModule(object):
 
     def filters(self):
         return {
-            'hostlist_expression': hostlist_expression
+            'hostlist_expression': hostlist_expression,
+            'error': error,
         }
