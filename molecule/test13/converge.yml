@@ -16,6 +16,6 @@
         openhpc_cluster_name: testohpc
         openhpc_slurm_configless: true
         openhpc_login_only_nodes: 'testohpc_login'
-        openhpc_extra_config:
+        openhpc_config:
           FirstJobId: 13
           SlurmctldSyslogDebug: error
