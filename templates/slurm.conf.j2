@@ -145,7 +145,7 @@ NodeName={{ hostlist }}
                 {% endfor %}{# nodes #}
             {% endif %}{# inventory_group_hosts #}
             {% if 'cloud_nodes' in group %}
-                {% set cloud_hostlist = (group_name | replace('_', '-')) ~ '-cloud-[0-' ~ (group['cloud_nodes'] - 1) ~ ']' %}
+                {% set cloud_hostlist = (group_name | replace('_', '-')) ~ group['cloud_nodes'] %}
                 {% set _ = nodelist.append(cloud_hostlist) %}
 NodeName=DEFAULT State=CLOUD RealMemory={{ ram_mb }}{{ ' CPUs=' ~ cpus if cpus else '' }}{{ ' Sockets=' ~ sockets if sockets else '' }}{{ ' CoresPerSocket=' ~ cores_per_socket if cores_per_socket else '' }}{{ ' ThreadsPerCore=' ~ threads_per_core if threads_per_core else '' }}{{ ' Features=' ~ features if features else '' }}
 NodeName={{ cloud_hostlist }} State=CLOUD
