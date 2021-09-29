@@ -133,7 +133,8 @@ Epilog=/etc/slurm/slurm.epilog.clean
             {% if not ram_mb %}
                 {% set _ = group_error_msg.append('memory') %}
             {% endif %}
-            {% set features = group.get('features', []) | join(',')%}
+            {% set cloud_features = group.get('cloud_features', {}).items() | map('join', '=') %}
+            {% set features = (cloud_features + group.get('features', [])) | join(',') %}
             {% if group_error_msg | length > 1 %}
                 {{ false | error(group_error_msg[0] + group_error_msg[1:] | join(' and ')) }}
             {% endif %}
