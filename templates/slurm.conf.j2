@@ -144,7 +144,7 @@ NodeName={{ hostlist }}
                 {% set cloud_hostlist = (group_name | replace('_', '-')) ~ group['cloud_nodes'] %}
                 {% set _ = nodelist.append(cloud_hostlist) %}
 NodeName=DEFAULT State=CLOUD RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }} {{ features }}
-NodeName={{ cloud_hostlist }} State=CLOUD
+NodeName={{ cloud_hostlist }}
             {% endif %}
         {% endif %}{# non-empty group #}
     {% endfor %}{# group #}
