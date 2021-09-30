@@ -121,16 +121,13 @@ Epilog=/etc/slurm/slurm.epilog.clean
             {% elif first_host_hv %}
                 {% set ram_mb = (first_host_hv['ansible_memory_mb']['real']['total'] * (group.ram_multiplier | default(openhpc_ram_multiplier))) | int %}
             {% else %}
-                {% set ram_mb = false %}
+                {% set _ = group_error_msg.append('memory') %}
             {% endif %}
-            {% set sockets = group.get('sockets', first_host_hv.get('ansible_processor_count', 1)) %}
-            {% set cores_per_socket = group.get('cores_per_socket', first_host_hv.get('ansible_processor_cores', 1)) %}
-            {% set threads_per_core = group.get('threads_per_core', first_host_hv.get('ansible_processor_threads_per_core', 1)) %}
+            {% set sockets = group.get('sockets', first_host_hv.get('ansible_processor_count', none)) %}
+            {% set cores_per_socket = group.get('cores_per_socket', first_host_hv.get('ansible_processor_cores', none)) %}
+            {% set threads_per_core = group.get('threads_per_core', first_host_hv.get('ansible_processor_threads_per_core', none)) %}
             {% if not (sockets and cores_per_socket and threads_per_core) %}
                 {% set _ = group_error_msg.append('processor information') %}
-            {% endif %}
-            {% if not ram_mb %}
-                {% set _ = group_error_msg.append('memory') %}
             {% endif %}
             {% set features = 'Features=' ~ (group['features'] | join(',')) if 'features' in group else '' %}
             {% if group_error_msg | length > 1 %}
