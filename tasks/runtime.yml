@@ -95,7 +95,7 @@
     path: "{{ _slurm_conf_tmpfile.path }}"
     option: "{{ item.key }}"
     section: null
-    value: "{{ item.value }}"
+    value: "{{ (item.value | join(',')) if (item.value is sequence and item.value is not string) else item.value }}"
     no_extra_spaces: true
     create: no
     mode: 0644
