@@ -132,13 +132,12 @@ Epilog=/etc/slurm/slurm.epilog.clean
             {% if not ram_mb %}
                 {% set _ = group_error_msg.append('memory') %}
             {% endif %}
-            {% set cloud_features = group.get('cloud_features', {}).items() | map('join', '=') %}
-            {% set features = (cloud_features + group.get('features', [])) | join(',') %}
+            {% set features = 'Features=' ~ (group['features'] | join(',')) if 'features' in group else '' %}
             {% if group_error_msg | length > 1 %}
                 {{ false | error(group_error_msg[0] + group_error_msg[1:] | join(' and ')) }}
             {% endif %}
             {% if inventory_group_hosts | length > 0 %}{# physical nodes #}
-NodeName=DEFAULT State=UNKNOWN RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }} Features={{ features }}
+NodeName=DEFAULT State=UNKNOWN RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }} {{ features }}
                 {% for hostlist in (inventory_group_hosts | hostlist_expression) %}
 NodeName={{ hostlist }}
                     {% set _ = nodelist.append(hostlist) %}
@@ -147,7 +146,7 @@ NodeName={{ hostlist }}
             {% if 'cloud_nodes' in group %}
                 {% set cloud_hostlist = (group_name | replace('_', '-')) ~ group['cloud_nodes'] %}
                 {% set _ = nodelist.append(cloud_hostlist) %}
-NodeName=DEFAULT State=CLOUD RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }} Features={{ features }}
+NodeName=DEFAULT State=CLOUD RealMemory={{ ram_mb }} Sockets={{ sockets }} CoresPerSocket={{ cores_per_socket }} ThreadsPerCore={{ threads_per_core }} {{ features }}
 NodeName={{ cloud_hostlist }} State=CLOUD
             {% endif %}
         {% endif %}{# non-empty group #}
