@@ -148,7 +148,7 @@ NodeName={{ cloud_hostlist }}
             {% endif %}
         {% endif %}{# non-empty group #}
     {% endfor %}{# group #}
-PartitionName={{part.name}} Default={{ {true:'YES', false:'NO'}[part.get('default', true)] }} MaxTime={{ part.get('maxtime', openhpc_job_maxtime) }} State=UP Nodes={{ nodelist | join(',') }}
+PartitionName={{part.name}} Default={{ part.get('default', 'YES') }} MaxTime={{ part.get('maxtime', openhpc_job_maxtime) }} State=UP Nodes={{ nodelist | join(',') }}
 {% endfor %}{# partitions #}
 
 # Want nodes that drop out of SLURM's configuration to be automatically
