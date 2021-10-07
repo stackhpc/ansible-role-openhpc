@@ -31,43 +31,41 @@ package in the image.
 
 `openhpc_slurmdbd_host`: Optional. Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to prevent the role from managing slurmdbd. Defaults to `openhpc_slurm_control_host`.
 
+`openhpc_slurm_configless`: Optional, default false. If true then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
+
 `openhpc_munge_key`: Optional. Define a munge key to use. If not provided then one is generated but the `openhpc_slurm_control_host` must be in the play.
 
 `openhpc_login_only_nodes`: Optional. If using "configless" mode specify the name of an ansible group containing nodes which are login-only nodes (i.e. not also control nodes), if required. These nodes will run `slurmd` to contact the control node for config.
 
 `openhpc_module_system_install`: Optional, default true. Whether or not to install an environment module system. If true, lmod will be installed. If false, You can either supply your own module system or go without one.
 
+`openhpc_ram_multiplier`: Optional, default `0.95`. Multiplier used in the calculation: `total_memory * openhpc_ram_multiplier` when setting `RealMemory` for the partition in slurm.conf. Can be overriden on a per partition basis using `openhpc_slurm_partitions.ram_multiplier`. Has no effect if `openhpc_slurm_partitions.ram_mb` is set.
+
 ### slurm.conf
 
-`openhpc_config`: Optional. Mapping of additional parameters and values for `slurm.conf`. Note these will override any included in `templates/slurm.conf.j2`. Parameters taking multiple comma-separated options (e.g. [SlurmctldParameters](https://slurm.schedmd.com/slurm.conf.html#OPT_SlurmctldParameters)) may be specified using a list for the value.
-
-`openhpc_cluster_name`: Name of the cluster.
-
-`openhpc_job_maxtime`: Optional, default `24:00:00`. Maximum time job limit in hours, minutes and seconds.
-
-`openhpc_ram_multiplier`: Optional, default `0.95`. Proportion of total memory to declare to Slurm.
-
-`openhpc_slurm_configless`: Optional, default false. If true then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
-
-`openhpc_slurm_partitions`: List of one or more slurm partitions. Each partition may contain the following values:
-* `groups`: If there are multiple node groups that make up the partition, a list of group mappings can be defined here. Nodes within a group are assumed to be homogenous.
-  Otherwise, `groups` can be omitted and the following attributes can be defined directly in the partition object:
+`openhpc_slurm_partitions`: list of one or more slurm partitions.  Each partition may contain the following values:
+* `groups`: If there are multiple node groups that make up the partition, a list of group objects can be defined here.
+  Otherwise, `groups` can be omitted and the following attributes can be defined in the partition object:
   * `name`: The name of the nodes within this group.
   * `cluster_name`: Optional.  An override for the top-level definition `openhpc_cluster_name`.
-  * `extra_nodes`: Optional. A list of additional node definitions, e.g. for nodes in this group/partition not controlled by this role. Each item should be a dict, with keys/values as per the ["NODE CONFIGURATION"](https://slurm.schedmd.com/slurm.conf.html#lbAE) docs for slurm.conf. Note the key `NodeName` must be first.
-  * `ram_mb`: Optional.  The physical RAM available in each node ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`) in MiB. This is set using ansible facts if not defined, equivalent to the total from `free --mebi` times the ram mulitplier for this node.
-  * `ram_multiplier`: Optional.  An override for the top-level definition `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
-* `default`: Optional. Whether this partion is the default. Valid settings are `YES` and `NO` or bool. Defaults to `YES` (so if not set the last partition defined will be the default).
-* `maxtime`: Optional.  The partition's time limit in hours, minutes and seconds ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`).  The default value is given by `openhpc_job_maxtime`.
+  * `ram_mb`: Optional.  The physical RAM available in each server of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`) in MiB. This is set using ansible facts if not defined, equivalent to `free --mebi` total * `openhpc_ram_multiplier`.
 
-For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`, with all nodes in this inventory group added to the group/partition. Note that:
-- Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
-- Nodes in a group are assumed to be homogenous in terms of processor and memory.
-- An inventory group may be empty, but if it is not then the play must contain at least one node from it (used to set processor information).
-- Nodes may not appear in more than one group.
+  For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`, with all nodes in this inventory group added to the group/partition. Note that:
+  - Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
+  - Nodes in a group are assumed to be homogenous in terms of processor and memory.
+  - An inventory group may be empty, but if it is not then the play must contain at least one node from it (used to set processor information).
+* `ram_multiplier`: Optional.  An override for the top-level definition `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
+* `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
+* `maxtime`: Optional.  A partition-specific time limit in hours, minutes and seconds ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`).  The default value is
+  given by `openhpc_job_maxtime`.
+
+`openhpc_job_maxtime`: A maximum time job limit in hours, minutes and seconds.  The default is `24:00:00`.
+
+`openhpc_cluster_name`: name of the cluster
+
+`openhpc_config`: Mapping of additional parameters and values for `slurm.conf`. Note these will override any included in `templates/slurm.conf.j2`.
 
 `openhpc_state_save_location`: Optional. Absolute path for Slurm controller state (`slurm.conf` parameter [StateSaveLocation](https://slurm.schedmd.com/slurm.conf.html#OPT_StateSaveLocation))
-
 
 #### Accounting
 
