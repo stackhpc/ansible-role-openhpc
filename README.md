@@ -68,7 +68,6 @@ For each group (if used) or partition there must be an ansible inventory group `
 
 `openhpc_state_save_location`: Optional. Absolute path for Slurm controller state (`slurm.conf` parameter [StateSaveLocation](https://slurm.schedmd.com/slurm.conf.html#OPT_StateSaveLocation))
 
-`openhpc_suspend_exc_nodes`: Optional. List of nodes to exclude from power saving mode. Like `slurm.conf` parameter [SuspendExcNodes](https://slurm.schedmd.com/slurm.conf.html#OPT_SuspendExcNodes) except for type (list vs comma-separated string) and node count specifications are not supported.
 
 #### Accounting
 

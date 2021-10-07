@@ -134,8 +134,3 @@ PartitionName={{part.name}} Default={{ part.get('default', 'YES') }} MaxTime={{ 
 # Want nodes that drop out of SLURM's configuration to be automatically
 # returned to service when they come back.
 ReturnToService=2
-
-# Define nodes NOT to be placed in power save mode
-{%if openhpc_suspend_exc_nodes %}
-SuspendExcNodes={{ openhpc_suspend_exc_nodes | hostlist_expression | join(',') }}
-{% endif %}
