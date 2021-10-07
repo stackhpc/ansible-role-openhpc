@@ -148,7 +148,7 @@
     mode: 0644
   when:
     - openhpc_slurm_service == 'slurmd'
-    - openhpc_slurm_configless
+    - "'enable_configless' in openhpc_config.SlurmctldParameters | default([])"
   notify:
     - Restart slurmd service
   # Reloading is sufficent, but using a single handler means no bounce. Realistically this won't regularly change on a running slurmd so restarting is ok.
