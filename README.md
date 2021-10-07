@@ -48,16 +48,19 @@ package in the image.
   Otherwise, `groups` can be omitted and the following attributes can be defined in the partition object:
   * `name`: The name of the nodes within this group.
   * `cluster_name`: Optional.  An override for the top-level definition `openhpc_cluster_name`.
+  * `extra_nodes`: Optional. A list of additional node definitions, e.g. for nodes in this group/partition not controlled by this role. Each item should be a dict, with keys/values as per the ["NODE CONFIGURATION"](https://slurm.schedmd.com/slurm.conf.html#lbAE) docs for slurm.conf. Note the key `NodeName` must be first.
   * `ram_mb`: Optional.  The physical RAM available in each server of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`) in MiB. This is set using ansible facts if not defined, equivalent to `free --mebi` total * `openhpc_ram_multiplier`.
-
-  For each group (if used) or partition there must be an ansible inventory group `<cluster_name>_<group_name>`, with all nodes in this inventory group added to the group/partition. Note that:
-  - Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
-  - Nodes in a group are assumed to be homogenous in terms of processor and memory.
-  - An inventory group may be empty, but if it is not then the play must contain at least one node from it (used to set processor information).
   * `ram_multiplier`: Optional.  An override for the top-level definition `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
 * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
 * `maxtime`: Optional.  A partition-specific time limit in hours, minutes and seconds ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`).  The default value is
   given by `openhpc_job_maxtime`.
+
+For each group (if used) or partition any nodes in an ansible inventory group `<cluster_name>_<group_name>` will be added to the group/partition. Note that:
+- Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
+- Nodes in a group are assumed to be homogenous in terms of processor and memory.
+- An inventory group may be empty, but if it is not then the play must contain at least one node from it (used to set processor information).
+- Nodes may not appear in more than one group.
+- A group/partition definition which does not have either a corresponding inventory group or a `extra_nodes` will raise an error.
 
 `openhpc_job_maxtime`: A maximum time job limit in hours, minutes and seconds.  The default is `24:00:00`.
 
