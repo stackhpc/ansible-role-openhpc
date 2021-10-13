@@ -14,8 +14,10 @@ platforms:
       - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    networks:
+    docker_networks:
       - name: net1
+        driver_options:
+          com.docker.network.driver.mtu: ${DOCKER_MTU:-1500} # 1500 is docker default
   - name: testohpc-compute-0
     image: ${MOLECULE_IMAGE}
     pre_build_image: true
@@ -27,8 +29,10 @@ platforms:
       - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    networks:
+    docker_networks:
       - name: net1
+        driver_options:
+          com.docker.network.driver.mtu: ${DOCKER_MTU:-1500} # 1500 is docker default
   - name: testohpc-compute-1
     image: ${MOLECULE_IMAGE}
     pre_build_image: true
@@ -40,8 +44,10 @@ platforms:
       - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    networks:
+    docker_networks:
       - name: net1
+        driver_options:
+          com.docker.network.driver.mtu: ${DOCKER_MTU:-1500} # 1500 is docker default
 provisioner:
   name: ansible
 verifier:
