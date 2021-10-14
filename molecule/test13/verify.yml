@@ -13,8 +13,8 @@
     command: scontrol show config
     register: slurm_config
   - assert:
-      that: "item in slurm_config.stdout"
+      that: "item in slurm_config.stdout_lines | map('replace', ' ', '')"
       fail_msg: "FAILED - {{ item }} not found in slurm config"
     loop:
       - SlurmctldSyslogDebug=error
-      - SlurmctldSyFirstJobId=13
+      - FirstJobId=13
