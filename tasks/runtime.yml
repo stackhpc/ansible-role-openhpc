@@ -77,7 +77,7 @@
   ansible.builtin.tempfile:
   register: _slurm_conf_tmpfile
   delegate_to: localhost
-  when: openhpc_enable.control | default(false) or not 'enable_configless' in openhpc_config.SlurmctldParameters | default([])
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   changed_when: false # so molecule doesn't fail
   become: no
 
@@ -88,7 +88,7 @@
     lstrip_blocks: true
     mode: 0644
   delegate_to: localhost
-  when: openhpc_enable.control | default(false) or not 'enable_configless' in openhpc_config.SlurmctldParameters | default([])
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   changed_when: false # so molecule doesn't fail
   become: no
 
@@ -103,7 +103,7 @@
     mode: 0644
   loop: "{{ openhpc_config | dict2items }}"
   delegate_to: localhost
-  when: openhpc_enable.control | default(false) or not 'enable_configless' in openhpc_config.SlurmctldParameters | default([])
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   changed_when: false # so molecule doesn't fail
   become: no
 
@@ -114,7 +114,7 @@
     owner: root
     group: root
     mode: 0644
-  when: openhpc_enable.control | default(false) or not 'enable_configless' in openhpc_config.SlurmctldParameters | default([])
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   notify:
     - Restart slurmctld service
   register: ohpc_slurm_conf
@@ -150,7 +150,7 @@
     mode: 0644
   when:
     - openhpc_slurm_service == 'slurmd'
-    - "'enable_configless' in openhpc_config.SlurmctldParameters | default([])"
+    - openhpc_slurm_configless
   notify:
     - Restart slurmd service
   # Reloading is sufficent, but using a single handler means no bounce. Realistically this won't regularly change on a running slurmd so restarting is ok.
