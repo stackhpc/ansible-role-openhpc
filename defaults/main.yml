@@ -12,7 +12,7 @@ openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
 openhpc_job_maxtime: 24:00:00
 openhpc_config: "{{ openhpc_extra_config | default({}) }}"
-openhpc_slurm_configless: "{{ true if ('enable_configless' in openhpc_config.get('SlurmctldParameters', [])) else false }}"
+openhpc_slurm_configless: "{{ 'enable_configless' in openhpc_config.get('SlurmctldParameters', []) }}"
 
 openhpc_state_save_location: /var/spool/slurm
 
