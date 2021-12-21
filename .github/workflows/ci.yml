@@ -28,6 +28,7 @@ jobs:
           - 'centos:8.3.2011'
           - 'centos:8.4.2105'
           - 'centos:7'
+          - 'rockylinux:8.5'
         scenario:
           - test1
           - test1b
