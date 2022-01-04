@@ -14,8 +14,9 @@
         openhpc_slurm_partitions:
           - name: "compute"
             extra_nodes:
-              # Need to specify IPs as even with State=DOWN, if slurmctld can't lookup a host it just excludes it from the config entirely
-              # Can't add to /etc/hosts via ansible due to Docker limitations on modifying /etc/hosts
+              # Need to specify IPs for the non-existent State=DOWN nodes, because otherwise even in this state slurmctld will exclude a node with no lookup information from the config.
+              # We use invalid IPs here (i.e. starting 0.) to flag the fact the nodes shouldn't exist.
+              # Note this has to be done via slurm config rather than /etc/hosts due to Docker limitations on modifying the latter.
               - NodeName: fake-x,fake-y
                 NodeAddr: 0.42.42.0,0.42.42.1
                 State: DOWN
