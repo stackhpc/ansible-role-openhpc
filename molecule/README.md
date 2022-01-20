@@ -52,8 +52,9 @@ Then to run tests, e.g.::
 
     cd ansible-role-openhpc/
     MOLECULE_IMAGE=centos:7 molecule test --all # NB some won't work as require OpenHPC v2.x (-> CentOS 8.x) features - see `.github/workflows/ci.yml`
-    MOLECULE_IMAGE=centos:8.2.2004 molecule test --all
-    MOLECULE_IMAGE=centos:8.3.2011 molecule test --all
+    MOLECULE_IMAGE=rockylinux:8.5 molecule test --all
+
+**NB:** If the host network has an MTU smaller than 1500 (the docker default), check `molecule.yml` for the relevant test contains `DOCKER_MTU`, then prepend `DOCKER_MTU=<mtu>` to your command. If you have already run molecule you will need to destroy the instances and run `docker network prune` before retrying.
 
 During development you may want to:
 
