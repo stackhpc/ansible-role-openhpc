@@ -43,6 +43,7 @@ jobs:
           - test12
           - test13
           - test14
+          - test15
 
         exclude:
           - image: 'centos:7'
@@ -65,6 +66,8 @@ jobs:
             scenario: test13
           - image: 'centos:7'
             scenario: test14
+          - image: 'centos:7'
+            scenario: test15
 
     steps:
       - name: Check out the codebase.
