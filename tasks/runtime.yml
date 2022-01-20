@@ -58,6 +58,7 @@
     state: touch
     owner: slurm
     group: slurm
+    mode: 0644
     access_time: preserve
     modification_time: preserve
   when: openhpc_slurm_job_comp_type == 'jobcomp/filetxt'
@@ -85,6 +86,7 @@
     src: slurm.conf.j2
     dest: "{{ _slurm_conf_tmpfile.path }}"
     lstrip_blocks: true
+    mode: 0644
   delegate_to: localhost
   when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
   changed_when: false # so molecule doesn't fail
@@ -95,7 +97,7 @@
     path: "{{ _slurm_conf_tmpfile.path }}"
     option: "{{ item.key }}"
     section: null
-    value: "{{ item.value }}"
+    value: "{{ (item.value | join(',')) if (item.value is sequence and item.value is not string) else item.value }}"
     no_extra_spaces: true
     create: no
     mode: 0644

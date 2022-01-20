@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+# NB: To test this from the repo root run:
+#   ansible-playbook -i tests/inventory -i tests/inventory-mock-groups tests/filter.yml
 
 from ansible import errors
 import jinja2
@@ -30,11 +32,25 @@ def _get_hostvar(context, var_name, inventory_hostname=None):
         namespace = context["hostvars"][inventory_hostname]
     return namespace.get(var_name)
 
-@jinja2.contextfilter
-def group_hosts(context, group_names):
-    return {g:_group_hosts(context["groups"].get(g, [])) for g in sorted(group_names)}
+def hostlist_expression(hosts):
+    """ Group hostnames using Slurm's hostlist expression format.
 
-def _group_hosts(hosts):
+        E.g. with an inventory containing:
+
+            [compute]
+            dev-foo-0 ansible_host=localhost
+            dev-foo-3 ansible_host=localhost
+            my-random-host
+            dev-foo-4 ansible_host=localhost
+            dev-foo-5 ansible_host=localhost
+            dev-compute-0 ansible_host=localhost
+            dev-compute-1 ansible_host=localhost
+
+        Then "{{ groups[compute] | hostlist_expression }}" will return:
+            
+            ["dev-foo-[0,3-5]", "dev-compute-[0-1]", "my-random-host"]
+    """
+
     results = {}
     unmatchable = []
     for v in hosts:
@@ -58,9 +74,16 @@ def _group_numbers(numbers):
         prev = v
     return ','.join(['{}-{}'.format(u[0], u[-1]) if len(u) > 1 else str(u[0]) for u in units])
 
+def error(condition, msg):
+    """ Raise an error if condition is not True """
+    
+    if not condition:
+        raise errors.AnsibleFilterError(msg)
+
 class FilterModule(object):
 
     def filters(self):
         return {
-            'group_hosts': group_hosts
+            'hostlist_expression': hostlist_expression,
+            'error': error,
         }

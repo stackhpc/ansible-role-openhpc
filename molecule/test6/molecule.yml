@@ -16,6 +16,10 @@ platforms:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     networks:
       - name: net1
+    docker_networks:
+      - name: net1
+        driver_options:
+          com.docker.network.driver.mtu: ${DOCKER_MTU:-1500} # 1500 is docker default
 provisioner:
   name: ansible
   inventory:
