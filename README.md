@@ -57,9 +57,9 @@ package in the image.
 For each group (if used) or partition any nodes in an ansible inventory group `<cluster_name>_<group_name>` will be added to the group/partition. Note that:
 - Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
 - Nodes in a group are assumed to be homogenous in terms of processor and memory.
-- An inventory group may be empty, but if it is not then the play must contain at least one node from it (used to set processor information).
+- An inventory group may be empty or missing, but if it is not then the play must contain at least one node from it (used to set processor information).
 - Nodes may not appear in more than one group.
-- A group/partition definition which does not have either a corresponding inventory group or a `extra_nodes` will raise an error.
+- At least one partition must be defined, but this done not need to contain any inventory nodes or `extra_nodes`.
 
 `openhpc_job_maxtime`: A maximum time job limit in hours, minutes and seconds.  The default is `24:00:00`.
 
