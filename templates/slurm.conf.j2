@@ -128,11 +128,15 @@ NodeName={{ hostlist }} State=UNKNOWN RealMemory={{ group.get('ram_mb', ram_mb) 
         {% endfor %}
     {% endfor %}{# group #}
 {% if not nodelist %}  {# empty partition - define an invalid hostname which slurm accepts #}
-    {% set nodelist = ['-nonesuch'] %}
+    {% set nodelist = ['n/a'] %}
 NodeName={{ nodelist[0] }}
 {% endif %}
 PartitionName={{part.name}} Default={{ part.get('default', 'YES') }} MaxTime={{ part.get('maxtime', openhpc_job_maxtime) }} State=UP Nodes={{ nodelist | join(',') }}
 {% endfor %}{# partitions #}
+{% if openhpc_slurm_partitions | length == 0 %}{# define some clearly invalid things which slurm accepts #}
+NodeName=n/a
+PartitionName= n/a
+{% endif %}
 
 # Want nodes that drop out of SLURM's configuration to be automatically
 # returned to service when they come back.
