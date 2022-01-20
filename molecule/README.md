@@ -21,7 +21,8 @@ test10 | 1            | N                       | As for #5 but then tries to ad
 test11 | 1            | N                       | As for #5 but then deletes a node (actually changes the partition due to molecule/ansible limitations)
 test12 | 1            | N                       | As for #5 but enabling job completion and testing `sacct -c`
 test13 | 1            | N                       | As for #5 but tests `openhpc_config` variable.
-test14 | 1            |                         | As for #5 but also tests `extra_nodes` via State=DOWN nodes.
+test14 | 1            | N                       | As for #5 but also tests `extra_nodes` via State=DOWN nodes.
+test15 | 1            | N                       | No compute nodes.
 
 # Local Installation & Running
 
@@ -52,6 +53,8 @@ Then to run tests, e.g.::
     cd ansible-role-openhpc/
     MOLECULE_IMAGE=centos:7 molecule test --all # NB some won't work as require OpenHPC v2.x (-> CentOS 8.x) features - see `.github/workflows/ci.yml`
     MOLECULE_IMAGE=rockylinux:8.5 molecule test --all
+
+**NB:** If the host network has an MTU smaller than 1500 (the docker default), check `molecule.yml` for the relevant test contains `DOCKER_MTU`, then prepend `DOCKER_MTU=<mtu>` to your command. If you have already run molecule you will need to destroy the instances and run `docker network prune` before retrying.
 
 During development you may want to:
 
