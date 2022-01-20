@@ -1,11 +1,11 @@
 ---
-- name: Fail if openhpc_cluster_name is undefined
-  # removed tests on openhpc_slurm_partitions and openhpc_slurm_control_host as both have role defaults which passed tests
-  assert:
-    that:
-      - openhpc_cluster_name is defined
-      - openhpc_cluster_name != none
-    fail_msg: "'openhpc_cluster_name' is not defined."
+- name: Fail if openhpc_slurm_control_host or openhpc_cluster_name or openhpc_slurm_partitions are undefined
+  fail:
+    msg: "Undefined openhpc_slurm_control_host or openhpc_cluster_name or openhpc_slurm_partitions, or latter is empty."
+  when:
+    openhpc_slurm_control_host == none or
+    openhpc_cluster_name == none or
+    openhpc_slurm_partitions | length == 0
 
 - name: Fail if configless mode selected when not on Centos 8
   fail:

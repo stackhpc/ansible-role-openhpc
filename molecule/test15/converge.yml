@@ -11,7 +11,8 @@
           batch: false
           runtime: true
         openhpc_slurm_control_host: "{{ groups['testohpc_control'] | first }}"
-        openhpc_slurm_partitions: []
+        openhpc_slurm_partitions:
+          - name: n/a
         openhpc_cluster_name: testohpc
         openhpc_slurm_configless: true
 
