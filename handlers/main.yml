@@ -18,6 +18,17 @@
     - openhpc_slurmdbd_host in play_hosts
   run_once: true
 
+- name: Check slurmdbd actually restarted
+  wait_for:
+    port: "{{ openhpc_slurmdbd_port }}"
+  delegate_to: "{{ openhpc_slurmdbd_host }}"
+  run_once: true
+  when:
+    - openhpc_slurmdbd_host is defined
+    - openhpc_slurm_service_started | bool
+    - openhpc_slurmdbd_host in play_hosts
+  listen: Restart slurmdbd service
+
 # NOTE: we need this running before slurmd
 # Allows you to reconfigure slurmctld from another host
 - name: Issue slurmctld restart command
