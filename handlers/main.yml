@@ -7,7 +7,7 @@
   when: openhpc_slurm_service_started | bool
 
 # NOTE: we need this running before slurmctld start
-- name: Restart slurmdbd service
+- name: Issue slurmdbd restart command
   service:
     name: "slurmdbd"
     state: restarted
@@ -17,6 +17,7 @@
     - openhpc_slurm_service_started | bool
     - openhpc_slurmdbd_host in play_hosts
   run_once: true
+  listen: Restart slurmdbd service
 
 - name: Check slurmdbd actually restarted
   wait_for:
