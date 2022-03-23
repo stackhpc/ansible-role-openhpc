@@ -163,15 +163,15 @@
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
 
+- name: flush handler
+  meta: flush_handlers # as then subsequent "ensure" is a no-op if slurm services bounced
+
 - name: Ensure slurmdbd is started and running
   service:
     name: slurmdbd
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_enable.database | default(false) | bool
-
-- name: flush handler
-  meta: flush_handlers # as then subsequent "ensure" is a no-op if slurm services bounced
 
 - name: Ensure Slurm service state
   service:
