@@ -80,10 +80,16 @@ def error(condition, msg):
     if not condition:
         raise errors.AnsibleFilterError(msg)
 
+def dict2parameters(d):
+    """ Convert a dict into a str in 'k1=v1 k2=v2 ...' format """
+    parts = ['%s=%s' % (k, v) for k, v in d.items()]
+    return ' '.join(parts)
+
 class FilterModule(object):
 
     def filters(self):
         return {
             'hostlist_expression': hostlist_expression,
             'error': error,
+            'dict2parameters': dict2parameters,
         }

@@ -52,6 +52,7 @@ package in the image.
 * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
 * `maxtime`: Optional.  A partition-specific time limit in hours, minutes and seconds ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`).  The default value is
   given by `openhpc_job_maxtime`.
+* `partition_params`: Optional. Mapping of additional parameters and values for [partition configuration](https://slurm.schedmd.com/slurm.conf.html#SECTION_PARTITION-CONFIGURATION).
 
 For each group (if used) or partition any nodes in an ansible inventory group `<cluster_name>_<group_name>` will be added to the group/partition. Note that:
 - Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
@@ -64,7 +65,7 @@ For each group (if used) or partition any nodes in an ansible inventory group `<
 
 `openhpc_cluster_name`: name of the cluster
 
-`openhpc_config`: Mapping of additional parameters and values for `slurm.conf`. Note these will override any included in `templates/slurm.conf.j2`.
+`openhpc_config`: Optional. Mapping of additional parameters and values for `slurm.conf`. Note these will override any included in `templates/slurm.conf.j2`.
 
 `openhpc_ram_multiplier`: Optional, default `0.95`. Multiplier used in the calculation: `total_memory * openhpc_ram_multiplier` when setting `RealMemory` for the partition in slurm.conf. Can be overriden on a per partition basis using `openhpc_slurm_partitions.ram_multiplier`. Has no effect if `openhpc_slurm_partitions.ram_mb` is set.
 
