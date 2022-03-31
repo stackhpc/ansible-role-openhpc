@@ -41,7 +41,7 @@ package in the image.
 
 ### slurm.conf
 
-`openhpc_slurm_partitions`: list of one or more slurm partitions.  Each partition may contain the following values:
+`openhpc_slurm_partitions`: Optional. List of one or more slurm partitions, default `[]`.  Each partition may contain the following values:
 * `groups`: If there are multiple node groups that make up the partition, a list of group objects can be defined here.
   Otherwise, `groups` can be omitted and the following attributes can be defined in the partition object:
   * `name`: The name of the nodes within this group.
@@ -59,7 +59,6 @@ For each group (if used) or partition any nodes in an ansible inventory group `<
 - Nodes in a group are assumed to be homogenous in terms of processor and memory.
 - An inventory group may be empty or missing, but if it is not then the play must contain at least one node from it (used to set processor information).
 - Nodes may not appear in more than one group.
-- At least one partition must be defined, but this done not need to contain any inventory nodes or `extra_nodes`.
 
 `openhpc_job_maxtime`: A maximum time job limit in hours, minutes and seconds.  The default is `24:00:00`.
 
