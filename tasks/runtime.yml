@@ -22,12 +22,12 @@
 
 - name: Ensure Slurm directories exists
   file:
-    path: "{{ item }}"
+    path: "{{ openhpc_state_save_location }}"
     owner: slurm
     group: slurm
     mode: 0755
     state: directory
-  loop: "{{ ['/var/spool/slurm'] + ([ openhpc_state_save_location ] if inventory_hostname == openhpc_slurm_control_host else []) }}"
+  when: inventory_hostname == openhpc_slurm_control_host
 
 - name: Generate a Munge key on control host
   # NB this is usually a no-op as the package install actually generates a (node-unique) one, so won't usually trigger handler
