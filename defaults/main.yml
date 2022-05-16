@@ -10,7 +10,7 @@ openhpc_packages:
 openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
-openhpc_job_maxtime: 24:00:00
+openhpc_job_maxtime: '60-0' # quote this to avoid ansible converting some formats to seconds, which is interpreted as minutes by Slurm
 openhpc_config: "{{ openhpc_extra_config | default({}) }}"
 openhpc_slurm_configless: "{{ 'enable_configless' in openhpc_config.get('SlurmctldParameters', []) }}"
 

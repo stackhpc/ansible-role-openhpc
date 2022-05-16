@@ -50,8 +50,8 @@ package in the image.
   * `ram_mb`: Optional.  The physical RAM available in each server of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`) in MiB. This is set using ansible facts if not defined, equivalent to `free --mebi` total * `openhpc_ram_multiplier`.
   * `ram_multiplier`: Optional.  An override for the top-level definition `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
 * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
-* `maxtime`: Optional.  A partition-specific time limit in hours, minutes and seconds ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`).  The default value is
-  given by `openhpc_job_maxtime`.
+* `maxtime`: Optional.  A partition-specific time limit following the format of [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`.  The default value is
+  given by `openhpc_job_maxtime`. The value should be quoted to avoid Ansible conversions.
 * `partition_params`: Optional. Mapping of additional parameters and values for [partition configuration](https://slurm.schedmd.com/slurm.conf.html#SECTION_PARTITION-CONFIGURATION).
 
 For each group (if used) or partition any nodes in an ansible inventory group `<cluster_name>_<group_name>` will be added to the group/partition. Note that:
@@ -60,7 +60,7 @@ For each group (if used) or partition any nodes in an ansible inventory group `<
 - An inventory group may be empty or missing, but if it is not then the play must contain at least one node from it (used to set processor information).
 - Nodes may not appear in more than one group.
 
-`openhpc_job_maxtime`: A maximum time job limit in hours, minutes and seconds.  The default is `24:00:00`.
+`openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days). See [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime` for format. The default is 60 days. The value should be quoted to avoid Ansible conversions.
 
 `openhpc_cluster_name`: name of the cluster
 
