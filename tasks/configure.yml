@@ -1,0 +1,46 @@
+- name: Ensure Slurm directory exists
+  file:
+    path: /var/spool/slurm
+    owner: slurm
+    group: slurm
+    mode: 0755
+    state: directory
+
+- name: Write Munge key
+  copy:
+    content: "{{ slurm_munge_key | b64decode }}"
+    dest: "/etc/munge/munge.key"
+    owner: munge
+    group: munge
+    mode: 0400
+  notify:
+    - Restart Munge service
+
+- name: Template slurm.conf
+  template:
+    src: slurm.conf.j2
+    dest: "/etc/slurm/slurm.conf"
+    lstrip_blocks: true
+    mode: 0644
+  when: inventory_hostname in query('vars', 'slurm_control_hosts')
+  notify:
+    - Restart Slurm daemons
+
+- meta: flush_handlers
+
+- name: Ensure munge running
+  systemd:
+    name: munge
+    state: started
+
+- name: Ensure slurm control daemon running
+  systemd:
+    name: slurmctld
+    state: started
+  when: inventory_hostname in query('vars', 'slurm_control_hosts')
+
+- name: Ensure slurm daemon running
+  systemd:
+    name: slurmd
+    state: started
+  when: inventory_hostname not in query('vars', 'slurm_control_hosts')

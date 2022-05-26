@@ -2,62 +2,36 @@
 # NOTE: We need this running before slurmdbd
 - name: Restart Munge service
   service:
-    name: "munge"
+    name: munge
     state: restarted
-  when: openhpc_slurm_service_started | bool
+  when: slurm_service_enabled | bool
 
-# NOTE: we need this running before slurmctld start
-- name: Issue slurmdbd restart command
+- name: Stop slurmds
   service:
-    name: "slurmdbd"
+    name: slurmd
+    state: stopped
+  when: inventory_hostname not in query('vars', 'slurm_control_hosts')
+  listen: Restart Slurm daemons
+
+- name: Restart slurmctld
+  ansible.builtin.systemd:
+    name: slurmctld
     state: restarted
-  delegate_to: "{{ openhpc_slurmdbd_host }}"
-  when:
-    - openhpc_slurmdbd_host is defined
-    - openhpc_slurm_service_started | bool
-    - openhpc_slurmdbd_host in play_hosts
-  run_once: true
-  listen: Restart slurmdbd service
+    daemon_reload: "{{ slurmctld_dropins.changed | default('no') }}"
+  when: inventory_hostname in query('vars', 'slurm_control_hosts')
+  listen: Restart Slurm daemons
 
-- name: Check slurmdbd actually restarted
-  wait_for:
-    port: "{{ openhpc_slurmdbd_port }}"
-  delegate_to: "{{ openhpc_slurmdbd_host }}"
-  run_once: true
-  when:
-    - openhpc_slurmdbd_host is defined
-    - openhpc_slurm_service_started | bool
-    - openhpc_slurmdbd_host in play_hosts
-  listen: Restart slurmdbd service
-
-# NOTE: we need this running before slurmd
-# Allows you to reconfigure slurmctld from another host
-- name: Issue slurmctld restart command
-  service:
-    name: "slurmctld"
-    state: restarted
-  delegate_to: "{{ openhpc_slurm_control_host }}"
-  run_once: true
-  when:
-    - openhpc_slurm_service_started | bool
-    - openhpc_slurm_control_host in play_hosts
-  listen: Restart slurmctld service
-
-- name: Check slurmctld actually restarted
+- name: Check slurmctld up
   wait_for:
     port: 6817
-    delay: 10
-  delegate_to: "{{ openhpc_slurm_control_host }}"
+    delay: 2
   run_once: true
-  when:
-    - openhpc_slurm_service_started | bool
-    - openhpc_slurm_control_host in play_hosts
-  listen: Restart slurmctld service
+  listen: Restart Slurm daemons
+  
 
-- name: Restart slurmd service
+- name: Start slurmds
   service:
-    name: "slurmd"
-    state: restarted
-  when:
-    - openhpc_slurm_service_started | bool
-    - openhpc_slurm_service == 'slurmd'
+    name: slurmd
+    state: started
+  when: inventory_hostname not in query('vars', 'slurm_control_hosts')
+  listen: Restart Slurm daemons

@@ -85,6 +85,13 @@ def dict2parameters(d):
     parts = ['%s=%s' % (k, v) for k, v in d.items()]
     return ' '.join(parts)
 
+def to_comma_list(v):
+    """ Convert a scalar or list into a comma-separated list as used in slurm.conf values """
+    if isinstance(v, list):
+        return ','.join(v)
+    else:
+        return v
+
 class FilterModule(object):
 
     def filters(self):
@@ -92,4 +99,5 @@ class FilterModule(object):
             'hostlist_expression': hostlist_expression,
             'error': error,
             'dict2parameters': dict2parameters,
+            'to_comma_list': to_comma_list,
         }
