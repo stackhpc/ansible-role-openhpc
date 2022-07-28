@@ -18,6 +18,7 @@
 from ansible import errors
 import jinja2
 import re
+import pprint
 
 # Pattern to match a hostname with numerical ending
 pattern = re.compile("^(.*\D(?=\d))(\d+)$")
@@ -49,6 +50,8 @@ def hostlist_expression(hosts):
         Then "{{ groups[compute] | hostlist_expression }}" will return:
             
             ['dev-foo-[00,04-05,3]', 'dev-compute-[000-001]', 'my-random-host']
+
+        NB: This does not guranteed to return parts in the same order as `scontrol hostlist`, but its output should return the same hosts when passed to `scontrol hostnames`.
     """
 
     results = {}
@@ -57,7 +60,6 @@ def hostlist_expression(hosts):
         m = pattern.match(v)
         if m:
             prefix, suffix = m.groups()
-            print(prefix,suffix)
             r = results.setdefault(prefix, [])
             r.append(suffix)
         else:
@@ -65,16 +67,18 @@ def hostlist_expression(hosts):
     return ['{}[{}]'.format(k, _group_numbers(v)) for k, v in results.items()] + unmatchable
 
 def _group_numbers(numbers):
-    print('numbers:', sorted(numbers))
     units = []
-    prev = min(int(n) for n in numbers)
-    for v in sorted(numbers):
-        if int(v) == prev + 1:
-            units[-1].append(v)
+    ints = [int(n) for n in numbers]
+    lengths = [len(n) for n in numbers]
+    # sort numbers by int value and length:
+    ints, lengths, numbers = zip(*sorted(zip(ints, lengths, numbers)))
+    prev = min(ints)
+    for i, v in enumerate(sorted(ints)):
+        if v == prev + 1:
+            units[-1].append(numbers[i])
         else:
-            units.append([v])
-        print('units:', units)
-        prev = int(v)
+            units.append([numbers[i]])
+        prev = v
     return ','.join(['{}-{}'.format(u[0], u[-1]) if len(u) > 1 else str(u[0]) for u in units])
 
 def error(condition, msg):
