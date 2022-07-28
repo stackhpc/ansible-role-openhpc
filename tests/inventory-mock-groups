@@ -15,3 +15,15 @@ localhost-1-10 ansible_host=127.0.0.1  ansible_connection='local'    ansible_pyt
 localhost-2-1 ansible_host=127.0.0.1  ansible_connection='local'    ansible_python_interpreter='/usr/bin/env python'
 localhost-2-2 ansible_host=127.0.0.1  ansible_connection='local'    ansible_python_interpreter='/usr/bin/env python'
 localhost-2-3 ansible_host=127.0.0.1  ansible_connection='local'    ansible_python_interpreter='/usr/bin/env python'
+
+[mock_group_2]
+# test padding:
+# $ scontrol show hostlist localhost-admin,localhost-0001,localhost-0002,localhost-0003,localhost-0008,localhost-0010,localhost-1
+# localhost-admin,localhost-[0001-0003,0008,0010,1]
+localhost-0001
+localhost-1
+localhost-0010
+localhost-admin
+localhost-0002
+localhost-0008
+localhost-0003

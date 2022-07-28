@@ -5,15 +5,19 @@
   vars:
     grouped_0: "{{ groups['mock_group_0'] | hostlist_expression }}"
     grouped_1: "{{ groups['mock_group_1'] | hostlist_expression }}"
+    grouped_2: "{{ groups['mock_group_2'] | hostlist_expression }}"
   tasks:
-    - name: Show grouped mock-group-0
-      debug: var=grouped_0
-    - name: Show grouped mock-group-1
-      debug: var=grouped_1
     - name: Test filter
       assert:
-        that:
-          - "['localhost-0-[0-3,5]', 'localhost-non-numerical'] == grouped_0"
-          - "['localhost-1-[1-2,4-5,10]', 'localhost-2-[1-3]'] == grouped_1"
-
+        that: item.result == item.expected
+        fail_msg: |
+          expected: {{ item.expected }}
+          got: {{ item.result }}
+      loop:
+        - result: "{{ grouped_0 }}"
+          expected: ['localhost-0-[0-3,5]', 'localhost-non-numerical']
+        - result: "{{ grouped_1 }}"
+          expected: ['localhost-1-[1-2,4-5,10]', 'localhost-2-[1-3]']
+        - result: "{{ grouped_2 }}"
+          expected: ['localhost-[1,0001-0003,0008,0010]', 'localhost-admin']
 ...
