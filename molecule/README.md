@@ -26,7 +26,7 @@ test15 | 1            | N                       | No compute nodes.
 
 # Local Installation & Running
 
-Local installation on a CentOS 8 machine looks like:
+Local installation on a RockyLinux 8.x machine looks like:
 
     sudo yum install -y gcc python3-pip python3-devel openssl-devel python3-libselinux
     sudo yum install -y yum-utils
@@ -35,8 +35,7 @@ Local installation on a CentOS 8 machine looks like:
     sudo yum install -y iptables
     sudo systemctl start docker
     sudo usermod -aG docker ${USER}
-    # if not running as centos, also run:
-    sudo usermod -aG docker centos
+    sudo usermod -aG docker rocky
     newgrp docker
     docker run hello-world # test docker works without sudo
 
