@@ -23,6 +23,9 @@
       cmd: "sacct --completion --noheader --parsable2"
     changed_when: false
     register: sacct
+    until: "sacct.stdout.strip() != ''"
+    retries: 5
+    delay: 1
   - assert:
       that: "(jobid + '|0|wrap|compute|2|testohpc-compute-[0-1]|COMPLETED') in sacct.stdout"
       fail_msg: "Didn't find expected output for {{ jobid }} in sacct output: {{ sacct.stdout }}"

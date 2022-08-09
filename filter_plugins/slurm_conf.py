@@ -38,17 +38,19 @@ def hostlist_expression(hosts):
         E.g. with an inventory containing:
 
             [compute]
-            dev-foo-0 ansible_host=localhost
-            dev-foo-3 ansible_host=localhost
+            dev-foo-00 ansible_host=localhost
+            dev-foo-3  ansible_host=localhost
             my-random-host
-            dev-foo-4 ansible_host=localhost
-            dev-foo-5 ansible_host=localhost
-            dev-compute-0 ansible_host=localhost
-            dev-compute-1 ansible_host=localhost
+            dev-foo-04 ansible_host=localhost
+            dev-foo-05 ansible_host=localhost
+            dev-compute-000 ansible_host=localhost
+            dev-compute-001 ansible_host=localhost
 
         Then "{{ groups[compute] | hostlist_expression }}" will return:
             
-            ["dev-foo-[0,3-5]", "dev-compute-[0-1]", "my-random-host"]
+            ['dev-foo-[00,04-05,3]', 'dev-compute-[000-001]', 'my-random-host']
+
+        NB: This does not guranteed to return parts in the same order as `scontrol hostlist`, but its output should return the same hosts when passed to `scontrol hostnames`.
     """
 
     results = {}
@@ -58,19 +60,23 @@ def hostlist_expression(hosts):
         if m:
             prefix, suffix = m.groups()
             r = results.setdefault(prefix, [])
-            r.append(int(suffix))
+            r.append(suffix)
         else:
             unmatchable.append(v)
     return ['{}[{}]'.format(k, _group_numbers(v)) for k, v in results.items()] + unmatchable
 
 def _group_numbers(numbers):
     units = []
-    prev = min(numbers)
-    for v in sorted(numbers):
+    ints = [int(n) for n in numbers]
+    lengths = [len(n) for n in numbers]
+    # sort numbers by int value and length:
+    ints, lengths, numbers = zip(*sorted(zip(ints, lengths, numbers)))
+    prev = min(ints)
+    for i, v in enumerate(sorted(ints)):
         if v == prev + 1:
-            units[-1].append(v)
+            units[-1].append(numbers[i])
         else:
-            units.append([v])
+            units.append([numbers[i]])
         prev = v
     return ','.join(['{}-{}'.format(u[0], u[-1]) if len(u) > 1 else str(u[0]) for u in units])
 
