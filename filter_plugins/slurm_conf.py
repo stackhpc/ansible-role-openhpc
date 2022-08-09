@@ -18,7 +18,6 @@
 from ansible import errors
 import jinja2
 import re
-import pprint
 
 # Pattern to match a hostname with numerical ending
 pattern = re.compile("^(.*\D(?=\d))(\d+)$")
