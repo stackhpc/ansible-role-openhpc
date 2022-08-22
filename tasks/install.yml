@@ -46,6 +46,25 @@
     name: "{{ openhpc_slurm_pkglist | reject('eq', '') }}"
   when: openhpc_slurm_pkglist | default(false, true)
 
+- name: Create drop-in directory for munge service
+  ansible.builtin.file:
+    path: /etc/systemd/system/munge.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Delay munge start till after cloud-init
+  # in case mungekey is injected by cloud-init
+  copy:
+    dest: /etc/systemd/system/munge.service.d/slurmapp.conf
+    content: |
+      [Unit]
+      After=cloud-final.service
+    owner: root
+    group: root
+    mode: 0644
+
 - name: Install packages from openhpc_packages variable
   yum:
     name: "{{ openhpc_packages }}"
