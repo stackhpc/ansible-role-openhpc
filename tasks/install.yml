@@ -61,6 +61,9 @@
     content: |
       [Unit]
       After=cloud-final.service
+    owner: root
+    group: root
+    mode: 0644
 
 - name: Install packages from openhpc_packages variable
   yum:

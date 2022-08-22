@@ -20,5 +20,5 @@
   register: drained_nodes
   until: "inventory_hostname in drained_nodes.stdout_lines"
   delay: "{{ openhpc_retry_delay }}"
-  retries: "{{ (openhpc_drain_timeout/openhpc_retry_delay) | int }}"
+  retries: "{{ (openhpc_drain_timeout / openhpc_retry_delay) | int }}"
   changed_when: false
