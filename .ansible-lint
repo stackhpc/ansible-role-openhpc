@@ -3,3 +3,5 @@ skip_list:
   - 'fqcn-builtins'
   - 'key-order'
   - 'name[missing]'
+warn_list:
+  - 'deprecated-module'
