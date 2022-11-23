@@ -13,8 +13,7 @@ platforms:
       - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    networks:
-      - name: net1
+    network: net1
     docker_networks:
       - name: net1
         driver_options:
@@ -30,8 +29,7 @@ platforms:
       - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    networks:
-      - name: net1
+    network: net1
     docker_networks:
       - name: net1
         driver_options:
@@ -47,8 +45,7 @@ platforms:
       - /tmp
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    networks:
-      - name: net1
+    network: net1
     docker_networks:
       - name: net1
         driver_options:
