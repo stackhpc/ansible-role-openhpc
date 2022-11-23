@@ -1,7 +1,7 @@
 ---
 name: 2x partitions, group is partition
 driver:
-  name: docker
+  name: podman
 platforms:
   - name: testohpc-login-0
     image: ${MOLECULE_IMAGE}

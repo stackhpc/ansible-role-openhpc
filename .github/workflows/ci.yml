@@ -25,7 +25,7 @@ jobs:
       matrix:
         image:
           - 'centos:7'
-          - 'rockylinux:8.5'
+          - 'rockylinux:8.6'
         scenario:
           - test1
           - test1b
@@ -79,7 +79,9 @@ jobs:
           python-version: '3.x'
 
       - name: Install test dependencies.
-        run: pip3 install -U ansible molecule[docker] docker yamllint ansible-lint
+        run: |
+          pip3 install -U ansible molecule[podman] yamllint ansible-lint
+          ansible-galaxy collection install containers.podman:>=1.10.1 # otherwise get https://github.com/containers/ansible-podman-collections/issues/428
 
       - name: Display ansible version
         run:  ansible --version
@@ -110,7 +112,9 @@ jobs:
           python-version: '3.x'
 
       - name: Install test dependencies.
-        run: pip3 install -U ansible molecule[docker] docker yamllint ansible-lint
+        run: |
+          pip3 install -U ansible molecule[podman] yamllint ansible-lint
+          ansible-galaxy collection install containers.podman:>=1.10.1 # otherwise get https://github.com/containers/ansible-podman-collections/issues/428
 
       - name: Display ansible version
         run:  ansible --version

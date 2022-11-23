@@ -1,7 +1,6 @@
 ---
-name: single partition, group is partition
 driver:
-  name: docker
+  name: podman
 platforms:
   - name: testohpc-control
     image: ${MOLECULE_IMAGE}
