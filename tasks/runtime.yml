@@ -27,14 +27,14 @@
     group: slurm
     mode: 0755
     state: directory
-  when: inventory_hostname == openhpc_slurm_control_host
+  when: openhpc_enable.control | bool
 
 - name: Generate a Munge key on control host
   # NB this is usually a no-op as the package install actually generates a (node-unique) one, so won't usually trigger handler
   command: "dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024"
   args:
     creates: "/etc/munge/munge.key"
-  when: inventory_hostname == openhpc_slurm_control_host
+  when: openhpc_enable.control | bool
 
 - name: Retrieve Munge key from control host
   slurp:
@@ -143,7 +143,7 @@
 - name: Set slurmctld location for configless operation
   lineinfile:
     path: /etc/sysconfig/slurmd
-    line: "SLURMD_OPTIONS='--conf-server {{ openhpc_slurm_control_host }}'"
+    line: "SLURMD_OPTIONS='--conf-server {{ openhpc_slurm_control_hostname }}'"
     regexp: "^SLURMD_OPTIONS="
     create: yes
     owner: root

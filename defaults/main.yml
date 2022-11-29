@@ -3,6 +3,7 @@ openhpc_slurm_service_enabled: true
 openhpc_slurm_service_started: "{{ openhpc_slurm_service_enabled }}"
 openhpc_slurm_service:
 openhpc_slurm_control_host: "{{ inventory_hostname }}"
+openhpc_slurm_control_hostname: "{{ openhpc_slurm_control_host }}"
 openhpc_slurm_partitions: []
 openhpc_cluster_name:
 openhpc_packages:
@@ -31,9 +32,9 @@ openhpc_slurm_job_comp_type: jobcomp/none
 openhpc_slurm_job_comp_loc: /var/log/slurm_jobacct.log
 
 # slurmdbd configuration
-openhpc_slurmdbd_host: "{{ openhpc_slurm_control_host }}"
+openhpc_slurmdbd_host: "{{ openhpc_slurm_control_hostname }}"
 openhpc_slurmdbd_port: "{{ openhpc_slurm_accounting_storage_port }}"
-openhpc_slurmdbd_mysql_host: "{{ openhpc_slurm_control_host }}"
+openhpc_slurmdbd_mysql_host: "{{ openhpc_slurm_control_hostname }}"
 openhpc_slurmdbd_mysql_database: slurm_acct_db
 #openhpc_slurmdbd_mysql_password:
 openhpc_slurmdbd_mysql_username: slurm

@@ -17,7 +17,9 @@ package in the image.
 
 `openhpc_slurm_service_started`: Optional boolean. Whether to start slurm services. If set to false, all services will be stopped. Defaults to `openhpc_slurm_service_enabled`.
 
-`openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`
+`openhpc_slurm_control_host`: Name in inventory of the control node e.g `"{{ groups['cluster_control'] | first }}"`
+
+`openhpc_slurm_control_hostname`: Actual resolvable host name of the control name, if different from `openhpc_slurm_control_host`.
 
 `openhpc_packages`: additional OpenHPC packages to install
 
