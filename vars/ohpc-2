@@ -7,8 +7,6 @@ ohpc_slurm_packages:
     - "slurm-slurmctld-ohpc"
     - "slurm-example-configs-ohpc"
   batch:
-    # Workaround https://github.com/openhpc/ohpc/issues/1644 using older apptainer version
-    - https://github.com/apptainer/apptainer/releases/download/v1.1.3/apptainer-1.1.3-1.x86_64.rpm
     - "ohpc-base-compute"
     - "ohpc-slurm-client"
   runtime:
