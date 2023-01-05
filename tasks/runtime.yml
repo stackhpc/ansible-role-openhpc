@@ -136,7 +136,7 @@
   changed_when: true
   when:
     - openhpc_slurm_control_host in ansible_play_hosts
-    - hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed # noqa 503
+    - hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed # noqa no-handler
   notify:
     - Restart slurmd service
 
@@ -164,7 +164,7 @@
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
 
-- name: flush handler
+- name: Flush handler
   meta: flush_handlers # as then subsequent "ensure" is a no-op if slurm services bounced
 
 - name: Ensure slurmdbd is started and running

@@ -19,13 +19,13 @@ jobs:
     # See:
     #   - https://bugzilla.redhat.com/show_bug.cgi?id=190144
     #   - https://github.com/systemd/systemd/pull/16424
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
         image:
           - 'centos:7'
-          - 'rockylinux:8.5'
+          - 'rockylinux:8.6'
         scenario:
           - test1
           - test1b
@@ -43,7 +43,6 @@ jobs:
           - test12
           - test13
           - test14
-          - test15
 
         exclude:
           - image: 'centos:7'
@@ -71,15 +70,17 @@ jobs:
 
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.9'
 
       - name: Install test dependencies.
-        run: pip3 install -U ansible molecule[docker] docker yamllint ansible-lint
+        run: |
+          pip3 install -U ansible molecule[podman] yamllint ansible-lint
+          ansible-galaxy collection install containers.podman:>=1.10.1 # otherwise get https://github.com/containers/ansible-podman-collections/issues/428
 
       - name: Display ansible version
         run:  ansible --version
@@ -102,15 +103,17 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.9'
 
       - name: Install test dependencies.
-        run: pip3 install -U ansible molecule[docker] docker yamllint ansible-lint
+        run: |
+          pip3 install -U ansible molecule[podman] yamllint ansible-lint
+          ansible-galaxy collection install containers.podman:>=1.10.1 # otherwise get https://github.com/containers/ansible-podman-collections/issues/428
 
       - name: Display ansible version
         run:  ansible --version

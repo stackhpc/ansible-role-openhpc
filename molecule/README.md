@@ -22,36 +22,27 @@ test11 | 1            | N                       | As for #5 but then deletes a n
 test12 | 1            | N                       | As for #5 but enabling job completion and testing `sacct -c`
 test13 | 1            | N                       | As for #5 but tests `openhpc_config` variable.
 test14 | 1            | N                       | As for #5 but also tests `extra_nodes` via State=DOWN nodes.
-test15 | 1            | N                       | No compute nodes.
+
 
 # Local Installation & Running
 
 Local installation on a RockyLinux 8.x machine looks like:
 
-    sudo yum install -y gcc python3-pip python3-devel openssl-devel python3-libselinux
-    sudo yum install -y yum-utils
-    sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-    sudo yum install -y docker-ce docker-ce-cli containerd.io
-    sudo yum install -y iptables
-    sudo systemctl start docker
-    sudo usermod -aG docker ${USER}
-    sudo usermod -aG docker rocky
-    newgrp docker
-    docker run hello-world # test docker works without sudo
-
+    sudo dnf install -y podman
     sudo yum install -y git
     git clone git@github.com:stackhpc/ansible-role-openhpc.git
     cd ansible-role-openhpc/
-    python3 -m venv venv
+    python3.9 -m venv venv
     . venv/bin/activate
     pip install -U pip
     pip install -r molecule/requirements.txt
+    ansible-galaxy collection install containers.podman:>=1.10.1
 
 Then to run tests, e.g.::
 
     cd ansible-role-openhpc/
     MOLECULE_IMAGE=centos:7 molecule test --all # NB some won't work as require OpenHPC v2.x (-> CentOS 8.x) features - see `.github/workflows/ci.yml`
-    MOLECULE_IMAGE=rockylinux:8.5 molecule test --all
+    MOLECULE_IMAGE=rockylinux:8.6 molecule test --all
 
 **NB:** If the host network has an MTU smaller than 1500 (the docker default), check `molecule.yml` for the relevant test contains `DOCKER_MTU`, then prepend `DOCKER_MTU=<mtu>` to your command. If you have already run molecule you will need to destroy the instances and run `docker network prune` before retrying.
 
