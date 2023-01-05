@@ -25,7 +25,8 @@ jobs:
       matrix:
         image:
           - 'centos:7'
-          - 'rockylinux:8.5'
+          - 'rockylinux:8.6'
+          - 'rockylinux:8.7'
         scenario:
           - test1
           - test1b
