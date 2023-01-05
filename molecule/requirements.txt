@@ -1,4 +1,4 @@
 pip
 setuptools
-molecule[docker,lint,ansible]
+molecule[podman,lint,ansible]
 ansible>=2.9.0
