@@ -41,12 +41,6 @@
   loop: "{{ ohpc_slurm_packages | dict2items }}"
   when: openhpc_enable.get(item.key, false)
 
-- name: Workaround https://github.com/openhpc/ohpc/issues/1644 using older apptainer version
-  yum:
-    name: https://github.com/apptainer/apptainer/releases/download/v1.1.3/apptainer-1.1.3-1.x86_64.rpm
-    disable_gpg_check: true
-  when: ansible_distribution_major_version == "8"
-
 - name: Install required slurm packages
   yum:
     name: "{{ openhpc_slurm_pkglist | reject('eq', '') }}"
