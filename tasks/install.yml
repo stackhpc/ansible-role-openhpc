@@ -1,23 +1,22 @@
 ---
 
-- name: Gather package facts
-  package_facts:
-    manager: rpm
-
-- name: Install ohpc-release package
-  yum:
-    name: "{{ openhpc_release_repo | default(ohpc_release_repos[ansible_distribution_major_version]) }}"
-    state: present
-    disable_gpg_check: True
-  when: "'ohpc-release' not in ansible_facts.packages"
-
-- name: Update package facts
-  package_facts:
-    manager: rpm
+- name: Ensure OpenHPC repos
+  ansible.builtin.yum_repository:
+    name: "{{ item.name }}"
+    description: "{{ item.description | default(omit) }}"
+    file: "{{ item.file }}"
+    baseurl: "{{ item.baseurl | default(omit) }}"
+    metalink: "{{ item.metalink | default(omit) }}"
+    mirrorlist: "{{ item.mirrorlist | default(omit) }}"
+    gpgcheck: "{{ item.gpgcheck | default(omit) }}"
+    gpgkey: "{{ item.gpgkey | default(omit) }}"
+  loop: "{{ ohpc_repos }}"
+  loop_control:
+    label: "{{ item.name }}"
 
 - name: Include variables for OpenHPC version
   include_vars:
-    file: "ohpc-{{ ansible_facts.packages['ohpc-release'][0]['version'] }}"
+    file: "ohpc-{{ openhpc_version }}"
 
 - name: Find PowerTools repo
   find:
