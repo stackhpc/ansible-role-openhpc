@@ -10,16 +10,27 @@ The minimal image for nodes is a CentOS 7 or RockyLinux 8 GenericCloud image. Th
 
 ## Role Variables
 
-`openhpc_release_repo`: Optional. Path to the `ohpc-release` repo to use. Defaults provide v1.3 for Centos 7 and v2 for Centos 8. Or, include this
-package in the image.
+`openhpc_version`: Optional. OpenHPC version to install. Defaults provide `1.3` for Centos 7 and `2` for RockyLinux/CentOS 8.
 
-`openhpc_slurm_service_enabled`: boolean, whether to enable the appropriate slurm service (slurmd/slurmctld)
+`openhpc_extra_repos`: Optional list. Extra Yum repository definitions to configure, following the format of the Ansible
+[yum_repository](https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html) module. Respected keys for
+each list element:
+* `name`: Required
+* `description`: Optional
+* `file`: Required
+* `baseurl`: Optional
+* `metalink`: Optional
+* `mirrorlist`: Optional
+* `gpgcheck`: Optional
+* `gpgkey`: Optional
+
+`openhpc_slurm_service_enabled`: boolean, whether to enable the appropriate slurm service (slurmd/slurmctld).
 
 `openhpc_slurm_service_started`: Optional boolean. Whether to start slurm services. If set to false, all services will be stopped. Defaults to `openhpc_slurm_service_enabled`.
 
-`openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`
+`openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`.
 
-`openhpc_packages`: additional OpenHPC packages to install
+`openhpc_packages`: additional OpenHPC packages to install.
 
 `openhpc_enable`:
 * `control`: whether to enable control host
@@ -62,7 +73,7 @@ For each group (if used) or partition any nodes in an ansible inventory group `<
 
 `openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days). See [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime` for format. The default is 60 days. The value should be quoted to avoid Ansible conversions.
 
-`openhpc_cluster_name`: name of the cluster
+`openhpc_cluster_name`: name of the cluster.
 
 `openhpc_config`: Optional. Mapping of additional parameters and values for `slurm.conf`. Note these will override any included in `templates/slurm.conf.j2`.
 
@@ -99,9 +110,9 @@ accounting data such as start and end times. By default no job accounting is con
 `jobcomp/filetxt`, `jobcomp/none`, `jobcomp/elasticsearch`.
 
 `openhpc_slurm_job_acct_gather_type`: Mechanism for collecting job accounting data. Can be one
- of `jobacct_gather/linux`, `jobacct_gather/cgroup` and `jobacct_gather/none`
+ of `jobacct_gather/linux`, `jobacct_gather/cgroup` and `jobacct_gather/none`.
 
-`openhpc_slurm_job_acct_gather_frequency`: Sampling period for job accounting (seconds)
+`openhpc_slurm_job_acct_gather_frequency`: Sampling period for job accounting (seconds).
 
 `openhpc_slurm_job_comp_loc`: Location to store the job accounting records. Depends on value of
 `openhpc_slurm_job_comp_type`, e.g for `jobcomp/filetxt` represents a path on disk.
@@ -111,15 +122,15 @@ accounting data such as start and end times. By default no job accounting is con
 The following options affect `slurmdbd.conf`. Please see the slurm [documentation](https://slurm.schedmd.com/slurmdbd.conf.html) for more details.
 You will need to configure these variables if you have set `openhpc_enable.database` to `true`.
 
-`openhpc_slurmdbd_port`: Port for slurmdb to listen on, defaults to `6819`
+`openhpc_slurmdbd_port`: Port for slurmdb to listen on, defaults to `6819`.
 
 `openhpc_slurmdbd_mysql_host`: Hostname or IP Where mariadb is running, defaults to `openhpc_slurm_control_host`.
 
-`openhpc_slurmdbd_mysql_database`: Database to use for accounting, defaults to `slurm_acct_db`
+`openhpc_slurmdbd_mysql_database`: Database to use for accounting, defaults to `slurm_acct_db`.
 
 `openhpc_slurmdbd_mysql_password`: Password for authenticating with the database. You must set this variable.
 
-`openhpc_slurmdbd_mysql_username`: Username for authenticating with the database, defaults to `slurm`
+`openhpc_slurmdbd_mysql_username`: Username for authenticating with the database, defaults to `slurm`.
 
 ## Example Inventory
 
