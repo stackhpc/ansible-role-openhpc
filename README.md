@@ -2,7 +2,7 @@
 
 # stackhpc.openhpc
 
-This Ansible role installs packages and performs configuration to provide an OpenHPC Slurm cluster. It can also be used to drain and resume nodes.
+This Ansible role installs packages and performs configuration to provide an OpenHPC Slurm cluster.
 
 As a role it must be used from a playbook, for which a simple example is given below. This approach means it is totally modular with no assumptions about available networks or any cluster features except for some hostname conventions. Any desired cluster fileystem or other required functionality may be freely integrated using additional Ansible roles or other approaches.
 
@@ -37,8 +37,6 @@ each list element:
 * `database`: whether to enable slurmdbd
 * `batch`: whether to enable compute nodes
 * `runtime`: whether to enable OpenHPC runtime
-* `drain`: whether to drain compute nodes
-* `resume`: whether to resume compute nodes
 
 `openhpc_slurmdbd_host`: Optional. Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to prevent the role from managing slurmdbd. Defaults to `openhpc_slurm_control_host`.
 
@@ -174,54 +172,6 @@ To deploy, create a playbook which looks like this:
             - name: "compute"
           openhpc_cluster_name: openhpc
           openhpc_packages: []
-    ...
-
-To drain nodes, for example, before scaling down the cluster to 6 nodes:
-
-    ---
-    - hosts: openstack
-      gather_facts: false
-      vars:
-        partition: "{{ cluster_group.output_value | selectattr('group', 'equalto', item.name) | list }}"
-        openhpc_slurm_partitions:
-          - name: "compute"
-            flavor: "compute-A"
-            image: "CentOS7.5-OpenHPC"
-            num_nodes: 6
-            user: "centos"
-        openhpc_cluster_name: openhpc
-      roles:
-        # Our stackhpc.cluster-infra role can be invoked in `query` mode which
-        # looks up the state of the cluster by querying the Heat API.
-        - role: stackhpc.cluster-infra
-          cluster_name: "{{ cluster_name }}"
-          cluster_state: query
-          cluster_params:
-            cluster_groups: "{{ cluster_groups }}"
-      tasks:
-        # Given that the original cluster that was created had 8 nodes and the
-        # cluster we want to create has 6 nodes, the computed desired_state
-        # variable stores the list of instances to leave untouched.
-        - name: Count the number of compute nodes per slurm partition
-          set_fact:
-            desired_state: "{{ (( partition | first).nodes | map(attribute='name') | list )[:item.num_nodes] + desired_state | default([]) }}"
-          when: partition | length > 0
-          with_items: "{{ openhpc_slurm_partitions }}"
-        - debug: var=desired_state
-
-    - hosts: cluster_batch
-      become: yes
-      vars:
-        desired_state: "{{ hostvars['localhost']['desired_state'] | default([]) }}"
-      roles:
-        # Now, the stackhpc.openhpc role is invoked in drain/resume modes where
-        # the instances in desired_state are resumed if in a drained state and
-        # drained if in a resumed state.
-        - role: stackhpc.openhpc
-          openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
-          openhpc_enable:
-            drain: "{{ inventory_hostname not in desired_state }}"
-            resume: "{{ inventory_hostname in desired_state }}"
     ...
 
 ---

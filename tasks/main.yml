@@ -32,14 +32,4 @@
     - openhpc_slurm_service_started | bool
   tags: post-configure
 
-- name: Run drain or resume tasks
-  block:
-    - name: Run drain tasks
-      include_tasks: drain.yml
-      when: openhpc_enable.drain | default(false) | bool
-
-    - name: Run resume tasks
-      include_tasks: resume.yml
-      when: openhpc_enable.resume | default(false) | bool
-  delegate_to: "{{ openhpc_slurm_control_host }}"
 ...

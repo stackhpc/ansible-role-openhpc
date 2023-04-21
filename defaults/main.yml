@@ -8,7 +8,6 @@ openhpc_slurm_partitions: []
 openhpc_cluster_name:
 openhpc_packages:
   - slurm-libpmi-ohpc
-openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
 openhpc_job_maxtime: '60-0' # quote this to avoid ansible converting some formats to seconds, which is interpreted as minutes by Slurm
@@ -44,8 +43,6 @@ openhpc_enable:
   batch: false
   database: false
   runtime: false
-  drain: false
-  resume: false
 ohpc_slurm_services:
   control: slurmctld
   batch: slurmd
