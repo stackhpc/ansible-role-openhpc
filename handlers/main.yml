@@ -60,4 +60,3 @@
     state: restarted
   when:
     - openhpc_slurm_service_started | bool
-    - openhpc_slurm_service == 'slurmd'

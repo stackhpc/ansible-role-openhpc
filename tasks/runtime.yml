@@ -20,6 +20,13 @@
     - openhpc_slurm_control_host not in ansible_play_hosts
     - not openhpc_munge_key
 
+- name: Enable batch on configless login-only nodes
+  set_fact:
+    openhpc_enable: "{{ openhpc_enable | combine({'batch':true}) }}"
+  when:
+    - openhpc_slurm_configless
+    - openhpc_login_only_nodes in group_names
+
 - name: Ensure Slurm directories exists
   file:
     path: "{{ openhpc_state_save_location }}"
@@ -150,7 +157,7 @@
     group: root
     mode: 0644
   when:
-    - openhpc_slurm_service == 'slurmd'
+    - openhpc_enable.batch | default(false)
     - openhpc_slurm_configless
   notify:
     - Restart slurmd service
@@ -167,15 +174,23 @@
 - name: Flush handler
   meta: flush_handlers # as then subsequent "ensure" is a no-op if slurm services bounced
 
-- name: Ensure slurmdbd is started and running
+- name: Ensure slurmdbd state
   service:
     name: slurmdbd
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_enable.database | default(false) | bool
 
-- name: Ensure Slurm service state
+- name: Ensure slurmctld state
   service:
-    name: "{{ openhpc_slurm_service }}"
+    name: slurmd
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
+  when: openhpc_enable.control | default(false) | bool
+
+- name: Ensure slurmd state
+  service:
+    name: slurmd
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
+    state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
+  when: openhpc_enable.batch | default(false) | bool
