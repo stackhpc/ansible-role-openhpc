@@ -56,26 +56,26 @@ openhpc_extra_repos: []
 ohpc_openhpc_repos:
   "7":
     - name: OpenHPC
-      file: OpenHPC.repo
+      file: OpenHPC
       description: "OpenHPC-1.3 - Base"
       baseurl: "http://build.openhpc.community/OpenHPC:/1.3/CentOS_7"
       gpgcheck: true
       gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v1.3.5.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-1
     - name: OpenHPC-updates
-      file: OpenHPC.repo
+      file: OpenHPC
       description: "OpenHPC-1.3 - Updates"
       baseurl: "http://build.openhpc.community/OpenHPC:/1.3/updates/CentOS_7"
       gpgcheck: true
       gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v1.3.5.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-1
   "8":
     - name: OpenHPC
-      file: OpenHPC.repo
+      file: OpenHPC
       description: OpenHPC-2 - Base
       baseurl: "http://repos.openhpc.community/OpenHPC/2/CentOS_8"
       gpgcheck: true
       gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v2.6.1.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-2
     - name: OpenHPC-updates
-      file: OpenHPC.repo
+      file: OpenHPC
       description: OpenHPC-2 - Updates
       baseurl: "http://repos.openhpc.community/OpenHPC/2/updates/CentOS_8"
       gpgcheck: true
@@ -84,14 +84,14 @@ ohpc_openhpc_repos:
 ohpc_default_extra_repos:
   "7":
     - name: epel
-      file: epel.repo
+      file: epel
       description: "Extra Packages for Enterprise Linux 7 - $basearch"
       metalink: "https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch&infra=$infra&content=$contentdir"
       gpgcheck: true
       gpgkey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7"
   "8":
     - name: epel
-      file: epel.repo
+      file: epel
       description: "Extra Packages for Enterprise Linux 8 - $basearch"
       metalink: "https://mirrors.fedoraproject.org/metalink?repo=epel-8&arch=$basearch&infra=$infra&content=$contentdir"
       gpgcheck: true
