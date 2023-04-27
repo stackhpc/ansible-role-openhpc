@@ -118,7 +118,9 @@ Epilog=/etc/slurm/slurm.epilog.clean
             {% set first_host_hv = hostvars[first_host] %}
             {% set ram_mb = (first_host_hv['ansible_memory_mb']['real']['total'] * (group.ram_multiplier | default(openhpc_ram_multiplier))) | int %}
             {% for hostlist in (inventory_group_hosts | hostlist_expression) %}
-NodeName={{ hostlist }} State=UNKNOWN RealMemory={{ group.get('ram_mb', ram_mb) }} Sockets={{first_host_hv['ansible_processor_count']}} CoresPerSocket={{ first_host_hv['ansible_processor_cores'] }} ThreadsPerCore={{ first_host_hv['ansible_processor_threads_per_core'] }}
+        {% set gres = ' Gres=%s' % (','.join(group.gres | map(attribute='conf') )) if 'gres' in group else '' %}
+
+NodeName={{ hostlist }} State=UNKNOWN RealMemory={{ group.get('ram_mb', ram_mb) }} Sockets={{first_host_hv['ansible_processor_count']}} CoresPerSocket={{ first_host_hv['ansible_processor_cores'] }} ThreadsPerCore={{ first_host_hv['ansible_processor_threads_per_core'] }}{{ gres }}
                 {% set _ = nodelist.append(hostlist) %}
             {% endfor %}{# nodes #}
         {% endif %}{# inventory_group_hosts #}
