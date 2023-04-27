@@ -1,0 +1,16 @@
+AutoDetect=off
+{% for part in openhpc_slurm_partitions %}
+{%  set nodelist = [] %}
+{%  for group in part.get('groups', [part]) %}
+{%      if 'gres' in group %}
+{%          for gres in group.gres %}
+{%              set gres_name, gres_type, _ = gres.conf.split(':') %}
+{%              set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
+{%              set inventory_group_hosts = groups.get(group_name, []) %}
+{%              for hostlist in (inventory_group_hosts | hostlist_expression) %}
+NodeName={{ hostlist }} Name={{ gres_name }} Type={{ gres_type }} File={{ gres.file }}
+{%              endfor %}
+{%          endfor %}
+{%      endif %}
+{%  endfor %}
+{% endfor %}
