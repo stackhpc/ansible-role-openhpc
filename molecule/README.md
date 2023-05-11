@@ -32,7 +32,7 @@ Local installation on a RockyLinux 8.x machine looks like:
     sudo yum install -y git
     git clone git@github.com:stackhpc/ansible-role-openhpc.git
     cd ansible-role-openhpc/
-    python3.9 -m venv venv
+    python3.8 -m venv venv
     . venv/bin/activate
     pip install -U pip
     pip install -r molecule/requirements.txt
