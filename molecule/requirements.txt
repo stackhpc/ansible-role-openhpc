@@ -1,2 +1,3 @@
 ansible>=2.9.0
-molecule[podman,lint,ansible]
+molecule
+molecule-plugins[podman]
