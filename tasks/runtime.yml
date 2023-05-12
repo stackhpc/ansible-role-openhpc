@@ -115,7 +115,7 @@
   changed_when: false # so molecule doesn't fail
   become: no
 
-- name: Create slurm.conf on control node
+- name: Create slurm.conf
   copy:
     src: "{{ _slurm_conf_tmpfile.path }}"
     dest: /etc/slurm/slurm.conf
@@ -127,6 +127,19 @@
     - Restart slurmctld service
   register: ohpc_slurm_conf
   # NB uses restart rather than reload as number of nodes might have changed
+
+- name: Create gres.conf
+  template:
+    src: "{{ openhpc_gres_template }}"
+    dest: /etc/slurm/gres.conf
+    mode: "0600"
+    owner: slurm
+    group: slurm
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
+  notify:
+    - Restart slurmctld service
+  register: ohpc_gres_conf
+  # NB uses restart rather than reload as this is needed in some cases
 
 - name: Remove local tempfile for slurm.conf templating
   ansible.builtin.file:
@@ -143,7 +156,7 @@
   changed_when: true
   when:
     - openhpc_slurm_control_host in ansible_play_hosts
-    - hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed # noqa no-handler
+    - hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed or hostvars[openhpc_slurm_control_host].ohpc_gres_conf.changed # noqa no-handler
   notify:
     - Restart slurmd service
 
