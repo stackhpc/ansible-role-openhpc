@@ -80,8 +80,9 @@ jobs:
 
       - name: Install test dependencies.
         run: |
-          pip3 install -U ansible molecule[podman] yamllint ansible-lint
-          # ansible-galaxy collection install containers.podman:>=1.10.1 # otherwise get https://github.com/containers/ansible-podman-collections/issues/428
+          pip3 install -U pip
+          pip3 install -r molecule/requirements.txt
+          ansible-galaxy collection install containers.podman:>=1.10.1 # otherwise get https://github.com/containers/ansible-podman-collections/issues/428
 
       - name: Display ansible version
         run:  ansible --version
