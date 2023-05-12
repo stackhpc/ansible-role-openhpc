@@ -19,7 +19,7 @@ jobs:
     # See:
     #   - https://bugzilla.redhat.com/show_bug.cgi?id=190144
     #   - https://github.com/systemd/systemd/pull/16424
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: false
       matrix:
@@ -80,7 +80,8 @@ jobs:
 
       - name: Install test dependencies.
         run: |
-          pip3 install -U ansible molecule-podman yamllint ansible-lint
+          pip3 install -U pip
+          pip3 install -U -r molecule/requirements.txt
           ansible-galaxy collection install containers.podman:>=1.10.1 # otherwise get https://github.com/containers/ansible-podman-collections/issues/428
 
       - name: Display ansible version
