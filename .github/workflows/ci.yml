@@ -70,9 +70,6 @@ jobs:
             scenario: test15
 
     steps:
-      - name: Install packages
-        run: sudo apt-get install -y podman-plugins
-
       - name: Check out the codebase.
         uses: actions/checkout@v3
 
