@@ -196,7 +196,7 @@
 
 - name: Ensure slurmctld state
   service:
-    name: slurmd
+    name: slurmctld
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_enable.control | default(false) | bool
