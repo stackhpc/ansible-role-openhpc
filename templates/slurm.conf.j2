@@ -9,10 +9,7 @@
 # See the slurm.conf man page for more information.
 #
 ClusterName={{ openhpc_cluster_name }}
-ControlMachine={{ openhpc_slurm_control_host }}
-#ControlAddr=
-#BackupController=
-#BackupAddr=
+SlurmctldHost={{ openhpc_slurm_control_host }}{% if openhpc_slurm_control_host_address is defined %}({{ openhpc_slurm_control_host_address }}){% endif %}
 #
 SlurmUser=slurm
 #SlurmdUser=root
