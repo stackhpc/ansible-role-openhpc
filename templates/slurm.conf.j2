@@ -35,7 +35,7 @@ MpiDefault=none
 #PluginDir=
 #PlugStackConfig=
 #PrivateData=jobs
-ProctrackType=proctrack/pgid
+ProctrackType=proctrack/cgroup
 #Prolog=
 #PrologFlags=
 #PrologSlurmctld=
@@ -55,7 +55,7 @@ SlurmUser=slurm
 StateSaveLocation={{ openhpc_state_save_location }}
 SwitchType=switch/none
 #TaskEpilog=
-#TaskPlugin=task/none
+#TaskPlugin=task/affinity
 #TaskProlog=
 #TopologyPlugin=topology/tree
 #TmpFS=/tmp
@@ -90,7 +90,7 @@ Waittime=0
 #MaxMemPerCPU=0
 #SchedulerTimeSlice=30
 SchedulerType=sched/backfill
-SelectType=select/cons_res
+SelectType=select/cons_tres
 SelectTypeParameters=CR_Core
 #
 #
@@ -121,7 +121,7 @@ AccountingStoragePort={{ openhpc_slurm_accounting_storage_port }}
 AccountingStorageType={{ openhpc_slurm_accounting_storage_type }}
 AccountingStorageUser={{ openhpc_slurm_accounting_storage_user }}
 #AccountingStoreFlags=
-
+#JobCompHost=
 JobCompLoc={{ openhpc_slurm_job_comp_loc }}
 #JobCompPass=
 #JobCompPort=
