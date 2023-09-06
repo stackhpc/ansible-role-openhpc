@@ -14,10 +14,6 @@ platforms:
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     network: net1
-    docker_networks:
-      - name: net1
-        driver_options:
-          com.docker.network.driver.mtu: ${DOCKER_MTU:-1500} # 1500 is docker default
   - name: testohpc-compute-0
     image: ${MOLECULE_IMAGE}
     pre_build_image: true
