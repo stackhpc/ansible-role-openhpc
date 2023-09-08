@@ -10,87 +10,135 @@
 #
 ClusterName={{ openhpc_cluster_name }}
 SlurmctldHost={{ openhpc_slurm_control_host }}{% if openhpc_slurm_control_host_address is defined %}({{ openhpc_slurm_control_host_address }}){% endif %}
+#SlurmctldHost=
 #
-SlurmUser=slurm
-#SlurmdUser=root
-SlurmctldPort=6817
-SlurmdPort=6818
-AuthType=auth/munge
-#JobCredentialPrivateKey=
-#JobCredentialPublicCertificate=
-StateSaveLocation={{ openhpc_state_save_location }}
-SlurmdSpoolDir=/var/spool/slurm
-SwitchType=switch/none
+#DisableRootJobs=NO
+#EnforcePartLimits=NO
+#EpilogSlurmctld=
+#FirstJobId=1
+#MaxJobId=67043328
+#GresTypes=
+#GroupUpdateForce=0
+#GroupUpdateTime=600
+#JobFileAppend=0
+#JobRequeue=1
+#JobSubmitPlugins=lua
+#KillOnBadExit=0
+#LaunchType=launch/slurm
+#Licenses=foo*4,bar
+#MailProg=/bin/mail
+#MaxJobCount=10000
+#MaxStepCount=40000
+#MaxTasksPerNode=512
 MpiDefault=none
-SlurmctldPidFile=/var/run/slurmctld.pid
-SlurmdPidFile=/var/run/slurmd.pid
-ProctrackType=proctrack/pgid
+#MpiParams=ports=#-#
 #PluginDir=
-#FirstJobId=
-#MaxJobCount=
 #PlugStackConfig=
-#PropagatePrioProcess=
+#PrivateData=jobs
+ProctrackType=proctrack/pgid
+#Prolog=
+#PrologFlags=
+#PrologSlurmctld=
+#PropagatePrioProcess=0
 #PropagateResourceLimits=
 #PropagateResourceLimitsExcept=
-#Prolog=
-#Epilog=
-#SrunProlog=
+#RebootProgram=
+SlurmctldPidFile=/var/run/slurmctld.pid
+SlurmctldPort=6817
+SlurmdPidFile=/var/run/slurmd.pid
+SlurmdPort=6818
+SlurmdSpoolDir=/var/spool/slurm # NB: not OpenHPC default!
+SlurmUser=slurm
+#SlurmdUser=root
 #SrunEpilog=
-#TaskProlog=
+#SrunProlog=
+StateSaveLocation={{ openhpc_state_save_location }}
+SwitchType=switch/none
 #TaskEpilog=
-#TaskPlugin=
+#TaskPlugin=task/affinity
+#TaskProlog=
+#TopologyPlugin=topology/tree
+#TmpFS=/tmp
 #TrackWCKey=no
-#TreeWidth=50
-#TmpFS=
-#UsePAM=
-{% if openhpc_slurm_configless %}SlurmctldParameters=enable_configless{% endif %}
-
-
+#TreeWidth=
+#UnkillableStepProgram=
+#UsePAM=0
+#
+#
 # TIMERS
+#BatchStartTimeout=10
+#CompleteWait=0
+#EpilogMsgTime=2000
+#GetEnvTimeout=2
+#HealthCheckInterval=0
+#HealthCheckProgram=
+InactiveLimit=0
+KillWait=30
+#MessageTimeout=10
+#ResvOverRun=0
+MinJobAge=300
+#OverTimeLimit=0
 SlurmctldTimeout=300
 SlurmdTimeout=300
-InactiveLimit=0
-MinJobAge=300
-KillWait=30
+#UnkillableStepTimeout=60
+#VSizeFactor=0
 Waittime=0
 #
+#
 # SCHEDULING
+#DefMemPerCPU=0
+#MaxMemPerCPU=0
+#SchedulerTimeSlice=30
 SchedulerType=sched/backfill
-#SchedulerAuth=
-#SchedulerPort=
-#SchedulerRootFilter=
 SelectType=select/cons_res
 SelectTypeParameters=CR_Core
-#FastSchedule=0
+#
+#
+# JOB PRIORITY
+#PriorityFlags=
 PriorityType=priority/multifactor
-#PriorityDecayHalfLife=14-0
-#PriorityUsageResetPeriod=14-0
-#PriorityWeightFairshare=100000
-#PriorityWeightAge=1000
+#PriorityDecayHalfLife=
+#PriorityCalcPeriod=
+#PriorityFavorSmall=
+#PriorityMaxAge=
+#PriorityUsageResetPeriod=
+#PriorityWeightAge=
+#PriorityWeightFairshare=
+#PriorityWeightJobSize=
 PriorityWeightPartition=1000
-#PriorityWeightJobSize=1000
-#PriorityMaxAge=1-0
+#PriorityWeightQOS=
 PreemptType=preempt/partition_prio
 PreemptMode=SUSPEND,GANG
 #
-# LOGGING
-# By default, SLURM will log to syslog, which is what we want
-SlurmctldSyslogDebug=info
-SlurmdSyslogDebug=info
-#
-# ACCOUNTING
-JobAcctGatherType={{ openhpc_slurm_job_acct_gather_type }}
-JobAcctGatherFrequency={{ openhpc_slurm_job_acct_gather_frequency }}
-JobCompType={{ openhpc_slurm_job_comp_type }}
-JobCompLoc={{ openhpc_slurm_job_comp_loc }}
-#
-AccountingStorageType={{ openhpc_slurm_accounting_storage_type }}
+# LOGGING AND ACCOUNTING
+#AccountingStorageEnforce=0
 AccountingStorageHost={{ openhpc_slurm_accounting_storage_host }}
-AccountingStoragePort={{ openhpc_slurm_accounting_storage_port }}
 {% if openhpc_slurm_accounting_storage_pass | default(false, true) %}
 AccountingStoragePass={{ openhpc_slurm_accounting_storage_pass }}
 {% endif %}
+AccountingStoragePort={{ openhpc_slurm_accounting_storage_port }}
+AccountingStorageType={{ openhpc_slurm_accounting_storage_type }}
 AccountingStorageUser={{ openhpc_slurm_accounting_storage_user }}
+#AccountingStoreFlags=
+#JobCompHost=
+JobCompLoc={{ openhpc_slurm_job_comp_loc }}
+#JobCompPass=
+#JobCompPort=
+JobCompType={{ openhpc_slurm_job_comp_type }}
+#JobCompUser=
+#JobContainerType=job_container/none
+JobAcctGatherFrequency={{ openhpc_slurm_job_acct_gather_frequency }}
+JobAcctGatherType={{ openhpc_slurm_job_acct_gather_type }}
+
+# By default, SLURM will log to syslog, which is what we want
+SlurmctldSyslogDebug=info
+SlurmdSyslogDebug=info
+#SlurmSchedLogFile=
+#SlurmSchedLogLevel=
+#DebugFlags=
+#
+#
+# POWER SAVE SUPPORT FOR IDLE NODES - NOT SUPPORTED IN THIS APPLIANCE VERSION
 
 # LOGIN-ONLY NODES
 # Define slurmd nodes not in partitions for login-only nodes in "configless" mode:
@@ -135,6 +183,5 @@ PartitionName={{part.name}} Default={{ part.get('default', 'YES') }} MaxTime={{ 
 # Define a non-existent node, in no partition, so that slurmctld starts even with all partitions empty
 NodeName=nonesuch
 
-# Want nodes that drop out of SLURM's configuration to be automatically
-# returned to service when they come back.
+{% if openhpc_slurm_configless %}SlurmctldParameters=enable_configless{% endif %}
 ReturnToService=2
