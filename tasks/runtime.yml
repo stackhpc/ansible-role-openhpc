@@ -121,14 +121,19 @@
   register: ohpc_slurm_conf
   # NB uses restart rather than reload as number of nodes might have changed
 
-- name: Create gres.conf
+- name: Create other config files
   template:
-    src: "{{ openhpc_gres_template }}"
-    dest: /etc/slurm/gres.conf
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     mode: "0600"
     owner: slurm
     group: slurm
   when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
+  loop:
+    - src: "{{ openhpc_gres_template }}"
+      dest: /etc/slurm/gres.conf
+    - src: "{{ openhpc_cgroup_template }}"
+      dest: /etc/slurm/cgroup.conf
   notify:
     - Restart slurmctld service
   register: ohpc_gres_conf
