@@ -1,4 +1,5 @@
 pip
 setuptools
-molecule[podman,lint,ansible]
+molecule[lint,ansible]
+molecule-plugins[podman]
 ansible>=2.9.0

@@ -28,7 +28,9 @@ each list element:
 
 `openhpc_slurm_service_started`: Optional boolean. Whether to start slurm services. If set to false, all services will be stopped. Defaults to `openhpc_slurm_service_enabled`.
 
-`openhpc_slurm_control_host`: ansible host name of the controller e.g `"{{ groups['cluster_control'] | first }}"`.
+`openhpc_slurm_control_host`: Required string. Ansible inventory hostname (and short hostname) of the controller e.g. `"{{ groups['cluster_control'] | first }}"`.
+
+`openhpc_slurm_control_host_address`: Optional string. IP address or name to use for the `openhpc_slurm_control_host`, e.g. to use a different interface than is resolved from `openhpc_slurm_control_host`.
 
 `openhpc_packages`: additional OpenHPC packages to install.
 

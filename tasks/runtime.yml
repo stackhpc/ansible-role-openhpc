@@ -163,7 +163,7 @@
 - name: Set slurmctld location for configless operation
   lineinfile:
     path: /etc/sysconfig/slurmd
-    line: "SLURMD_OPTIONS='--conf-server {{ openhpc_slurm_control_host }}'"
+    line: "SLURMD_OPTIONS='--conf-server {{ openhpc_slurm_control_host_address | default(openhpc_slurm_control_host) }}'"
     regexp: "^SLURMD_OPTIONS="
     create: yes
     owner: root

@@ -29,10 +29,11 @@ test14 | 1            | N                       | As for #5 but also tests `extr
 Local installation on a RockyLinux 8.x machine looks like:
 
     sudo dnf install -y podman
+    sudo dnf install podman-plugins # required for DNS
     sudo yum install -y git
     git clone git@github.com:stackhpc/ansible-role-openhpc.git
     cd ansible-role-openhpc/
-    python3.8 -m venv venv
+    python3.9 -m venv venv
     . venv/bin/activate
     pip install -U pip
     pip install -r molecule/requirements.txt
@@ -43,8 +44,6 @@ Then to run tests, e.g.::
     cd ansible-role-openhpc/
     MOLECULE_IMAGE=centos:7 molecule test --all # NB some won't work as require OpenHPC v2.x (-> CentOS 8.x) features - see `.github/workflows/ci.yml`
     MOLECULE_IMAGE=rockylinux:8.6 molecule test --all
-
-**NB:** If the host network has an MTU smaller than 1500 (the docker default), check `molecule.yml` for the relevant test contains `DOCKER_MTU`, then prepend `DOCKER_MTU=<mtu>` to your command. If you have already run molecule you will need to destroy the instances and run `docker network prune` before retrying.
 
 During development you may want to:
 

@@ -4,6 +4,7 @@ openhpc_slurm_service_enabled: true
 openhpc_slurm_service_started: "{{ openhpc_slurm_service_enabled }}"
 openhpc_slurm_service:
 openhpc_slurm_control_host: "{{ inventory_hostname }}"
+#openhpc_slurm_control_host_address:
 openhpc_slurm_partitions: []
 openhpc_cluster_name:
 openhpc_packages:
