@@ -46,6 +46,14 @@ openhpc_enable:
   database: false
   runtime: false
 
+# Only used for install-generic.yml:
+openhpc_generic_packages: 
+  - munge
+  - mariadb-connector-c # only required on slurmdbd
+  - hwloc-libs # only required on slurmd
+openhpc_binary_dir:
+openhpc_library_dir:
+
 # Repository configuration
 openhpc_extra_repos: []
 

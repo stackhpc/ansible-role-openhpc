@@ -1,0 +1,49 @@
+- include_tasks: pre.yml
+
+- name: Create a list of slurm daemons
+  set_fact:
+    _ohpc_daemons: "{{ _ohpc_daemon_map | dict2items | selectattr('value') | items2dict | list }}"
+  vars:
+    _ohpc_daemon_map:
+      slurmctld: "{{ openhpc_enable.control }}"
+      slurmd: "{{ openhpc_enable.batch }}"
+      slurmdbd: "{{ openhpc_enable.database }}"
+
+- name: Install system packages
+  dnf:
+    name: "{{ openhpc_generic_packages }}"
+
+- name: Create Slurm user
+  user:
+    name: slurm
+    comment: SLURM resource manager
+    home: /etc/slurm
+    shell: /sbin/nologin
+
+- name: Create Slurm unit files
+  template:
+    src: "{{ item }}.service.j2"
+    dest: /lib/systemd/system/{{ item }}.service
+  loop: "{{ _ohpc_daemons }}"
+  register: _slurm_systemd_units
+
+- name: Get current library locations
+  shell:
+    cmd: "ldconfig -v | grep -v ^$'\t'"
+  register: _slurm_ldconfig
+  changed_when: false
+
+- name: Add library locations to ldd search path
+  copy:
+    dest: /etc/ld.so.conf.d/slurm.conf
+    content: "{{ openhpc_library_dir }}"
+    owner: root
+    group: root
+    mode: ugo=r
+  when: openhpc_library_dir not in _ldd_paths
+  vars:
+    _ldd_paths: "{{ _slurm_ldconfig.stdout_lines | map('split', ':') | map('first') }}"
+
+- name: Reload Slurm unit files
+  command: systemctl daemon-reload
+  when: _slurm_systemd_units.changed
