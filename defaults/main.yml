@@ -45,9 +45,6 @@ openhpc_enable:
   batch: false
   database: false
   runtime: false
-ohpc_slurm_services:
-  control: slurmctld
-  batch: slurmd
 
 # Repository configuration
 openhpc_extra_repos: []
