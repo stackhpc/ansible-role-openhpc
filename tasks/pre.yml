@@ -4,10 +4,3 @@
   when:
     - openhpc_slurm_configless
     - openhpc_login_only_nodes in group_names
-
-- name: Select slurm service to control
-  set_fact:
-    openhpc_slurm_service: "{{ ohpc_slurm_services[item] }}"
-  loop: "{{ ohpc_slurm_services.keys() | list }}"
-  when: "openhpc_enable.get(item, false)"
-  tags: always
