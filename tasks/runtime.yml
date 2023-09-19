@@ -1,4 +1,7 @@
 ---
+
+- include_tasks: pre.yml
+
 - name: Check openhpc_slurm_control_host, openhpc_cluster_name or openhpc_slurm_partitions exist
   assert:
     that:
@@ -19,13 +22,6 @@
   when:
     - openhpc_slurm_control_host not in ansible_play_hosts
     - not openhpc_munge_key
-
-- name: Enable batch on configless login-only nodes
-  set_fact:
-    openhpc_enable: "{{ openhpc_enable | combine({'batch': true}) }}"
-  when:
-    - openhpc_slurm_configless
-    - openhpc_login_only_nodes in group_names
 
 - name: Ensure Slurm directories exists
   file:
