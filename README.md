@@ -2,15 +2,13 @@
 
 # stackhpc.openhpc
 
-This Ansible role installs packages and performs configuration to provide an OpenHPC Slurm cluster.
+This Ansible role installs packages and performs configuration to provide an OpenHPC v2.x Slurm cluster.
 
 As a role it must be used from a playbook, for which a simple example is given below. This approach means it is totally modular with no assumptions about available networks or any cluster features except for some hostname conventions. Any desired cluster fileystem or other required functionality may be freely integrated using additional Ansible roles or other approaches.
 
-The minimal image for nodes is a CentOS 7 or RockyLinux 8 GenericCloud image. These use OpenHPC v1 and v2 respectively. Centos8/OpenHPCv2 is generally preferred as it provides additional functionality for Slurm, compilers, MPI and transport libraries.
+The minimal image for nodes is a RockyLinux 8 GenericCloud image.
 
 ## Role Variables
-
-`openhpc_version`: Optional. OpenHPC version to install. Defaults provide `1.3` for Centos 7 and `2` for RockyLinux/CentOS 8.
 
 `openhpc_extra_repos`: Optional list. Extra Yum repository definitions to configure, following the format of the Ansible
 [yum_repository](https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html) module. Respected keys for
@@ -42,7 +40,7 @@ each list element:
 
 `openhpc_slurmdbd_host`: Optional. Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to prevent the role from managing slurmdbd. Defaults to `openhpc_slurm_control_host`.
 
-`openhpc_slurm_configless`: Optional, default false. If true then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used. **NB: Requires Centos8/OpenHPC v2.**
+`openhpc_slurm_configless`: Optional, default false. If true then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used.
 
 `openhpc_munge_key`: Optional. Define a munge key to use. If not provided then one is generated but the `openhpc_slurm_control_host` must be in the play.
 

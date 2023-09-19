@@ -10,11 +10,6 @@
       - openhpc_cluster_name != ''
       - openhpc_slurm_partitions is defined
     fail_msg: "Undefined openhpc_slurm_control_host, openhpc_cluster_name or openhpc_slurm_partitions."
-  
-- name: Fail if configless mode selected when not on Centos 8
-  fail:
-    msg: "openhpc_slurm_configless = True requires Centos8 / OpenHPC v2"
-  when: openhpc_slurm_configless and not ansible_distribution_major_version == "8"
 
 - name: Fail if control host not in play and munge key not specified
   fail:
