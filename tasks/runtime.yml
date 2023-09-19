@@ -103,6 +103,7 @@
     section: ''
     value: "{{ (item.value | join(',')) if (item.value is sequence and item.value is not string) else item.value }}"
     no_extra_spaces: true
+    state: "{{ 'absent' if item.value == '<absent>' else 'present' }}"
     create: no
     mode: 0644
   loop: "{{ openhpc_config | dict2items }}"
