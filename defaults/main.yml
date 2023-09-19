@@ -51,6 +51,7 @@ openhpc_generic_packages:
   - munge
   - mariadb-connector-c # only required on slurmdbd
   - hwloc-libs # only required on slurmd
+  - mpitests-openmpi # allows testing MPI using /usr/lib64/openmpi/bin
 openhpc_sbin_dir: /usr/sbin # path to slurm daemon binaries (e.g. slurmctld)
 openhpc_bin_dir: /usr/bin  # path to slurm user binaries (e.g sinfo)
 openhpc_library_dir: /usr/lib64/slurm # path to slurm libraries
@@ -107,7 +108,7 @@ ohpc_repos: "{{ ohpc_openhpc_repos[ansible_distribution_major_version] + ohpc_de
 
 openhpc_munge_key:
 openhpc_login_only_nodes: ''
-openhpc_module_system_install: true
+openhpc_module_system_install: true # only works for install-ohpc.yml/main.yml
 
 # Auto detection
 openhpc_ram_multiplier: 0.95
