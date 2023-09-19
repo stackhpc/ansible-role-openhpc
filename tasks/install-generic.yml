@@ -47,3 +47,11 @@
 - name: Reload Slurm unit files
   command: systemctl daemon-reload
   when: _slurm_systemd_units.changed
+
+- name: Add slurm user binaries to PATH
+  copy:
+    dest: /etc/profile.d/slurm.sh
+    content: PATH=$PATH:{{ openhpc_bin_dir }}
+    owner: root
+    group: root
+    mode: u=rw,go=r

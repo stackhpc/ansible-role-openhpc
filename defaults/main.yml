@@ -51,8 +51,9 @@ openhpc_generic_packages:
   - munge
   - mariadb-connector-c # only required on slurmdbd
   - hwloc-libs # only required on slurmd
-openhpc_binary_dir:
-openhpc_library_dir:
+openhpc_sbin_dir: /usr/sbin # path to slurm daemon binaries (e.g. slurmctld)
+openhpc_bin_dir: /usr/bin  # path to slurm user binaries (e.g sinfo)
+openhpc_library_dir: /usr/lib64/slurm # path to slurm libraries
 
 # Repository configuration
 openhpc_extra_repos: []
