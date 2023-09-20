@@ -61,7 +61,7 @@ openhpc_generic_packages:
   - mpitests-openmpi # allows testing MPI using /usr/lib64/openmpi/bin
 openhpc_sbin_dir: /usr/sbin # path to slurm daemon binaries (e.g. slurmctld)
 openhpc_bin_dir: /usr/bin  # path to slurm user binaries (e.g sinfo)
-openhpc_library_dir: /usr/lib64/slurm # path to slurm libraries
+openhpc_lib_dir: /usr/lib64/slurm # path to slurm libraries
 
 # Repository configuration
 openhpc_extra_repos: []

@@ -42,11 +42,11 @@
 - name: Add library locations to ldd search path
   copy:
     dest: /etc/ld.so.conf.d/slurm.conf
-    content: "{{ openhpc_library_dir }}"
+    content: "{{ openhpc_lib_dir }}"
     owner: root
     group: root
     mode: ugo=r
-  when: openhpc_library_dir not in _ldd_paths
+  when: openhpc_lib_dir not in _ldd_paths
   vars:
     _ldd_paths: "{{ _slurm_ldconfig.stdout_lines | map('split', ':') | map('first') }}"
 

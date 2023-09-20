@@ -54,7 +54,7 @@ Variables only relevant for `install-ohpc.yml` or `install-generic.yml` task fil
 
 `openhpc_bin_dir`: Optional. Path to Slurm user binaries such as `sinfo`, default `/usr/bin` (`install-generic.yml` only).
 
-`openhpc_library_dir`: Optional. Path to Slurm libraries, default `/usr/lib64/slurm` (`install-generic.yml` only).
+`openhpc_lib_dir`: Optional. Path to Slurm libraries, default `/usr/lib64/slurm` (`install-generic.yml` only).
 
 `openhpc_config_files`: Optional. List of additional Slurm configuration files to template. Default templates `gres.conf` to control node. List elements are dicts which must contain:
   - `template`: A dict with parameters for Ansible's [template](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html) module.
