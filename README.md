@@ -56,6 +56,10 @@ Variables only relevant for `install-ohpc.yml` or `install-generic.yml` task fil
 
 `openhpc_library_dir`: Optional. Path to Slurm libraries, default `/usr/lib64/slurm` (`install-generic.yml` only).
 
+`openhpc_config_files`: Optional. List of additional Slurm configuration files to template. Default templates `gres.conf` to control node. List elements are dicts which must contain:
+  - `template`: A dict with parameters for Ansible's [template](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html) module.
+  - `enable`: String `control`, `batch`, `database` or `runtime` specifying nodes to template this file on (i.e. matches keys from `openhpc_enable`). Any other string results in no templating.
+
 ### slurm.conf
 
 `openhpc_slurm_partitions`: Optional. List of one or more slurm partitions, default `[]`.  Each partition may contain the following values:

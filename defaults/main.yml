@@ -15,8 +15,15 @@ openhpc_job_maxtime: '60-0' # quote this to avoid ansible converting some format
 openhpc_config: "{{ openhpc_extra_config | default({}) }}"
 openhpc_gres_template: gres.conf.j2
 openhpc_slurm_configless: "{{ 'enable_configless' in openhpc_config.get('SlurmctldParameters', []) }}"
-
 openhpc_state_save_location: /var/spool/slurm
+openhpc_config_files:
+  - template:
+      dest: /etc/slurm/gres.conf
+      src: "{{ openhpc_gres_template }}"
+      mode: "0600"
+      owner: slurm
+      group: slurm
+    enable: control
 
 # Accounting
 openhpc_slurm_accounting_storage_host: "{{ openhpc_slurmdbd_host }}"
