@@ -3,13 +3,13 @@
 - include_tasks: pre.yml
 
 - name: Ensure OpenHPC repos
-  ansible.builtin.yum_repository: "{{ item }}"
+  ansible.builtin.yum_repository: "{{ item }}" # noqa: args[module]
   loop: "{{ ohpc_openhpc_repos[ansible_distribution_major_version] }}"
   loop_control:
     label: "{{ item.name }}"
 
 - name: Ensure extra repos
-  ansible.builtin.yum_repository: "{{ item }}"
+  ansible.builtin.yum_repository: "{{ item }}" # noqa: args[module]
   loop: "{{ openhpc_extra_repos }}"
   loop_control:
     label: "{{ item.name }}"

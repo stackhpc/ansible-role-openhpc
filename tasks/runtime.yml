@@ -120,7 +120,7 @@
   # NB uses restart rather than reload as number of nodes might have changed
 
 - name: Template other Slurm configuration files
-  template: "{{ item.template }}"
+  template: "{{ item.template }}" # noqa: risky-file-permissions
   loop: "{{ openhpc_config_files }}"
   when: "openhpc_enable[item.enable] | default(false) | bool"
   notify: Restart slurmctld service

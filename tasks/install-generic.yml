@@ -10,7 +10,7 @@
       slurmdbd: "{{ openhpc_enable.database }}"
 
 - name: Ensure extra repos
-  ansible.builtin.yum_repository: "{{ item }}"
+  ansible.builtin.yum_repository: "{{ item }}" # noqa: args[module]
   loop: "{{ openhpc_extra_repos }}"
   loop_control:
     label: "{{ item.name }}"
@@ -30,12 +30,15 @@
   template:
     src: "{{ item }}.service.j2"
     dest: /lib/systemd/system/{{ item }}.service
+    owner: root
+    group: root
+    mode: ug=rw,o=r
   loop: "{{ _ohpc_daemons }}"
   register: _slurm_systemd_units
 
 - name: Get current library locations
   shell:
-    cmd: "ldconfig -v | grep -v ^$'\t'"
+    cmd: "ldconfig -v | grep -v ^$'\t'" # noqa: no-tabs risky-shell-pipe
   register: _slurm_ldconfig
   changed_when: false
 
@@ -51,7 +54,8 @@
     _ldd_paths: "{{ _slurm_ldconfig.stdout_lines | map('split', ':') | map('first') }}"
 
 - name: Reload Slurm unit files
-  command: systemctl daemon-reload
+  # Can't do just this from systemd module
+  command: systemctl daemon-reload # noqa: command-instead-of-module no-changed-when no-handler
   when: _slurm_systemd_units.changed
 
 - name: Add slurm user binaries to PATH
