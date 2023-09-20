@@ -24,7 +24,6 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - 'centos:7'
           - 'rockylinux:8.8'
         scenario:
           - test1
@@ -44,29 +43,7 @@ jobs:
           - test13
           - test14
 
-        exclude:
-          - image: 'centos:7'
-            scenario: test5
-          - image: 'centos:7'
-            scenario: test6
-          - image: 'centos:7'
-            scenario: test7
-          - image: 'centos:7'
-            scenario: test8
-          - image: 'centos:7'
-            scenario: test9
-          - image: 'centos:7'
-            scenario: test10
-          - image: 'centos:7'
-            scenario: test11
-          - image: 'centos:7'
-            scenario: test12
-          - image: 'centos:7'
-            scenario: test13
-          - image: 'centos:7'
-            scenario: test14
-          - image: 'centos:7'
-            scenario: test15
+        exclude: []
 
     steps:
       - name: Check out the codebase.

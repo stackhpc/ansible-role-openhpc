@@ -12,12 +12,4 @@
   when: openhpc_enable.runtime | default(false) | bool
   tags: configure
 
-- name: Run post-configure tasks
-  include_tasks: post-configure.yml
-  when:
-    - openhpc_enable.runtime | default(false) | bool
-    # Requires operational slurm cluster
-    - openhpc_slurm_service_started | bool
-  tags: post-configure
-
 ...
