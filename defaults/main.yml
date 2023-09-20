@@ -1,5 +1,4 @@
 ---
-openhpc_version: "{{ '1.3' if ansible_distribution_major_version == '7' else '2' }}"
 openhpc_slurm_service_enabled: true
 openhpc_slurm_service_started: "{{ openhpc_slurm_service_enabled }}"
 openhpc_slurm_service:
@@ -9,7 +8,6 @@ openhpc_slurm_partitions: []
 openhpc_cluster_name:
 openhpc_packages:
   - slurm-libpmi-ohpc
-openhpc_drain_timeout: 86400
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
 openhpc_job_maxtime: '60-0' # quote this to avoid ansible converting some formats to seconds, which is interpreted as minutes by Slurm
@@ -46,29 +44,11 @@ openhpc_enable:
   batch: false
   database: false
   runtime: false
-  drain: false
-  resume: false
-ohpc_slurm_services:
-  control: slurmctld
-  batch: slurmd
 
 # Repository configuration
 openhpc_extra_repos: []
 
 ohpc_openhpc_repos:
-  "7":
-    - name: OpenHPC
-      file: OpenHPC
-      description: "OpenHPC-1.3 - Base"
-      baseurl: "http://build.openhpc.community/OpenHPC:/1.3/CentOS_7"
-      gpgcheck: true
-      gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v1.3.5.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-1
-    - name: OpenHPC-updates
-      file: OpenHPC
-      description: "OpenHPC-1.3 - Updates"
-      baseurl: "http://build.openhpc.community/OpenHPC:/1.3/updates/CentOS_7"
-      gpgcheck: true
-      gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v1.3.5.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-1
   "8":
     - name: OpenHPC
       file: OpenHPC
@@ -84,13 +64,6 @@ ohpc_openhpc_repos:
       gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v2.6.1.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-2
 
 ohpc_default_extra_repos:
-  "7":
-    - name: epel
-      file: epel
-      description: "Extra Packages for Enterprise Linux 7 - $basearch"
-      metalink: "https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch&infra=$infra&content=$contentdir"
-      gpgcheck: true
-      gpgkey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7"
   "8":
     - name: epel
       file: epel

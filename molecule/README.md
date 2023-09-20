@@ -42,8 +42,7 @@ Local installation on a RockyLinux 8.x machine looks like:
 Then to run tests, e.g.::
 
     cd ansible-role-openhpc/
-    MOLECULE_IMAGE=centos:7 molecule test --all # NB some won't work as require OpenHPC v2.x (-> CentOS 8.x) features - see `.github/workflows/ci.yml`
-    MOLECULE_IMAGE=rockylinux:8.6 molecule test --all
+    MOLECULE_IMAGE=rockylinux:8.8 molecule test --all
 
 During development you may want to:
 

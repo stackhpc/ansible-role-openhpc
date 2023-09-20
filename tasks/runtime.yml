@@ -1,4 +1,7 @@
 ---
+
+- include_tasks: pre.yml
+
 - name: Check openhpc_slurm_control_host, openhpc_cluster_name or openhpc_slurm_partitions exist
   assert:
     that:
@@ -7,11 +10,6 @@
       - openhpc_cluster_name != ''
       - openhpc_slurm_partitions is defined
     fail_msg: "Undefined openhpc_slurm_control_host, openhpc_cluster_name or openhpc_slurm_partitions."
-  
-- name: Fail if configless mode selected when not on Centos 8
-  fail:
-    msg: "openhpc_slurm_configless = True requires Centos8 / OpenHPC v2"
-  when: openhpc_slurm_configless and not ansible_distribution_major_version == "8"
 
 - name: Fail if control host not in play and munge key not specified
   fail:
@@ -97,7 +95,7 @@
   community.general.ini_file:
     path: "{{ _slurm_conf_tmpfile.path }}"
     option: "{{ item.key }}"
-    section: null
+    section: ''
     value: "{{ (item.value | join(',')) if (item.value is sequence and item.value is not string) else item.value }}"
     no_extra_spaces: true
     create: no
@@ -163,7 +161,7 @@
     group: root
     mode: 0644
   when:
-    - openhpc_slurm_service == 'slurmd'
+    - openhpc_enable.batch | default(false)
     - openhpc_slurm_configless
   notify:
     - Restart slurmd service
@@ -180,15 +178,23 @@
 - name: Flush handler
   meta: flush_handlers # as then subsequent "ensure" is a no-op if slurm services bounced
 
-- name: Ensure slurmdbd is started and running
+- name: Ensure slurmdbd state
   service:
     name: slurmdbd
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_enable.database | default(false) | bool
 
-- name: Ensure Slurm service state
+- name: Ensure slurmctld state
   service:
-    name: "{{ openhpc_slurm_service }}"
+    name: slurmctld
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
+  when: openhpc_enable.control | default(false) | bool
+
+- name: Ensure slurmd state
+  service:
+    name: slurmd
+    enabled: "{{ openhpc_slurm_service_enabled | bool }}"
+    state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
+  when: openhpc_enable.batch | default(false) | bool

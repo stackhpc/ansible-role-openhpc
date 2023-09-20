@@ -60,4 +60,5 @@
     state: restarted
   when:
     - openhpc_slurm_service_started | bool
-    - openhpc_slurm_service == 'slurmd'
+    - openhpc_enable.batch | default(false) | bool
+    # 2nd condition required as notification happens on controller, which isn't necessarily a compute note

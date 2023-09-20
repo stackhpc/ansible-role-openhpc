@@ -1,0 +1,6 @@
+- name: Enable batch on configless login-only nodes
+  set_fact:
+    openhpc_enable: "{{ openhpc_enable | combine({'batch': true}) }}"
+  when:
+    - openhpc_slurm_configless
+    - openhpc_login_only_nodes in group_names
