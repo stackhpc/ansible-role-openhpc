@@ -9,6 +9,12 @@
       slurmd: "{{ openhpc_enable.batch }}"
       slurmdbd: "{{ openhpc_enable.database }}"
 
+- name: Ensure extra repos
+  ansible.builtin.yum_repository: "{{ item }}"
+  loop: "{{ openhpc_extra_repos }}"
+  loop_control:
+    label: "{{ item.name }}"
+
 - name: Install system packages
   dnf:
     name: "{{ openhpc_generic_packages }}"

@@ -73,18 +73,12 @@ ohpc_openhpc_repos:
       baseurl: "http://repos.openhpc.community/OpenHPC/2/updates/CentOS_8"
       gpgcheck: true
       gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v2.6.1.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-2
-
-ohpc_default_extra_repos:
-  "8":
     - name: epel
       file: epel
       description: "Extra Packages for Enterprise Linux 8 - $basearch"
       metalink: "https://mirrors.fedoraproject.org/metalink?repo=epel-8&arch=$basearch&infra=$infra&content=$contentdir"
       gpgcheck: true
       gpgkey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8"
-
-# Concatenate all repo definitions here
-ohpc_repos: "{{ ohpc_openhpc_repos[ansible_distribution_major_version] + ohpc_default_extra_repos[ansible_distribution_major_version] + openhpc_extra_repos }}"
 
 openhpc_munge_key:
 openhpc_login_only_nodes: ''

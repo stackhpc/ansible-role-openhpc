@@ -20,16 +20,7 @@ This role provides four task files which can be selected by using the `tasks_fro
 Variables only relevant for `install-ohpc.yml` or `install-generic.yml` task files are marked as such below.
 
 `openhpc_extra_repos`: Optional list. Extra Yum repository definitions to configure, following the format of the Ansible
-[yum_repository](https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html) module (`install-ohpc.yml` only). Respected keys for
-each list element:
-* `name`: Required
-* `description`: Optional
-* `file`: Required
-* `baseurl`: Optional
-* `metalink`: Optional
-* `mirrorlist`: Optional
-* `gpgcheck`: Optional
-* `gpgkey`: Optional
+[yum_repository](https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html) module.
 
 `openhpc_slurm_service_enabled`: boolean, whether to enable the appropriate slurm service (slurmd/slurmctld).
 
