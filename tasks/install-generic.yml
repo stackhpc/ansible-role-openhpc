@@ -45,7 +45,7 @@
     content: "{{ openhpc_lib_dir }}"
     owner: root
     group: root
-    mode: ugo=r
+    mode: ug=rw,o=r
   when: openhpc_lib_dir not in _ldd_paths
   vars:
     _ldd_paths: "{{ _slurm_ldconfig.stdout_lines | map('split', ':') | map('first') }}"
