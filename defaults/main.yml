@@ -16,6 +16,7 @@ openhpc_gres_template: gres.conf.j2
 openhpc_slurm_configless: "{{ 'enable_configless' in openhpc_config.get('SlurmctldParameters', []) }}"
 openhpc_state_save_location: /var/spool/slurm
 openhpc_slurm_conf_path: /etc/slurm/slurm.conf
+openhpc_slurm_conf_template: slurm.conf.j2
 openhpc_config_files:
   - template:
       dest: /etc/slurm/gres.conf

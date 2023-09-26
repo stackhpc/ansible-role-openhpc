@@ -85,7 +85,7 @@
 
 - name: Template basic slurm.conf
   template:
-    src: slurm.conf.j2
+    src: "{{ openhpc_slurm_conf_template }}"
     dest: "{{ _slurm_conf_tmpfile.path }}"
     lstrip_blocks: true
     mode: 0644

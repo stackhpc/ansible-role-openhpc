@@ -62,8 +62,6 @@ Variables only relevant for `install-ohpc.yml` or `install-generic.yml` task fil
 
 ### slurm.conf
 
-`openhpc_slurm_conf_path`: Optional. Path to template `slurm.conf` configuration file to. Default `/etc/slurm/slurm.conf`
-
 `openhpc_slurm_partitions`: Optional. List of one or more slurm partitions, default `[]`.  Each partition may contain the following values:
 * `groups`: If there are multiple node groups that make up the partition, a list of group objects can be defined here.
   Otherwise, `groups` can be omitted and the following attributes can be defined in the partition object:
@@ -98,6 +96,10 @@ For each group (if used) or partition any nodes in an ansible inventory group `<
 `openhpc_ram_multiplier`: Optional, default `0.95`. Multiplier used in the calculation: `total_memory * openhpc_ram_multiplier` when setting `RealMemory` for the partition in slurm.conf. Can be overriden on a per partition basis using `openhpc_slurm_partitions.ram_multiplier`. Has no effect if `openhpc_slurm_partitions.ram_mb` is set.
 
 `openhpc_state_save_location`: Optional. Absolute path for Slurm controller state (`slurm.conf` parameter [StateSaveLocation](https://slurm.schedmd.com/slurm.conf.html#OPT_StateSaveLocation))
+
+`openhpc_slurm_conf_template`: Optional. Path of Jinja template for slurm.conf configuration file. Default is `slurm.conf.j2` template in role. **NB:** The required templating is complex, if just setting specific parameters use `openhpc_config` intead.
+
+`openhpc_slurm_conf_path`: Optional. Path to template `slurm.conf` configuration file to. Default `/etc/slurm/slurm.conf`
 
 #### Accounting
 
