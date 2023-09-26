@@ -2,13 +2,13 @@
 Description=Slurm controller daemon
 After=network-online.target munge.service
 Wants=network-online.target
-ConditionPathExists=/etc/slurm/slurm.conf
+ConditionPathExists={{ openhpc_slurm_conf_path }}
 
 [Service]
 Type=simple
 EnvironmentFile=-/etc/sysconfig/slurmctld
 EnvironmentFile=-/etc/default/slurmctld
-ExecStart={{ openhpc_sbin_dir }}/slurmctld -D -s $SLURMCTLD_OPTIONS
+ExecStart={{ openhpc_sbin_dir }}/slurmctld -D -s -f {{ openhpc_slurm_conf_path }} $SLURMCTLD_OPTIONS
 ExecReload=/bin/kill -HUP $MAINPID
 LimitNOFILE=65536
 TasksMax=infinity

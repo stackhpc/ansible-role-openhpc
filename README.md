@@ -62,6 +62,8 @@ Variables only relevant for `install-ohpc.yml` or `install-generic.yml` task fil
 
 ### slurm.conf
 
+`openhpc_slurm_conf_path`: Optional. Path to template `slurm.conf` configuration file to. Default `/etc/slurm/slurm.conf`
+
 `openhpc_slurm_partitions`: Optional. List of one or more slurm partitions, default `[]`.  Each partition may contain the following values:
 * `groups`: If there are multiple node groups that make up the partition, a list of group objects can be defined here.
   Otherwise, `groups` can be omitted and the following attributes can be defined in the partition object:

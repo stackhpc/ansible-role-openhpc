@@ -20,12 +20,15 @@
 
 - name: Ensure Slurm directories exists
   file:
-    path: "{{ openhpc_state_save_location }}"
+    path: "{{ item }}"
     owner: slurm
     group: slurm
-    mode: 0755
+    mode: ug=wrX,o=rX
     state: directory
-  when: inventory_hostname == openhpc_slurm_control_host
+  loop:
+    - "{{ openhpc_slurm_conf_path | dirname }}"
+    - "{{ openhpc_state_save_location }}"
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
 
 - name: Generate a Munge key on control host
   # NB this is usually a no-op as the package install actually generates a (node-unique) one, so won't usually trigger handler
@@ -110,7 +113,7 @@
 - name: Create slurm.conf
   copy:
     src: "{{ _slurm_conf_tmpfile.path }}"
-    dest: /etc/slurm/slurm.conf
+    dest: "{{ openhpc_slurm_conf_path }}"
     owner: root
     group: root
     mode: 0644
