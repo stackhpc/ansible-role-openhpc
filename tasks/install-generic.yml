@@ -58,10 +58,19 @@
   command: systemctl daemon-reload # noqa: command-instead-of-module no-changed-when no-handler
   when: _slurm_systemd_units.changed
 
-- name: Add slurm user binaries to PATH
-  copy:
-    dest: /etc/profile.d/slurm.sh
-    content: PATH=$PATH:{{ openhpc_bin_dir }}
+- name: Find user binaries
+  find:
+    paths: "{{ openhpc_bin_dir }}"
+  register: _ohpc_binaries
+
+- name: Symlink slurm user binaries into $PATH
+  file:
+    src: "{{ item.path }}"
+    state: link
+    dest: "{{ ('/usr/bin', item.path | basename) | path_join }}"
     owner: root
     group: root
-    mode: u=rw,go=r
+    mode: u=rwx,go=rx
+  loop: "{{ _ohpc_binaries.files }}"
+  loop_control:
+    label: "{{ item.path }}"
