@@ -72,7 +72,7 @@
 - name: Template slurmdbd.conf
   template:
     src: slurmdbd.conf.j2
-    dest: /etc/slurm/slurmdbd.conf
+    dest: "{{ openhpc_slurm_conf_path | dirname }}/slurmdbd.conf"
     mode: "0600"
     owner: slurm
     group: slurm
