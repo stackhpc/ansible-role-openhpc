@@ -49,6 +49,19 @@ openhpc_enable:
 openhpc_extra_repos: []
 
 ohpc_openhpc_repos:
+  "9":
+    - name: OpenHPC
+      file: OpenHPC
+      description: OpenHPC-3 - Base
+      baseurl: "http://repos.openhpc.community/OpenHPC/3/EL_9"
+      gpgcheck: true
+      gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v3.0.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-3
+    - name: OpenHPC-updates
+      file: OpenHPC
+      description: OpenHPC-3 - Updates
+      baseurl: "http://repos.openhpc.community/OpenHPC/3/updates/EL_9"
+      gpgcheck: true
+      gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v3.0.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-3
   "8":
     - name: OpenHPC
       file: OpenHPC
@@ -64,6 +77,13 @@ ohpc_openhpc_repos:
       gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v2.6.1.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-2
 
 ohpc_default_extra_repos:
+  "9":
+    - name: epel
+      file: epel
+      description: "Extra Packages for Enterprise Linux $releasever - $basearch"
+      metalink: "https://mirrors.fedoraproject.org/metalink?repo=epel-$releasever&arch=$basearch&infra=$infra&content=$contentdir"
+      gpgcheck: true
+      gpgkey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9"
   "8":
     - name: epel
       file: epel
