@@ -132,6 +132,14 @@
   register: ohpc_gres_conf
   # NB uses restart rather than reload as this is needed in some cases
 
+- name: 'FIXME: Create cgroup.conf'
+  # appears to be required even with NO cgroup plugins: https://slurm.schedmd.com/cgroups.html#cgroup_design
+  copy:
+    remote_src: yes
+    src: /etc/slurm/cgroup.conf.example
+    dest: /etc/slurm/cgroup.conf
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
+
 - name: Remove local tempfile for slurm.conf templating
   ansible.builtin.file:
     path: "{{ _slurm_conf_tmpfile.path }}"
