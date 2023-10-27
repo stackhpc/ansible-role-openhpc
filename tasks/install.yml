@@ -33,6 +33,7 @@
 - name: Install required slurm packages
   yum:
     name: "{{ openhpc_slurm_pkglist | reject('eq', '') }}"
+    install_weak_deps: false
   when: openhpc_slurm_pkglist | default(false, true)
 
 - name: Install packages from openhpc_packages variable
