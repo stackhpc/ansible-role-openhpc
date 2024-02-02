@@ -36,6 +36,9 @@
     section: crb
     option: enabled
     value: "1"
+    mode: "0644"
+    owner: root
+    group: root
   #when: its rocky9
 
 - name: Build host-specific list of required slurm packages

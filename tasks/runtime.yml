@@ -132,12 +132,15 @@
   register: ohpc_gres_conf
   # NB uses restart rather than reload as this is needed in some cases
 
-- name: 'FIXME: Create cgroup.conf'
+- name: Create cgroup.conf
   # appears to be required even with NO cgroup plugins: https://slurm.schedmd.com/cgroups.html#cgroup_design
   copy:
     remote_src: yes
     src: /etc/slurm/cgroup.conf.example
     dest: /etc/slurm/cgroup.conf
+    mode: "0644" # perms/ownership based off src from ohpc package
+    owner: root
+    group: root
   when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
 
 - name: Remove local tempfile for slurm.conf templating
