@@ -45,9 +45,9 @@
   when: (openhpc_enable.get(item.key, false)) or ()
 
 - name: Install required slurm packages
-  yum:
+  dnf:
     name: "{{ openhpc_slurm_pkglist | reject('eq', '') }}"
-    install_weak_deps: false
+    install_weak_deps: false # avoids getting recommended packages
   when: openhpc_slurm_pkglist | default(false, true)
 
 - name: Install packages from openhpc_packages variable
