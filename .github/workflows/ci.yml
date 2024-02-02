@@ -1,14 +1,13 @@
 ---
 name: CI
-'on':
+on:
   pull_request:
   push:
     branches:
       - master
 
 jobs:
-
-  test:
+  molecule:
     name: Molecule
     # Workaround: systemd/kernel compatibility issue:
     #   Failed to parse bus message: Invalid argument
@@ -25,6 +24,7 @@ jobs:
       matrix:
         image:
           - 'rockylinux:8.8'
+          - 'rockylinux:9.3'
         scenario:
           - test1
           - test1b
@@ -75,21 +75,21 @@ jobs:
           ANSIBLE_FORCE_COLOR: '1'
           MOLECULE_IMAGE: ${{ matrix.image }}
 
-  runonce:
+  checks:
     name: Checks
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v3
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
       - name: Install test dependencies.
         run: |
-          pip3 install -U ansible molecule[podman] yamllint ansible-lint
+          pip3 install -U ansible ansible-lint
           ansible-galaxy collection install containers.podman:>=1.10.1 # otherwise get https://github.com/containers/ansible-podman-collections/issues/428
 
       - name: Display ansible version
@@ -101,11 +101,11 @@ jobs:
       - name: Create ansible.cfg with correct roles_path
         run:  printf '[defaults]\nroles_path=../' >ansible.cfg
 
-      - name: Run Ansible syntax check
-        run:  ansible-playbook tests/test.yml -i tests/inventory --syntax-check
-
       - name: Run Ansible lint
         run:  ansible-lint .
+
+      - name: Run Ansible syntax check
+        run:  ansible-playbook tests/test.yml -i tests/inventory --syntax-check
 
       - name: Test custom filters
         run: ansible-playbook tests/filter.yml -i tests/inventory -i tests/inventory-mock-groups
