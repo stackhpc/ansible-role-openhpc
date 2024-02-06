@@ -8,7 +8,7 @@ platforms:
     groups:
       - testohpc_login
       - initial
-    command: 'dnf -y install systemd && /sbin/init' # not in RL9 image
+    command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
     tmpfs:
       - /run
       - /tmp
@@ -21,7 +21,7 @@ platforms:
     groups:
       - testohpc_compute
       - initial
-    command: 'dnf -y install systemd && /sbin/init' # not in RL9 image
+    command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
     tmpfs:
       - /run
       - /tmp
@@ -34,7 +34,7 @@ platforms:
     groups:
       - testohpc_compute
       - initial
-    command: 'dnf -y install systemd && /sbin/init' # not in RL9 image
+    command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
     tmpfs:
       - /run
       - /tmp
@@ -46,7 +46,7 @@ platforms:
     pre_build_image: true
     groups: # NB this is NOT in the "testohpc_compute" so that it isn't added to slurm.conf initially
       - new
-    command: 'dnf -y install systemd && /sbin/init' # not in RL9 image
+    command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
     tmpfs:
       - /run
       - /tmp
