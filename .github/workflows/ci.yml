@@ -101,11 +101,11 @@ jobs:
       - name: Create ansible.cfg with correct roles_path
         run:  printf '[defaults]\nroles_path=../' >ansible.cfg
 
-      - name: Run Ansible lint
-        run:  ansible-lint .
-
       - name: Run Ansible syntax check
         run:  ansible-playbook tests/test.yml -i tests/inventory --syntax-check
+
+      - name: Run Ansible lint
+        run:  ansible-lint .
 
       - name: Test custom filters
         run: ansible-playbook tests/filter.yml -i tests/inventory -i tests/inventory-mock-groups

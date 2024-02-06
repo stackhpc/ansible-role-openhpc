@@ -8,7 +8,6 @@ platforms:
     groups:
       - testohpc_login
     command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
-    # command: /sbin/init
     tmpfs:
       - /run
       - /tmp
@@ -21,7 +20,6 @@ platforms:
     groups:
       - testohpc_compute
     command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
-    # command: /sbin/init
     tmpfs:
       - /run
       - /tmp
@@ -34,7 +32,6 @@ platforms:
     groups:
       - testohpc_compute
     command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
-    # command: /sbin/init
     tmpfs:
       - /run
       - /tmp
