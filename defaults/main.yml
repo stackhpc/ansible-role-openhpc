@@ -20,7 +20,7 @@ openhpc_slurm_conf_path: /etc/slurm/slurm.conf
 openhpc_slurm_conf_template: slurm.conf.j2
 openhpc_config_files:
   - template:
-      dest: /etc/slurm/gres.conf
+      dest: "{{ openhpc_slurm_conf_path | dirname }}/gres.conf"
       src: "{{ openhpc_gres_template }}"
       mode: "0600"
       owner: slurm
