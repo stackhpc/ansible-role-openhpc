@@ -56,7 +56,7 @@ jobs:
 
       - name: Install test dependencies.
         run: |
-          pip3 install -U pip ansible>=2.9.0 molecule-plugins[podman] yamllint ansible-lint
+          pip3 install -U pip ansible>=2.9.0 molecule-plugins[podman]==23.5.0 yamllint ansible-lint
           ansible-galaxy collection install containers.podman:>=1.10.1 # otherwise get https://github.com/containers/ansible-podman-collections/issues/428
 
       - name: Display ansible version
