@@ -42,7 +42,7 @@ Local installation on a RockyLinux 8.x machine looks like:
 Then to run tests, e.g.::
 
     cd ansible-role-openhpc/
-    MOLECULE_IMAGE=rockylinux:8.8 molecule test --all
+    MOLECULE_IMAGE=rockylinux:8.9 molecule test --all
 
 During development you may want to:
 
