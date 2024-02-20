@@ -132,11 +132,10 @@
   register: ohpc_gres_conf
   # NB uses restart rather than reload as this is needed in some cases
 
-- name: Create cgroup.conf
+- name: Template cgroup.conf
   # appears to be required even with NO cgroup plugins: https://slurm.schedmd.com/cgroups.html#cgroup_design
-  copy:
-    remote_src: yes
-    src: /etc/slurm/cgroup.conf.example
+  template:
+    src: cgroup.conf.j2
     dest: /etc/slurm/cgroup.conf
     mode: "0644" # perms/ownership based off src from ohpc package
     owner: root
