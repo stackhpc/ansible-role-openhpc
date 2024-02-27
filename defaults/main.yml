@@ -112,6 +112,9 @@ ohpc_default_extra_repos:
       gpgcheck: true
       gpgkey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8"
 
+# Concatenate extra repo definitions here
+ohpc_extra_repos: "{{ ohpc_default_extra_repos[ansible_distribution_major_version] + openhpc_extra_repos }}"
+
 openhpc_munge_key:
 openhpc_login_only_nodes: ''
 openhpc_module_system_install: true # only works for install-ohpc.yml/main.yml

@@ -10,7 +10,7 @@
 
 - name: Ensure extra repos
   ansible.builtin.yum_repository: "{{ item }}" # noqa: args[module]
-  loop: "{{ openhpc_extra_repos }}"
+  loop: "{{ ohpc_extra_repos }}" # NB this gets required ones for OpenHPC too
   loop_control:
     label: "{{ item.name }}"
 
