@@ -2,7 +2,7 @@
 
 # stackhpc.openhpc
 
-This Ansible role installs packages and performs configuration to provide a Slurm cluster. By default this uses packages from [OpenHPC v2.x](https://openhpc.community/) but it is also possible to use alternative Slurm binaries and packages.
+This Ansible role installs packages and performs configuration to provide a Slurm cluster. By default this uses packages from [OpenHPC](https://openhpc.community/) but it is also possible to use alternative Slurm binaries and packages.
 
 As a role it must be used from a playbook, for which a simple example is given below. This approach means it is totally modular with no assumptions about available networks or any cluster features except for some hostname conventions. Any desired cluster fileystem or other required functionality may be freely integrated using additional Ansible roles or other approaches.
 
@@ -30,7 +30,7 @@ Variables only relevant for `install-ohpc.yml` or `install-generic.yml` task fil
 
 `openhpc_slurm_control_host_address`: Optional string. IP address or name to use for the `openhpc_slurm_control_host`, e.g. to use a different interface than is resolved from `openhpc_slurm_control_host`.
 
-`openhpc_packages`: additional OpenHPC packages to install (`install-ohpc.yml` only).
+`openhpc_packages`: Optional list. Additional OpenHPC packages to install (`install-ohpc.yml` only).
 
 `openhpc_enable`:
 * `control`: whether to enable control host
