@@ -134,6 +134,16 @@
   register: ohpc_other_conf
   # NB uses restart rather than reload as this is needed in some cases
 
+- name: Template cgroup.conf
+  # appears to be required even with NO cgroup plugins: https://slurm.schedmd.com/cgroups.html#cgroup_design
+  template:
+    src: cgroup.conf.j2
+    dest: /etc/slurm/cgroup.conf
+    mode: "0644" # perms/ownership based off src from ohpc package
+    owner: root
+    group: root
+  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
+
 - name: Remove local tempfile for slurm.conf templating
   ansible.builtin.file:
     path: "{{ _slurm_conf_tmpfile.path }}"

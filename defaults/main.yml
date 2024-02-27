@@ -14,6 +14,7 @@ openhpc_job_maxtime: '60-0' # quote this to avoid ansible converting some format
 openhpc_config: "{{ openhpc_extra_config | default({}) }}"
 openhpc_gres_template: gres.conf.j2
 openhpc_slurm_configless: "{{ 'enable_configless' in openhpc_config.get('SlurmctldParameters', []) }}"
+
 openhpc_state_save_location: /var/spool/slurm
 openhpc_slurmd_spool_dir: /var/spool/slurm
 openhpc_slurm_conf_path: /etc/slurm/slurm.conf
@@ -68,6 +69,19 @@ openhpc_lib_dir: /usr/lib64/slurm # path to slurm libraries
 openhpc_extra_repos: []
 
 ohpc_openhpc_repos:
+  "9":
+    - name: OpenHPC
+      file: OpenHPC
+      description: OpenHPC-3 - Base
+      baseurl: "http://repos.openhpc.community/OpenHPC/3/EL_9"
+      gpgcheck: true
+      gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v3.0.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-3
+    - name: OpenHPC-updates
+      file: OpenHPC
+      description: OpenHPC-3 - Updates
+      baseurl: "http://repos.openhpc.community/OpenHPC/3/updates/EL_9"
+      gpgcheck: true
+      gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v3.0.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-3
   "8":
     - name: OpenHPC
       file: OpenHPC
@@ -81,6 +95,16 @@ ohpc_openhpc_repos:
       baseurl: "http://repos.openhpc.community/OpenHPC/2/updates/CentOS_8"
       gpgcheck: true
       gpgkey: https://raw.githubusercontent.com/openhpc/ohpc/v2.6.1.GA/components/admin/ohpc-release/SOURCES/RPM-GPG-KEY-OpenHPC-2
+
+ohpc_default_extra_repos:
+  "9":
+    - name: epel
+      file: epel
+      description: "Extra Packages for Enterprise Linux $releasever - $basearch"
+      metalink: "https://mirrors.fedoraproject.org/metalink?repo=epel-$releasever&arch=$basearch&infra=$infra&content=$contentdir"
+      gpgcheck: true
+      gpgkey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9"
+  "8":
     - name: epel
       file: epel
       description: "Extra Packages for Enterprise Linux 8 - $basearch"
