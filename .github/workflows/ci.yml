@@ -7,6 +7,33 @@ name: CI
       - master
 
 jobs:
+  build:
+    name: Build Rocky9 container image
+    # Upstream rockylinux:9.3 images don't contain systemd, which means /sbin/init fails.
+    # A workaround of using "/bin/bash -c 'dnf -y install systemd && /sbin/init'"
+    # as the container command is flaky.
+    # This job builds an image using the upstream rockylinux:9.3 image which ensures
+    # that the image used for the molecule workflow is always updated.
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: molecule/images
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: podman build -t rocky93systemd:latest .
+
+      - name: Save image
+        run: podman save --output rocky93systemd.docker rocky93systemd:latest
+
+      - name: Upload rocky9 image
+        uses: actions/upload-artifact@v4
+        with:
+          name: rocky93systemd
+          path: molecule/images/rocky93systemd.docker
+    
   molecule:
     name: Molecule
     # Workaround: systemd/kernel compatibility issue:
@@ -18,13 +45,14 @@ jobs:
     # See:
     #   - https://bugzilla.redhat.com/show_bug.cgi?id=190144
     #   - https://github.com/systemd/systemd/pull/16424
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+    needs: build
     strategy:
       fail-fast: false
       matrix:
         image:
           - 'rockylinux:8.9'
-          - 'rockylinux:9.3'
+          - 'localhost/rocky93systemd'
         scenario:
           - test1
           - test1b
@@ -42,12 +70,23 @@ jobs:
           - test12
           - test13
           - test14
-
         exclude: []
 
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v4
+
+      - name: Download rocky9 container image
+        uses: actions/download-artifact@v4
+        with:
+          name: rocky93systemd
+          path: molecule/images/rocky93systemd.docker
+        if: matrix.image == 'localhost/rocky93systemd'
+
+      - name: Load rocky9 container image
+        run: podman load --input rocky93systemd.docker/rocky93systemd.docker
+        working-directory: molecule/images
+        if: matrix.image == 'localhost/rocky93systemd'
 
       - name: Set up Python 3.
         uses: actions/setup-python@v4
