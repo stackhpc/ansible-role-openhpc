@@ -39,17 +39,18 @@ Local installation on a RockyLinux 8.x machine looks like:
     pip install -r molecule/requirements.txt
     ansible-galaxy collection install containers.podman:>=1.10.1
 
-Then to run tests, e.g.::
+Build a RockyLinux 9.3 image with systemd included:
+
+    cd ansible-role-openhpc/molecule/images
+    podman build -t rocky93systemd:latest .
+
+Run tests, e.g.:
 
     cd ansible-role-openhpc/
-    MOLECULE_IMAGE=rockylinux:8.9 molecule test --all
+    MOLECULE_NO_LOG="false" MOLECULE_IMAGE=rockylinux:8.9 molecule test --all
 
-During development you may want to:
+where the image may be `rockylinux:8.9` or `localhost/rocky93systemd`.
 
-- See some debugging information by prepending:
-
-        MOLECULE_NO_LOG="false" ...
-
-- Prevent destroying insstances using:
-
-        molecule test --destroy never
+Other useful options during development:
+- Prevent destroying instances by using `molecule test --destroy never`
+- Run only a single test using e.g. `molecule test --scenario test5`

@@ -7,7 +7,7 @@ platforms:
     pre_build_image: true
     groups:
       - testohpc_login
-    command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
+    command: /sbin/init
     tmpfs:
       - /run
       - /tmp
@@ -20,7 +20,7 @@ platforms:
     groups:
       - testohpc_compute
       - testohpc_grp1
-    command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
+    command: /sbin/init
     tmpfs:
       - /run
       - /tmp
@@ -33,7 +33,7 @@ platforms:
     groups:
       - testohpc_compute
       - testohpc_grp1
-    command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
+    command: /sbin/init
     tmpfs:
       - /run
       - /tmp
@@ -46,7 +46,7 @@ platforms:
     groups:
       - testohpc_compute
       - testohpc_grp2
-    command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
+    command: /sbin/init
     tmpfs:
       - /run
       - /tmp
@@ -59,7 +59,7 @@ platforms:
     groups:
       - testohpc_compute
       - testohpc_grp2
-    command: "/bin/bash -c 'dnf -y install systemd && /sbin/init'" # not in RL9 image
+    command: /sbin/init
     tmpfs:
       - /run
       - /tmp
