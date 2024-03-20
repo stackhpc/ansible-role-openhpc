@@ -36,15 +36,6 @@ jobs:
     
   molecule:
     name: Molecule
-    # Workaround: systemd/kernel compatibility issue:
-    #   Failed to parse bus message: Invalid argument
-    # when doing `systemctl show slurmd` by switching to an older ubuntu
-    # release (18.04 from 20.04). We can remove this when we are running a
-    # systemd version new enough to cope with the extra capabilities that are
-    # in newer kernel versions.
-    # See:
-    #   - https://bugzilla.redhat.com/show_bug.cgi?id=190144
-    #   - https://github.com/systemd/systemd/pull/16424
     runs-on: ubuntu-22.04
     needs: build
     strategy:
