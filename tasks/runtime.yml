@@ -41,6 +41,14 @@
   delegate_to: "{{ openhpc_slurm_control_host }}"
   when: openhpc_slurm_control_host in ansible_play_hosts
 
+- name: Fix permissions on /etc to pass Munge startup checks
+  # Rocky-9-GenericCloud-Base-9.4-20240523.0.x86_64.qcow2 makes /etc g=rwx rather than g=rx (where group=root)
+  # which fails munged startup checks
+  file:
+    path: /etc
+    state: directory
+    mode: g-w
+
 - name: Write Munge key
   copy:
     content: "{{ openhpc_munge_key or (openhpc_control_munge_key.content | b64decode) }}"
