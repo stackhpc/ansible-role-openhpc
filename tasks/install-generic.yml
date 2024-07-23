@@ -71,6 +71,7 @@
     owner: root
     group: root
     mode: u=rwx,go=rx
+    force: true # files may already exist
   loop: "{{ _ohpc_binaries.files }}"
   loop_control:
     label: "{{ item.path }}"
