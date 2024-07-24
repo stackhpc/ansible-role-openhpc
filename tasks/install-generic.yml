@@ -58,20 +58,15 @@
   command: systemctl daemon-reload # noqa: command-instead-of-module no-changed-when no-handler
   when: _slurm_systemd_units.changed
 
-- name: Find user binaries
-  find:
-    paths: "{{ openhpc_bin_dir }}"
-  register: _ohpc_binaries
-
-- name: Symlink slurm user binaries into $PATH
-  file:
-    src: "{{ item.path }}"
-    state: link
-    dest: "{{ ('/usr/bin', item.path | basename) | path_join }}"
+- name: Prepend $PATH with slurm user binary location
+  lineinfile:
+    path: /etc/environment
+    line: "{{ new_path }}"
+    regexp: "^{{ new_path | regex_escape }}"
     owner: root
     group: root
-    mode: u=rwx,go=rx
-    force: true # files may already exist
-  loop: "{{ _ohpc_binaries.files }}"
-  loop_control:
-    label: "{{ item.path }}"
+    mode: u=gw,go=r
+  vars:
+    new_path: PATH="{{ openhpc_bin_dir }}:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin"
+
+- meta: reset_connection # to get new environment
