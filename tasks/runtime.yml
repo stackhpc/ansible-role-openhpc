@@ -20,12 +20,19 @@
 
 - name: Ensure Slurm directories exists
   file:
-    path: "{{ openhpc_state_save_location }}"
+    path: "{{ item.path }}"
     owner: slurm
     group: slurm
-    mode: 0755
+    mode: '0755'
     state: directory
-  when: inventory_hostname == openhpc_slurm_control_host
+  loop:
+    - path: "{{ openhpc_state_save_location }}" # StateSaveLocation
+      enable: control
+    - path: "{{ openhpc_slurm_conf_path | dirname }}"
+      enable: runtime
+    - path: "{{ openhpc_slurmd_spool_dir }}" # SlurmdSpoolDir
+      enable: batch
+  when: "openhpc_enable[item.enable] | default(false) | bool"
 
 - name: Generate a Munge key on control host
   # NB this is usually a no-op as the package install actually generates a (node-unique) one, so won't usually trigger handler
@@ -73,7 +80,7 @@
 - name: Template slurmdbd.conf
   template:
     src: slurmdbd.conf.j2
-    dest: /etc/slurm/slurmdbd.conf
+    dest: "{{ openhpc_slurm_conf_path | dirname }}/slurmdbd.conf"
     mode: "0600"
     owner: slurm
     group: slurm
@@ -90,7 +97,7 @@
 
 - name: Template basic slurm.conf
   template:
-    src: slurm.conf.j2
+    src: "{{ openhpc_slurm_conf_template }}"
     dest: "{{ _slurm_conf_tmpfile.path }}"
     lstrip_blocks: true
     mode: 0644
@@ -106,6 +113,7 @@
     section: ''
     value: "{{ (item.value | join(',')) if (item.value is sequence and item.value is not string) else item.value }}"
     no_extra_spaces: true
+    state: "{{ 'absent' if item.value == '<absent>' else 'present' }}"
     create: no
     mode: 0644
   loop: "{{ openhpc_config | dict2items }}"
@@ -117,27 +125,21 @@
 - name: Create slurm.conf
   copy:
     src: "{{ _slurm_conf_tmpfile.path }}"
-    dest: /etc/slurm/slurm.conf
+    dest: "{{ openhpc_slurm_conf_path }}"
     owner: root
     group: root
     mode: 0644
   when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
-  notify:
-    - Restart slurmctld service
+  notify: Restart slurmctld service
   register: ohpc_slurm_conf
   # NB uses restart rather than reload as number of nodes might have changed
 
-- name: Create gres.conf
-  template:
-    src: "{{ openhpc_gres_template }}"
-    dest: /etc/slurm/gres.conf
-    mode: "0600"
-    owner: slurm
-    group: slurm
-  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless
-  notify:
-    - Restart slurmctld service
-  register: ohpc_gres_conf
+- name: Template other Slurm configuration files
+  template: "{{ item.template }}" # noqa: risky-file-permissions
+  loop: "{{ openhpc_config_files }}"
+  when: "openhpc_enable[item.enable] | default(false) | bool"
+  notify: Restart slurmctld service
+  register: ohpc_other_conf
   # NB uses restart rather than reload as this is needed in some cases
 
 - name: Template cgroup.conf
@@ -165,7 +167,7 @@
   changed_when: true
   when:
     - openhpc_slurm_control_host in ansible_play_hosts
-    - hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed or hostvars[openhpc_slurm_control_host].ohpc_gres_conf.changed # noqa no-handler
+    - hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed or hostvars[openhpc_slurm_control_host].ohpc_other_conf.changed # noqa no-handler
   notify:
     - Restart slurmd service
 
