@@ -150,10 +150,10 @@ NodeName={{ node }}
 # OpenHPC default configuration
 PropagateResourceLimitsExcept=MEMLOCK
 Epilog=/etc/slurm/slurm.epilog.clean
+{% set donehosts = [] %}
 {% for part in openhpc_slurm_partitions %}
     {% set nodelist = [] %}
     {% for group in part.get('groups', [part]) %}
-        
         {% set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
 # openhpc_slurm_partitions group: {{ group_name }}
         {% set inventory_group_hosts = groups.get(group_name, []) %}
@@ -164,9 +164,11 @@ Epilog=/etc/slurm/slurm.epilog.clean
             {% set ram_mb = (first_host_hv['ansible_memory_mb']['real']['total'] * (group.ram_multiplier | default(openhpc_ram_multiplier))) | int %}
             {% for hostlist in (inventory_group_hosts | hostlist_expression) %}
         {% set gres = ' Gres=%s' % (','.join(group.gres | map(attribute='conf') )) if 'gres' in group else '' %}
-
+            {% if hostlist not in donehosts %}
 NodeName={{ hostlist }} State=UNKNOWN RealMemory={{ group.get('ram_mb', ram_mb) }} Sockets={{first_host_hv['ansible_processor_count']}} CoresPerSocket={{ first_host_hv['ansible_processor_cores'] }} ThreadsPerCore={{ first_host_hv['ansible_processor_threads_per_core'] }}{{ gres }}
+            {% endif %}
                 {% set _ = nodelist.append(hostlist) %}
+                {% set _ = donehosts.append(hostlist) %}
             {% endfor %}{# nodes #}
         {% endif %}{# inventory_group_hosts #}
         {% for extra_node_defn in group.get('extra_nodes', []) %}
