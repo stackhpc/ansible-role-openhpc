@@ -73,7 +73,7 @@ For each group (if used) or partition any nodes in an ansible inventory group `<
 - Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
 - Nodes in a group are assumed to be homogenous in terms of processor and memory.
 - An inventory group may be empty or missing, but if it is not then the play must contain at least one node from it (used to set processor information).
-- Nodes may not appear in more than one group.
+
 
 `openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days). See [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime` for format. The default is 60 days. The value should be quoted to avoid Ansible conversions.
 
