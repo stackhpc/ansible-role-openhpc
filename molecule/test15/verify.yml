@@ -1,0 +1,16 @@
+---
+
+- name: Check slurm hostlist
+  hosts: testohpc_login
+  vars:
+    expected_sinfo: | # NB compute is default (*)                                             
+      'compute*,up,60-00:00:00,2,idle,testohpc-compute-[0-1]'
+      'beta,up,60-00:00:00,2,idle,testohpc-compute-[0-1]'
+  tasks:
+  - name: Get slurm partition info
+    command: sinfo --noheader --format="%P,%a,%l,%D,%t,%N" # using --format ensures we control whitespace
+    register: sinfo
+  - name:
+    assert:
+      that: "sinfo.stdout.split() == expected_sinfo.split()"
+      fail_msg: "FAILED - got {{ sinfo.stdout.split() }} expected {{ expected_sinfo.split() }}"
