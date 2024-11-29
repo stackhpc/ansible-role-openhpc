@@ -22,7 +22,7 @@ each list element:
 * `gpgcheck`: Optional
 * `gpgkey`: Optional
 
-`openhpc_slurm_service_enabled`: boolean, whether to enable the appropriate slurm service (slurmd/slurmctld).
+`openhpc_slurm_service_enabled`: Optional boolean. Whether to enable the appropriate slurm service (slurmd/slurmctld).
 
 `openhpc_slurm_service_started`: Optional boolean. Whether to start slurm services. If set to false, all services will be stopped. Defaults to `openhpc_slurm_service_enabled`.
 
@@ -33,22 +33,24 @@ each list element:
 `openhpc_packages`: additional OpenHPC packages to install.
 
 `openhpc_enable`:
-* `control`: whether to enable control host
-* `database`: whether to enable slurmdbd
-* `batch`: whether to enable compute nodes
+* `control`: whether host should run slurmctld
+* `database`: whether host should run slurmdbd
+* `batch`: whether host should run slurmd
 * `runtime`: whether to enable OpenHPC runtime
 
 `openhpc_slurmdbd_host`: Optional. Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to prevent the role from managing slurmdbd. Defaults to `openhpc_slurm_control_host`.
 
-`openhpc_slurm_configless`: Optional, default false. If true then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used.
+Note slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is always used.
 
-`openhpc_munge_key`: Optional. Define a munge key to use. If not provided then one is generated but the `openhpc_slurm_control_host` must be in the play.
+`openhpc_munge_key`: Required. Define a munge key to use.
 
-`openhpc_login_only_nodes`: Optional. If using "configless" mode specify the name of an ansible group containing nodes which are login-only nodes (i.e. not also control nodes), if required. These nodes will run `slurmd` to contact the control node for config.
+`openhpc_login_only_nodes`: Optional. The name of an ansible inventory group containing nodes which are login nodes (i.e. not also control nodes). These nodes must have `openhpc_enable.batch: true` and will run `slurmd` to contact the control node for config.
 
 `openhpc_module_system_install`: Optional, default true. Whether or not to install an environment module system. If true, lmod will be installed. If false, You can either supply your own module system or go without one.
 
 ### slurm.conf
+
+`openhpc_cluster_name`: Required, name of the cluster.
 
 `openhpc_slurm_partitions`: Optional. List of one or more slurm partitions, default `[]`.  Each partition may contain the following values:
 * `groups`: If there are multiple node groups that make up the partition, a list of group objects can be defined here.
@@ -64,7 +66,7 @@ each list element:
 
     Note [GresTypes](https://slurm.schedmd.com/slurm.conf.html#OPT_GresTypes) must be set in `openhpc_config` if this is used.
 
-* `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
+* `default`: Optional.  Whether this partion is the default, valid settings are `YES` and `NO`.
 * `maxtime`: Optional.  A partition-specific time limit following the format of [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`.  The default value is
   given by `openhpc_job_maxtime`. The value should be quoted to avoid Ansible conversions.
 * `partition_params`: Optional. Mapping of additional parameters and values for [partition configuration](https://slurm.schedmd.com/slurm.conf.html#SECTION_PARTITION-CONFIGURATION).
@@ -74,52 +76,29 @@ For each group (if used) or partition any nodes in an ansible inventory group `<
 - Nodes in a group are assumed to be homogenous in terms of processor and memory.
 - An inventory group may be empty or missing, but if it is not then the play must contain at least one node from it (used to set processor information).
 
-
 `openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days). See [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime` for format. The default is 60 days. The value should be quoted to avoid Ansible conversions.
 
-`openhpc_cluster_name`: name of the cluster.
-
-`openhpc_config`: Optional. Mapping of additional parameters and values for `slurm.conf`. Note these will override any included in `templates/slurm.conf.j2`.
-
 `openhpc_ram_multiplier`: Optional, default `0.95`. Multiplier used in the calculation: `total_memory * openhpc_ram_multiplier` when setting `RealMemory` for the partition in slurm.conf. Can be overriden on a per partition basis using `openhpc_slurm_partitions.ram_multiplier`. Has no effect if `openhpc_slurm_partitions.ram_mb` is set.
+
+`openhpc_slurm_conf_default`: Optional. Multiline string giving default key=value parameters for `slurm.conf`. This may include jinja templating. See [defaults/main.yml](defaults/main.yml) for details. Values are only included here if either a) this role sets them to non-default values or b) they are parameterised from other role variables. Note any values here may be overriden using `openhpc_slurm_conf_overrides`.
+
+`openhpc_slurm_conf_overrides`: Optional. Multiline string giving key=value parameters for `slurm.conf` to override those from `openhpc_slurm_conf_default`. This may include jinja templating. Note keys must be unique so this cannot be used to add e.g. additional `NodeName=...` entries. TODO: Fix this via an additional var.
+
+`openhpc_slurm_conf_template`: Optional. Name/path of template for `slurm.conf`. The default template uses the relevant role variables and this should not usually need changing.
 
 `openhpc_state_save_location`: Optional. Absolute path for Slurm controller state (`slurm.conf` parameter [StateSaveLocation](https://slurm.schedmd.com/slurm.conf.html#OPT_StateSaveLocation))
 
 #### Accounting
 
-By default, no accounting storage is configured. OpenHPC v1.x and un-updated OpenHPC v2.0 clusters support file-based accounting storage which can be selected by setting the role variable `openhpc_slurm_accounting_storage_type` to `accounting_storage/filetxt`<sup id="accounting_storage">[1](#slurm_ver_footnote)</sup>. Accounting for OpenHPC v2.1 and updated OpenHPC v2.0 clusters requires the Slurm database daemon, `slurmdbd` (although job completion may be a limited alternative, see [below](#Job-accounting). To enable accounting:
+By default, no accounting storage is configured. To enable accounting:
 
 * Configure a mariadb or mysql server as described in the slurm accounting [documentation](https://slurm.schedmd.com/accounting.html) on one of the nodes in your inventory and set `openhpc_enable.database `to `true` for this node.
-* Set `openhpc_slurm_accounting_storage_type` to `accounting_storage/slurmdbd`.
-* Configure the variables for `slurmdbd.conf` below.
+* Set
 
-The role will take care of configuring the following variables for you:
-
-`openhpc_slurm_accounting_storage_host`: Where the accounting storage service is running i.e where slurmdbd running.
-
-`openhpc_slurm_accounting_storage_port`: Which port to use to connect to the accounting storage.
-
-`openhpc_slurm_accounting_storage_user`: Username for authenticating with the accounting storage.
-
-`openhpc_slurm_accounting_storage_pass`: Mungekey or database password to use for authenticating.
-
-For more advanced customisation or to configure another storage type, you might want to modify these values manually.
-
-#### Job accounting
-
-This is largely redundant if you are using the accounting plugin above, but will give you basic
-accounting data such as start and end times. By default no job accounting is configured.
-
-`openhpc_slurm_job_comp_type`: Logging mechanism for job accounting. Can be one of
-`jobcomp/filetxt`, `jobcomp/none`, `jobcomp/elasticsearch`.
-
-`openhpc_slurm_job_acct_gather_type`: Mechanism for collecting job accounting data. Can be one
- of `jobacct_gather/linux`, `jobacct_gather/cgroup` and `jobacct_gather/none`.
-
-`openhpc_slurm_job_acct_gather_frequency`: Sampling period for job accounting (seconds).
-
-`openhpc_slurm_job_comp_loc`: Location to store the job accounting records. Depends on value of
-`openhpc_slurm_job_comp_type`, e.g for `jobcomp/filetxt` represents a path on disk.
+      openhpc_slurm_conf_overrides: |
+        AccountingStorageType=accounting_storage/slurmdbd
+        
+* Configure the variables listed in the `slurmdbd.conf` section below.
 
 ### slurmdbd.conf
 
@@ -136,50 +115,43 @@ You will need to configure these variables if you have set `openhpc_enable.datab
 
 `openhpc_slurmdbd_mysql_username`: Username for authenticating with the database, defaults to `slurm`.
 
-## Example Inventory
+## Example
 
-And an Ansible inventory as this:
+With this Ansible inventory:
 
-    [openhpc_login]
-    openhpc-login-0 ansible_host=10.60.253.40 ansible_user=centos
+```ini
+[cluster_control]
+control-0
 
-    [openhpc_compute]
-    openhpc-compute-0 ansible_host=10.60.253.31 ansible_user=centos
-    openhpc-compute-1 ansible_host=10.60.253.32 ansible_user=centos
+[cluster_login]
+login-0
 
-    [cluster_login:children]
-    openhpc_login
+[cluster_compute]
+compute-0
+compute-1
+```
 
-    [cluster_control:children]
-    openhpc_login
+The following playbook deploys control, login and compute nodes with a customised `slurm.conf` adding debug logging.
 
-    [cluster_batch:children]
-    openhpc_compute
-
-## Example Playbooks
-
-To deploy, create a playbook which looks like this:
-
-    ---
-    - hosts:
-      - cluster_login
-      - cluster_control
-      - cluster_batch
-      become: yes
-      roles:
-        - role: openhpc
-          openhpc_enable:
-            control: "{{ inventory_hostname in groups['cluster_control'] }}"
-            batch: "{{ inventory_hostname in groups['cluster_batch'] }}"
-            runtime: true
-          openhpc_slurm_service_enabled: true
-          openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
-          openhpc_slurm_partitions:
-            - name: "compute"
-          openhpc_cluster_name: openhpc
-          openhpc_packages: []
-    ...
-
----
-
-<b id="slurm_ver_footnote">1</b> Slurm 20.11 removed `accounting_storage/filetxt` as an option. This version of Slurm was introduced in OpenHPC v2.1 but the OpenHPC repos are common to all OpenHPC v2.x releases. [↩](#accounting_storage)
+```yaml
+- hosts:
+  - cluster_login
+  - cluster_control
+  - cluster_compute
+  become: yes
+  vars:
+    openhpc_enable:
+      control: "{{ inventory_hostname in groups['cluster_control'] }}"
+      batch: "{{ inventory_hostname in groups['cluster_compute'] + groups['cluster_login'] }}"
+      runtime: true
+    openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
+    openhpc_slurm_partitions:
+      - name: "compute"
+    openhpc_cluster_name: openhpc
+    openhpc_slurm_conf_overrides: |
+      SlurmctldDebug=debug
+      SlurmdDebug=debug
+  tasks:
+    - import_role:
+        name: openhpc
+```
