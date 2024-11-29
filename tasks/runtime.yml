@@ -27,7 +27,7 @@
   notify:
     - Restart Munge service
   vars:
-    _ohpc_package_munge_key: "{{ hostvars[ ansible_play_hosts | first ]._ohpc_munge_key_file.content | b64decode }}"
+    _ohpc_package_munge_key: "{{ hostvars[ansible_play_hosts | first]._ohpc_munge_key_file.content | b64decode }}"
 
 - name: Template slurmdbd.conf
   template:
