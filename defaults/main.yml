@@ -1,7 +1,6 @@
 ---
 openhpc_slurm_service_enabled: true
 openhpc_slurm_service_started: "{{ openhpc_slurm_service_enabled }}"
-openhpc_slurm_service:
 openhpc_slurm_control_host: "{{ inventory_hostname }}"
 #openhpc_slurm_control_host_address:
 openhpc_slurm_partitions: []
@@ -13,7 +12,6 @@ openhpc_gres_template: gres.conf.j2
 openhpc_state_save_location: /var/spool/slurm
 
 # Accounting
-openhpc_slurm_accounting_storage_type: accounting_storage/none
 
 # slurmdbd configuration
 # todo: check we can override openhpc_slurm_accounting_storage_port
