@@ -11,15 +11,23 @@
   loop: "{{ openhpc_directories }}"
   when: inventory_hostname == openhpc_slurm_control_host
 
+- name: Read package-generated Munge key
+  slurp:
+    src: /etc/munge/munge.key
+  register: _ohpc_munge_key_file
+  run_once: true
+
 - name: Write Munge key
   copy:
-    content: "{{ openhpc_munge_key }}"
+    content: "{{ openhpc_munge_key | default(_ohpc_package_munge_key) }}"
     dest: "/etc/munge/munge.key"
     owner: munge
     group: munge
     mode: 0400
   notify:
     - Restart Munge service
+  vars:
+    _ohpc_package_munge_key: "{{ hostvars[ ansible_play_hosts | first ]._ohpc_munge_key_file.content | b64decode }}"
 
 - name: Template slurmdbd.conf
   template:
