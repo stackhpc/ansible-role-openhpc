@@ -64,5 +64,5 @@
   delay: 30
   when:
     - openhpc_slurm_service_started | bool
-    - openhpc_enable.batch | default(false) | bool
+    - openhpc_enable.batch | default(false)
     # 2nd condition required as notification happens on controller, which isn't necessarily a compute note

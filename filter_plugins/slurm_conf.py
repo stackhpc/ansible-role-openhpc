@@ -91,6 +91,10 @@ def dict2parameters(d):
     parts = ['%s=%s' % (k, v) for k, v in d.items()]
     return ' '.join(parts)
 
+def from_slurm_conf(s):
+    """ Convert a slurm.conf format string into a dict """
+    return dict(line.split('=', 1) for line in s.splitlines())
+
 class FilterModule(object):
 
     def filters(self):
@@ -98,4 +102,5 @@ class FilterModule(object):
             'hostlist_expression': hostlist_expression,
             'error': error,
             'dict2parameters': dict2parameters,
+            'from_slurm_conf': from_slurm_conf,
         }

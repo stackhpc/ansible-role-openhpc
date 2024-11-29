@@ -1,7 +1,5 @@
 ---
 
-- include_tasks: pre.yml
-
 - name: Ensure OpenHPC repos
   ansible.builtin.yum_repository:
     name: "{{ item.name }}"
