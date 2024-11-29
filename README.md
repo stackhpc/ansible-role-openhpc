@@ -48,6 +48,8 @@ Note slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html
 
 `openhpc_module_system_install`: Optional, default true. Whether or not to install an environment module system. If true, lmod will be installed. If false, You can either supply your own module system or go without one.
 
+`openhpc_extra_directories`: Optional list of dicts describing additional directories or files to create. By default, the directory for `openhpc_state_save_location` is created. Each dict can take keys `path`, `owner`, `group`, `mode` and `state` (default: directory) as for [ansible.builtin.file](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html). As it is run with sudo it is useful to create directories/files for the the slurm user in locations that that user does not have write access to, e.g. `/var/log/`.
+
 ### slurm.conf
 
 `openhpc_cluster_name`: Required, name of the cluster.
