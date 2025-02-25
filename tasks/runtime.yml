@@ -137,8 +137,8 @@
 - name: Template cgroup.conf
   # appears to be required even with NO cgroup plugins: https://slurm.schedmd.com/cgroups.html#cgroup_design
   template:
-    src: cgroup.conf.j2
-    dest: /etc/slurm/cgroup.conf
+    src: "{{ openhpc_cgroup_template }}"
+    dest: "{{ openhpc_slurm_conf_path | dirname }}/cgroup.conf"
     mode: "0644" # perms/ownership based off src from ohpc package
     owner: root
     group: root
