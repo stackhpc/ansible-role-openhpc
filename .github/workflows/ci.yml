@@ -60,7 +60,10 @@ jobs:
           - test12
           - test13
           - test14
-        exclude: []
+        exclude:
+          # mariadb package provides /usr/bin/mysql on RL8 which doesn't work with geerlingguy/mysql role
+          - scenario: test4
+            image: 'rockylinux:8.9'
 
     steps:
       - name: Check out the codebase.
