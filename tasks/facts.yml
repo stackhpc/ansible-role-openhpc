@@ -1,0 +1,27 @@
+- name: Capture configuration from scontrol
+  # this includes any dynamically-generated config, not just what is set in
+  # slurm.conf
+  ansible.builtin.command: scontrol show config
+  register: _scontrol_config
+
+- name: Create facts directory
+  ansible.builtin.file:
+    path: /etc/ansible/facts.d/
+    state: directory
+    owner: root
+    group: root
+    mode: ugo=rwX
+
+- name: Template slurm configuration facts
+  copy:
+    dest: /etc/ansible/facts.d/slurm.fact
+    content: "{{ _scontrol_config.stdout_lines | config2dict | to_nice_json }}"
+    owner: slurm
+    group: slurm
+    mode: ug=rw,o=r # any user can run scontrol show config anyway
+  register: _template_facts
+
+- name: Reload facts if necessary
+  ansible.builtin.setup:
+    filter: ansible_local
+  when: _template_facts.changed
