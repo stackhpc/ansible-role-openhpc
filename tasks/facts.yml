@@ -2,6 +2,7 @@
   # this includes any dynamically-generated config, not just what is set in
   # slurm.conf
   ansible.builtin.command: scontrol show config
+  changed_when: false
   register: _scontrol_config
 
 - name: Create facts directory
@@ -20,8 +21,4 @@
     group: slurm
     mode: ug=rw,o=r # any user can run scontrol show config anyway
   register: _template_facts
-
-- name: Reload facts if necessary
-  ansible.builtin.setup:
-    filter: ansible_local
-  when: _template_facts.changed
+  notify: Reload facts
