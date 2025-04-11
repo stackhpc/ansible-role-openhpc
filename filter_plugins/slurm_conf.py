@@ -108,7 +108,10 @@ def config2dict(lines):
         if '=' not in line: # ditch blank/info lines
             continue
         else:
-            k, v = (x.strip() for x in line.split('='))
+            parts = [x.strip() for x in line.split('=', maxsplit=1)] # maxplit handles '=' in values
+            if len(parts) != 2:
+                raise errors.AnsibleFilterError(f'line {line} cannot be split into key=value')
+            k, v = parts
             small_v = v.lower()
             if small_v == '(null)':
                 v = None
