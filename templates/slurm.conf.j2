@@ -185,5 +185,5 @@ PartitionName={{part.name}} Default={{ part.get('default', 'YES') }} MaxTime={{ 
 # Define a non-existent node, in no partition, so that slurmctld starts even with all partitions empty
 NodeName=nonesuch
 
-{% if openhpc_slurm_configless %}SlurmctldParameters=enable_configless{% endif %}
+{% if openhpc_slurm_configless | bool %}SlurmctldParameters=enable_configless{% endif %}
 ReturnToService=2
