@@ -91,6 +91,40 @@ def dict2parameters(d):
     parts = ['%s=%s' % (k, v) for k, v in d.items()]
     return ' '.join(parts)
 
+def config2dict(lines):
+    """ Convert a sequence of output lines from `scontrol show config` to a dict.
+        
+        As per man page uppercase keys are derived parameters, mixed case are from
+        from config files.
+
+        The following case-insensitive conversions of values are carried out:
+        - '(null)' and 'n/a' are converted to None.
+        - yes and no are converted to True and False respectively
+        
+        Except for these, values are always strings.
+    """
+    cfg = {}
+    for line in lines:
+        if '=' not in line: # ditch blank/info lines
+            continue
+        else:
+            parts = [x.strip() for x in line.split('=', maxsplit=1)] # maxplit handles '=' in values
+            if len(parts) != 2:
+                raise errors.AnsibleFilterError(f'line {line} cannot be split into key=value')
+            k, v = parts
+            small_v = v.lower()
+            if small_v == '(null)':
+                v = None
+            elif small_v == 'n/a':
+                v = None
+            elif small_v == 'no':
+                v = False
+            elif small_v == 'yes':
+                v = True
+            cfg[k] = v
+    return cfg
+
+
 class FilterModule(object):
 
     def filters(self):
@@ -98,4 +132,5 @@ class FilterModule(object):
             'hostlist_expression': hostlist_expression,
             'error': error,
             'dict2parameters': dict2parameters,
+            'config2dict': config2dict,
         }

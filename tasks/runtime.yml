@@ -216,3 +216,5 @@
     enabled: "{{ openhpc_slurm_service_enabled | bool }}"
     state: "{{ 'started' if openhpc_slurm_service_started | bool else 'stopped' }}"
   when: openhpc_enable.batch | default(false) | bool
+
+- import_tasks: facts.yml
