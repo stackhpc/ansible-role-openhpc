@@ -10,8 +10,7 @@
 #
 ClusterName={{ openhpc_cluster_name }}
 SlurmctldHost={{ openhpc_slurm_control_host }}{% if openhpc_slurm_control_host_address is defined %}({{ openhpc_slurm_control_host_address }}){% endif %}
-#SlurmctldHost=
-#
+
 #DisableRootJobs=NO
 #EnforcePartLimits=NO
 #EpilogSlurmctld=
@@ -186,4 +185,5 @@ PartitionName={{part.name}} Default={{ part.get('default', 'YES') }} MaxTime={{ 
 NodeName=nonesuch
 
 {% if openhpc_slurm_configless | bool %}SlurmctldParameters=enable_configless{% endif %}
+
 ReturnToService=2

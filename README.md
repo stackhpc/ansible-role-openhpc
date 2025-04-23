@@ -136,6 +136,14 @@ You will need to configure these variables if you have set `openhpc_enable.datab
 
 `openhpc_slurmdbd_mysql_username`: Username for authenticating with the database, defaults to `slurm`.
 
+## Facts
+
+This role creates local facts from the live Slurm configuration, which can be
+accessed (with facts gathering enabled) using `ansible_local.slurm`. As per the
+`scontrol show config` man page, uppercase keys are derived parameters and keys
+in mixed case are from from config files. Note the facts are only refreshed
+when this role is run.
+
 ## Example Inventory
 
 And an Ansible inventory as this:
