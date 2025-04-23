@@ -58,10 +58,10 @@ each list element:
   * `extra_nodes`: Optional. A list of additional node definitions, e.g. for nodes in this group/partition not controlled by this role. Each item should be a dict, with keys/values as per the ["NODE CONFIGURATION"](https://slurm.schedmd.com/slurm.conf.html#lbAE) docs for slurm.conf. Note the key `NodeName` must be first.
   * `ram_mb`: Optional.  The physical RAM available in each node of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`) in MiB. This is set using ansible facts if not defined, equivalent to `free --mebi` total * `openhpc_ram_multiplier`.
   * `ram_multiplier`: Optional.  An override for the top-level definition `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
-  * `gres`: Optional. List of dicts defining [generic resources](https://slurm.schedmd.com/gres.html). Each dict must define:
+  * `gres`: Optional. List of dicts defining [generic resources](https://slurm.schedmd.com/gres.html). Each dict should define:
       - `conf`: A string with the [resource specification](https://slurm.schedmd.com/slurm.conf.html#OPT_Gres_1) but requiring the format `<name>:<type>:<number>`, e.g. `gpu:A100:2`. Note the `type` is an arbitrary string.
-      - `file`: A string with the [File](https://slurm.schedmd.com/gres.conf.html#OPT_File) (path to device(s)) for this resource, e.g. `/dev/nvidia[0-1]` for the above example.
-
+      - `file`: Optional if `autodetect` is set, A string with the [File](https://slurm.schedmd.com/gres.conf.html#OPT_File) (path to device(s)) for this resource, e.g. `/dev/nvidia[0-1]` for the above example.
+      - `autodetect`: Optional if `file` is set, The [auto detection mechanism](https://slurm.schedmd.com/gres.conf.html#OPT_AutoDetect) to use for the resource.
     Note [GresTypes](https://slurm.schedmd.com/slurm.conf.html#OPT_GresTypes) must be set in `openhpc_config` if this is used.
 
 * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.

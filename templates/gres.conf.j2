@@ -8,7 +8,10 @@ AutoDetect=off
 {%              set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
 {%              set inventory_group_hosts = groups.get(group_name, []) %}
 {%              for hostlist in (inventory_group_hosts | hostlist_expression) %}
-NodeName={{ hostlist }} Name={{ gres_name }} Type={{ gres_type }} File={{ gres.file }}
+                set file = gres.file | default('')
+                set autodetect = gres.autodetect | default('')
+NodeName={{ hostlist }} Name={{ gres_name }} Type={{ gres_type }}{% if gres.file is truthy %}  File={{ gres.file }}{% endif %}{% if gres.autodetect is truthy %} AutoDetect={{ gres.autodetect }}{%endif%}
+
 {%              endfor %}
 {%          endfor %}
 {%      endif %}
