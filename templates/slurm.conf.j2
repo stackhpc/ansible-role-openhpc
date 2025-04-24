@@ -164,7 +164,7 @@ Epilog=/etc/slurm/slurm.epilog.clean
             {% for hostlist in (inventory_group_hosts | hostlist_expression) %}
         {% set gres = ' Gres=%s' % (','.join(group.gres | map(attribute='conf') )) if 'gres' in group else '' %}
             {% if hostlist not in donehosts %}
-NodeName={{ hostlist }} State=UNKNOWN RealMemory={{ group.get('ram_mb', ram_mb) }} Sockets={{first_host_hv['ansible_processor_count']}} CoresPerSocket={{ first_host_hv['ansible_processor_cores'] }} ThreadsPerCore={{ first_host_hv['ansible_processor_threads_per_core'] }}{{ gres }}
+NodeName={{ hostlist }} State=UNKNOWN RealMemory={{ group.get('ram_mb', ram_mb) }} Sockets={{first_host_hv['ansible_processor_count']}} CoresPerSocket={{ first_host_hv['ansible_processor_cores'] }} ThreadsPerCore={{ first_host_hv['ansible_processor_threads_per_core'] }} CPUSpecList=92-95 {{ gres }}
             {% endif %}
                 {% set _ = nodelist.append(hostlist) %}
                 {% set _ = donehosts.append(hostlist) %}
