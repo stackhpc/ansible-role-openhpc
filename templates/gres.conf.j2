@@ -13,7 +13,6 @@ NodeName={{ hostlist }} AutoDetect={{ group.gres_autodetect }}
 {%              set gres_name, gres_type, _ = gres.conf.split(':') %}
 {%              for hostlist in (inventory_group_hosts | hostlist_expression) %}
 NodeName={{ hostlist }} Name={{ gres_name }} Type={{ gres_type }} File={{ gres.file }}
-
 {%              endfor %}
 {%          endfor %}
 {%      endif %}
