@@ -72,7 +72,7 @@ def group_by_gres_autodetect(context, hosts):
     """
     result = defaultdict(list)
     for host in hosts:
-        gres_autodetect = _get_hostvar(context, 'gres_autodetect', inventory_hostname=host)
+        gres_autodetect = _get_hostvar(context, 'openhpc_gres_autodetect', inventory_hostname=host) or 'off'
         result[gres_autodetect].append(host)
     return result
 
