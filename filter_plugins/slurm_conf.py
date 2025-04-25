@@ -15,6 +15,7 @@
 # NB: To test this from the repo root run:
 #   ansible-playbook -i tests/inventory -i tests/inventory-mock-groups tests/filter.yml
 
+from collections import defaultdict
 from ansible import errors
 import jinja2
 import re
@@ -64,6 +65,16 @@ def hostlist_expression(hosts):
         else:
             unmatchable.append(v)
     return ['{}[{}]'.format(k, _group_numbers(v)) for k, v in results.items()] + unmatchable
+
+@jinja2.pass_context
+def group_by_gres_autodetect(context, hosts):
+    """ Groups a list of hosts by the gres_autodetect variable
+    """
+    result = defaultdict(list)
+    for host in hosts:
+        gres_autodetect = _get_hostvar(context, 'gres_autodetect', inventory_hostname=host)
+        result[gres_autodetect].append(host)
+    return result
 
 def _group_numbers(numbers):
     units = []
@@ -133,4 +144,5 @@ class FilterModule(object):
             'error': error,
             'dict2parameters': dict2parameters,
             'config2dict': config2dict,
+            'group_by_gres_autodetect': group_by_gres_autodetect,
         }
