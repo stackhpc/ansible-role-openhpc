@@ -9,7 +9,7 @@ AutoDetect=off
 {%          set autodetect_mechanisms = inventory_group_hosts | group_by_gres_autodetect %}
 {%          for mechanism, _mechanism_hosts in autodetect_mechanisms.items() %}
 {%              set mechanism_hosts = _mechanism_hosts | difference(donehosts) %}
-{%              if mechanism != 'disabled' %}
+{%              if mechanism != 'off' %}
 {%                  for hostlist in (mechanism_hosts | hostlist_expression) %}
 NodeName={{ hostlist }} AutoDetect={{ mechanism }}
 {%                  endfor %}
