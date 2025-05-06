@@ -1,7 +1,7 @@
 AutoDetect=off
+{% set donehosts = [] | unique %}
 {% for part in openhpc_slurm_partitions %}
 {%  set nodelist = [] %}
-{%  set donehosts = [] | unique %}
 {%  for group in part.get('groups', [part]) %}
 {%      if 'gres' in group %}
 {%          set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
