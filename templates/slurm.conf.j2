@@ -166,9 +166,10 @@ NodeName={{ hostlist }} {{ '' -}}
     {{ nodegroup.params | default({}) | dict2parameters }} {{ '' -}}
     {% if 'gres' in nodegroup %}Gres={{ ','.join(nodegroup.gres | map(attribute='conf')) }}{% endif %}
 {%              endfor %}{# hostlists #}
-
-NodeSet={{ nodegroup.name }} Nodes={{ ','.join(hostlists) }}{# no support for creating nodesets by Feature #}
 {%      endif %}{# 1 or more hosts in inventory #}
+
+NodeSet={{ nodegroup.name }} Nodes={{ ','.join(hostlists | default(['""'])) }}{# no support for creating nodesets by Feature #}
+
 {% endfor %}
 
 # Define a non-existent node, in no partition, so that slurmctld starts even with all partitions empty
