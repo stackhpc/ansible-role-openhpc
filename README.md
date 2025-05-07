@@ -50,30 +50,44 @@ each list element:
 
 ### slurm.conf
 
-`openhpc_slurm_partitions`: Optional. List of one or more slurm partitions, default `[]`.  Each partition may contain the following values:
-* `groups`: If there are multiple node groups that make up the partition, a list of group objects can be defined here.
-  Otherwise, `groups` can be omitted and the following attributes can be defined in the partition object:
-  * `name`: The name of the nodes within this group.
-  * `cluster_name`: Optional.  An override for the top-level definition `openhpc_cluster_name`.
-  * `extra_nodes`: Optional. A list of additional node definitions, e.g. for nodes in this group/partition not controlled by this role. Each item should be a dict, with keys/values as per the ["NODE CONFIGURATION"](https://slurm.schedmd.com/slurm.conf.html#lbAE) docs for slurm.conf. Note the key `NodeName` must be first.
-  * `ram_mb`: Optional.  The physical RAM available in each node of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`) in MiB. This is set using ansible facts if not defined, equivalent to `free --mebi` total * `openhpc_ram_multiplier`.
-  * `ram_multiplier`: Optional.  An override for the top-level definition `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
+`openhpc_nodegroups`: Optional, default `[]`. List of mappings, each defining a
+unique set of homogenous nodes:
+  * `name`: Required. Name of node group.
+  * `ram_mb`: Optional.  The physical RAM available in each node of this group
+  ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`)
+  in MiB. This is set using ansible facts if not defined, equivalent to
+  `free --mebi` total * `openhpc_ram_multiplier`.
+  * `ram_multiplier`: Optional.  An override for the top-level definition
+  `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
   * `gres`: Optional. List of dicts defining [generic resources](https://slurm.schedmd.com/gres.html). Each dict must define:
       - `conf`: A string with the [resource specification](https://slurm.schedmd.com/slurm.conf.html#OPT_Gres_1) but requiring the format `<name>:<type>:<number>`, e.g. `gpu:A100:2`. Note the `type` is an arbitrary string.
       - `file`: A string with the [File](https://slurm.schedmd.com/gres.conf.html#OPT_File) (path to device(s)) for this resource, e.g. `/dev/nvidia[0-1]` for the above example.
-
     Note [GresTypes](https://slurm.schedmd.com/slurm.conf.html#OPT_GresTypes) must be set in `openhpc_config` if this is used.
+  * `params`: Optional. Mapping of additional parameters and values for
+  [node configuration](https://slurm.schedmd.com/slurm.conf.html#lbAE).
 
-* `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
-* `maxtime`: Optional.  A partition-specific time limit following the format of [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`.  The default value is
+  Each nodegroup will contain hosts from an Ansible inventory group named
+  `{{ openhpc_cluster_name }}_{{ group_name}}`. Note that:
+  - Each host may only appear in one nodegroup.
+  - Hosts in a nodegroup are assumed to be homogenous in terms of processor and memory.
+  - Hosts may have arbitrary hostnames, but these should be lowercase to avoid a
+    mismatch between inventory and actual hostname.
+  - An inventory group may be missing or empty, in which case the node group
+    contains no hosts.
+  - If the inventory group is not empty the play must contain at least one host.
+    This is used to set `Sockets`, `CoresPerSocket`, `ThreadsPerCore` and
+    optionally `RealMemory` for the nodegroup.
+
+`openhpc_partitions`: Optional, default `[]`. List of mappings, each defining a
+partition. Each partition mapping may contain:
+  * `name`: Required. Name of partition.
+  * `groups`: Optional. List of nodegroup names. If omitted, the partition name
+  is assumed to match a nodegroup name.
+  * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
+  * `maxtime`: Optional.  A partition-specific time limit following the format of [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`.  The default value is
   given by `openhpc_job_maxtime`. The value should be quoted to avoid Ansible conversions.
-* `partition_params`: Optional. Mapping of additional parameters and values for [partition configuration](https://slurm.schedmd.com/slurm.conf.html#SECTION_PARTITION-CONFIGURATION).
-
-For each group (if used) or partition any nodes in an ansible inventory group `<cluster_name>_<group_name>` will be added to the group/partition. Note that:
-- Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
-- Nodes in a group are assumed to be homogenous in terms of processor and memory.
-- An inventory group may be empty or missing, but if it is not then the play must contain at least one node from it (used to set processor information).
-
+  * `params`: Optional. Mapping of additional parameters and values for
+  [partition configuration](https://slurm.schedmd.com/slurm.conf.html#SECTION_PARTITION-CONFIGURATION).
 
 `openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days). See [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime` for format. The default is 60 days. The value should be quoted to avoid Ansible conversions.
 
