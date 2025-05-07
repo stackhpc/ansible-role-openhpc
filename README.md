@@ -93,7 +93,12 @@ partition. Each partition mapping may contain:
 
 `openhpc_cluster_name`: name of the cluster.
 
-`openhpc_config`: Optional. Mapping of additional parameters and values for `slurm.conf`. Note these will override any included in `templates/slurm.conf.j2`.
+`openhpc_config`: Optional. Mapping of additional parameters and values for
+[slurm.conf](https://slurm.schedmd.com/slurm.conf.html). Keys are parameter
+names and values are lists or strings as appropriate. This can be used to
+supplement or override the template defaults, or to remove a template parameter
+by setting the value to `'omit'` - note this is the literal string, not the
+Ansible special variable.
 
 `openhpc_ram_multiplier`: Optional, default `0.95`. Multiplier used in the calculation: `total_memory * openhpc_ram_multiplier` when setting `RealMemory` for the partition in slurm.conf. Can be overriden on a per partition basis using `openhpc_slurm_partitions.ram_multiplier`. Has no effect if `openhpc_slurm_partitions.ram_mb` is set.
 
