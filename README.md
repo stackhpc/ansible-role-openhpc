@@ -161,50 +161,121 @@ accessed (with facts gathering enabled) using `ansible_local.slurm`. As per the
 in mixed case are from from config files. Note the facts are only refreshed
 when this role is run.
 
-## Example Inventory
+## Example
 
-And an Ansible inventory as this:
+### Simple
 
-    [openhpc_login]
-    openhpc-login-0 ansible_host=10.60.253.40 ansible_user=centos
+The following creates a cluster with a a single partition `compute`
+containing two nodes:
 
-    [openhpc_compute]
-    openhpc-compute-0 ansible_host=10.60.253.31 ansible_user=centos
-    openhpc-compute-1 ansible_host=10.60.253.32 ansible_user=centos
+```ini
+# inventory/hosts:
+[hpc_login]
+cluster-login-0
 
-    [cluster_login:children]
-    openhpc_login
+[hpc_compute]
+cluster-compute-0
+cluster-compute-1
 
-    [cluster_control:children]
-    openhpc_login
+[hpc_control]
+cluster-control
+```
 
-    [cluster_batch:children]
-    openhpc_compute
-
-## Example Playbooks
-
-To deploy, create a playbook which looks like this:
-
-    ---
-    - hosts:
-      - cluster_login
-      - cluster_control
-      - cluster_batch
-      become: yes
-      roles:
-        - role: openhpc
-          openhpc_enable:
-            control: "{{ inventory_hostname in groups['cluster_control'] }}"
-            batch: "{{ inventory_hostname in groups['cluster_batch'] }}"
-            runtime: true
-          openhpc_slurm_service_enabled: true
-          openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
-          openhpc_slurm_partitions:
-            - name: "compute"
-          openhpc_cluster_name: openhpc
-          openhpc_packages: []
-    ...
-
+```yaml
+#playbook.yml
 ---
+- hosts: all
+  become: yes
+  tasks:
+    - import_role:
+        name: stackhpc.openhpc
+      vars:
+        openhpc_cluster_name: hpc
+        openhpc_enable:
+          control: "{{ inventory_hostname in groups['cluster_control'] }}"
+          batch: "{{ inventory_hostname in groups['cluster_compute'] }}"
+          runtime: true
+        openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
+        openhpc_nodegroups:
+          - name: compute
+        openhpc_partitions:
+          - name: compute
+---
+```
+
+### Multiple nodegroups
+
+This example shows how partitions can span multiple types of compute node.
+
+This example inventory describes three types of compute node (login and
+control nodes are omitted for brevity):
+
+```ini
+# inventory/hosts:
+...
+[hpc_general]
+# standard compute nodes
+cluster-general-0
+cluster-general-1
+
+[hpc_large]
+# large memory nodes
+cluster-largemem-0
+cluster-largemem-1
+
+[hpc_gpu]
+# GPU nodes
+cluster-a100-0
+cluster-a100-1
+...
+```
+
+Firstly the `openhpc_nodegroups` is set to capture these inventory groups and
+apply any node-level parameters - in this case the `largemem` nodes have
+2x cores reserved for some reason, and GRES is configured for the GPU nodes:
+
+```yaml
+openhpc_cluster_name: hpc
+openhpc_nodegroups:
+  - name: general
+  - name: large
+    node_params:
+      CoreSpecCount: 2
+  - name: gpu
+    gres:
+      - conf: gpu:A100:2
+        file: /dev/nvidia[0-1]
+```
+
+Now two partitions can be configured - a default one with a short timelimit and
+no large memory nodes for testing jobs, and another with all hardware and longer
+job runtime for "production" jobs:
+
+```yaml
+openhpc_partitions:
+  - name: test
+    groups:
+      - general
+      - gpu
+    maxtime: '1:0:0' # 1 hour
+    default: 'YES'
+  - name: general
+    groups:
+      - general
+      - large
+      - gpu
+    maxtime: '2-0' # 2 days
+    default: 'NO'
+```
+Users will select the partition using `--partition` argument and request nodes
+with appropriate memory or GPUs using the `--mem` and `--gres` or `--gpus*`
+options for `sbatch` or `srun`.
+
+Finally here some additional configuration must be provided for GRES:
+```yaml
+openhpc_config:
+  GresTypes:
+    -gpu
+```
 
 <b id="slurm_ver_footnote">1</b> Slurm 20.11 removed `accounting_storage/filetxt` as an option. This version of Slurm was introduced in OpenHPC v2.1 but the OpenHPC repos are common to all OpenHPC v2.x releases. [↩](#accounting_storage)
