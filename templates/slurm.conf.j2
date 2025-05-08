@@ -158,9 +158,10 @@ Epilog=/etc/slurm/slurm.epilog.clean
 {%          set hostlists = (inventory_group_hosts | hostlist_expression) %}{# hosts in inventory group aren't necessarily a single hostlist expression #}
 {%              for hostlist in  hostlists %}
 NodeName={{ hostlist }} {{ '' -}}
+    Features=nodegroup_{{ nodegroup.name }} {{ '' -}}
     State=UNKNOWN {{ '' -}}
     RealMemory={{ nodegroup.ram_mb | default(ram_mb) }} {{ '' -}}
-    Sockets={{first_host_hv['ansible_processor_count'] }} {{ '' -}}
+    Sockets={{ first_host_hv['ansible_processor_count'] }} {{ '' -}}
     CoresPerSocket={{ first_host_hv['ansible_processor_cores'] }} {{ '' -}}
     ThreadsPerCore={{ first_host_hv['ansible_processor_threads_per_core'] }} {{ '' -}}
     {{ nodegroup.node_params | default({}) | dict2parameters }} {{ '' -}}
@@ -168,7 +169,7 @@ NodeName={{ hostlist }} {{ '' -}}
 {%              endfor %}{# hostlists #}
 {%      endif %}{# 1 or more hosts in inventory #}
 
-NodeSet={{ nodegroup.name }} Nodes={{ ','.join(hostlists | default(['""'])) }}{# no support for creating nodesets by Feature #}
+NodeSet=nodegroup_{{ nodegroup.name }} Feature=nodegroup_{{ nodegroup.name }}
 
 {% endfor %}
 
@@ -181,7 +182,7 @@ PartitionName={{partition.name}} {{ '' -}}
     Default={{ partition.get('default', 'YES') }} {{ '' -}}
     MaxTime={{ partition.get('maxtime', openhpc_job_maxtime) }} {{ '' -}}
     State=UP  {{ '' -}}
-    Nodes={{ partition.get('groups', [partition.name]) | join(',') }} {{ '' -}}
+    Nodes={{ partition.get('groups', [partition.name]) | map('regex_replace', '^', 'nodegroup_') | join(',') }} {{ '' -}}
     {{ partition.partition_params | default({}) | dict2parameters }}
 {% endfor %}{# openhpc_partitions #}
 
