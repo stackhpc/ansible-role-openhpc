@@ -7,7 +7,7 @@
       batch: "{{ inventory_hostname in groups['testohpc_compute'] }}"
       runtime: true
     openhpc_slurm_control_host: "{{ groups['testohpc_login'] | first }}"
-    openhpc_slurm_partitions:
+    openhpc_nodegroups:
       - name: "compute"
         extra_nodes:
           # Need to specify IPs for the non-existent State=DOWN nodes, because otherwise even in this state slurmctld will exclude a node with no lookup information from the config.
