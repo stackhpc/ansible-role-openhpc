@@ -1,0 +1,23 @@
+- name: Check openhpc_slurm_control_host and openhpc_cluster_name
+  assert:
+    that:
+      - openhpc_slurm_control_host is defined
+      - openhpc_slurm_control_host != ''
+      - openhpc_cluster_name is defined
+      - openhpc_cluster_name != ''
+    fail_msg: openhpc role variables not correctly defined, see detail above
+
+- name: Check no host appears in more than one nodegroup
+  assert:
+    that: "{{ _openhpc_check_hosts.values() | select('greaterthan', 1) | length  == 0}}"
+    fail_msg: |
+      Some hosts appear more than once in inventory groups {{ _openhpc_node_inventory_groups | join(', ') }}:
+      {{ _openhpc_check_hosts | dict2items | rejectattr('value', 'equalto', 1) | items2dict | to_nice_yaml }}
+  vars:
+    _openhpc_node_inventory_groups: "{{ openhpc_nodegroups | map(attribute='name') | map('regex_replace', '^', openhpc_cluster_name ~ '_') }}"
+    _openhpc_check_hosts: "{{ _openhpc_node_inventory_groups | map('extract', groups) | flatten | community.general.counter }}"
+
+- name: Fail if configuration is old
+  assert:
+    that: openhpc_slurm_partitions is not defined
+    fail_msg: stackhpc.openhpc parameter openhpc_slurm_partitions has been replaced - see openhpc_nodegroups and openhpc_partitions
