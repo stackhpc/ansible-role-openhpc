@@ -80,7 +80,7 @@ unique set of homogenous nodes:
     This is used to set `Sockets`, `CoresPerSocket`, `ThreadsPerCore` and
     optionally `RealMemory` for the nodegroup.
 
-`openhpc_partitions`: Optional, default `[]`. List of mappings, each defining a
+`openhpc_partitions`: Optional. List of mappings, each defining a
 partition. Each partition mapping may contain:
   * `name`: Required. Name of partition.
   * `groups`: Optional. List of node group names. If omitted, the node group
@@ -90,6 +90,9 @@ partition. Each partition mapping may contain:
   * `partition_params`: Optional. Mapping of additional parameters and values for
   [partition configuration](https://slurm.schedmd.com/slurm.conf.html#SECTION_PARTITION-CONFIGURATION).
   **NB:** Parameters which can be set via the keys above must not be included here.
+
+If this variable is not set one partition per nodegroup is created, with default
+partition configuration for each.
 
 `openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days), see
 [slurm.conf:MaxTime](https://slurm.schedmd.com/slurm.conf.html#OPT_MaxTime).
