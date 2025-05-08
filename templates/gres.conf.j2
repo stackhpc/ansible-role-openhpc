@@ -1,29 +1,17 @@
 AutoDetect=off
-{% set donehosts = [] | unique %}
-{% for part in openhpc_slurm_partitions %}
-{%  set nodelist = [] %}
-{%  for group in part.get('groups', [part]) %}
-{%      if 'gres' in group %}
-{%          set group_name = group.cluster_name|default(openhpc_cluster_name) ~ '_' ~ group.name %}
-{%          set inventory_group_hosts = groups.get(group_name, []) %}
-{%          set autodetect_mechanisms = inventory_group_hosts | group_by_gres_autodetect %}
-{%          for mechanism, _mechanism_hosts in autodetect_mechanisms.items() %}
-{%              set mechanism_hosts = _mechanism_hosts | difference(donehosts) %}
-{%              if mechanism != 'off' %}
-{%                  for hostlist in (mechanism_hosts | hostlist_expression) %}
-NodeName={{ hostlist }} AutoDetect={{ mechanism }}
-{%                  endfor %}
-{%              else %}
-{%                  for gres in group.gres %}
-{%                      set gres_name, gres_type, _ = gres.conf.split(':') %}
-{%                      for hostlist in (mechanism_hosts | hostlist_expression) %}
-NodeName={{ hostlist }} Name={{ gres_name }} Type={{ gres_type }} File={{ gres.file | mandatory('The gres configuration dictionary: ' ~  gres ~ ' is missing the file key, but openhpc_gres_autodetect is set to off. The error occured on partition: ' ~  part.name ~ '. Please add the file key or set openhpc_gres_autodetect.') }}
-
-{%                      endfor %}
-{%                  endfor %}
-{%              endif %}
-{% set donehosts = donehosts | union(mechanism_hosts) %}
-{%          endfor %}
-{%      endif %}
-{%  endfor %}
-{% endfor %}
+{% for nodegroup in openhpc_nodegroups %}
+{%      set gres_list = nodegroup.gres | default([]) %}
+{%      set gres_autodetect = nodegroup.gres_autodetect | default('off') %}
+{%      if gres_autodetect | default('off') != 'off'  %}
+NodeName={{ hostlist }} AutoDetect={{ gres_autodetect }}
+{%      else %}
+{%          for gres in gres_list %}
+{%              set gres_name, gres_type, _ = gres.conf.split(':') %}
+{%              set inventory_group_name = openhpc_cluster_name ~ '_' ~ nodegroup.name %}
+{%              set inventory_group_hosts = groups.get(inventory_group_name, []) %}
+{%              for hostlist in (inventory_group_hosts | hostlist_expression) %}
+NodeName={{ hostlist }} Name={{ gres_name }} Type={{ gres_type }} File={{ gres.file }}
+{%              endfor %}{# hostlists #}
+{%          endfor %}{# gres #}
+{%      endif %}{# autodetect #}
+{% endfor %}{# nodegroup #}
