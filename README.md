@@ -83,16 +83,17 @@ unique set of homogenous nodes:
 `openhpc_partitions`: Optional, default `[]`. List of mappings, each defining a
 partition. Each partition mapping may contain:
   * `name`: Required. Name of partition.
-  * `groups`: Optional. List of nodegroup names. If omitted, the partition name
-  is assumed to match a nodegroup name.
+  * `groups`: Optional. List of node group names. If omitted, the node group
+     with the same name as the partition is used.
   * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
-  * `maxtime`: Optional.  A partition-specific time limit following the format of [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`.  The default value is
-  given by `openhpc_job_maxtime`. The value should be quoted to avoid Ansible conversions.
+  * `maxtime`: Optional.  A partition-specific time limit overriding `openhpc_job_maxtime`.
   * `partition_params`: Optional. Mapping of additional parameters and values for
   [partition configuration](https://slurm.schedmd.com/slurm.conf.html#SECTION_PARTITION-CONFIGURATION).
   **NB:** Parameters which can be set via the keys above must not be included here.
 
-`openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days). See [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime` for format. The default is 60 days. The value should be quoted to avoid Ansible conversions.
+`openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days), see
+[slurm.conf:MaxTime](https://slurm.schedmd.com/slurm.conf.html#OPT_MaxTime).
+**NB:** This should be quoted to avoid Ansible conversions.
 
 `openhpc_cluster_name`: name of the cluster.
 
