@@ -8,14 +8,15 @@
       runtime: true
     openhpc_slurm_control_host: "{{ groups['testohpc_login'] | first }}"
     openhpc_nodegroups:
-      - name: "compute"
+      - name: grp1
+      - name: grp2
+    openhpc_partitions:
+      - name: compute
         groups:
-        - name: "grp1"
-        - name: "grp2"
+          - grp1
+          - grp2
     openhpc_cluster_name: testohpc
   tasks:
     - name: "Include ansible-role-openhpc"
       include_role:
         name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
-      
-
