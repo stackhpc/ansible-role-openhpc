@@ -9,7 +9,7 @@
 
 - name: Check no host appears in more than one nodegroup
   assert:
-    that: "{{ _openhpc_check_hosts.values() | select('greaterthan', 1) | length  == 0}}"
+    that: "{{ _openhpc_check_hosts.values() | select('greaterthan', 1) | length == 0 }}"
     fail_msg: |
       Some hosts appear more than once in inventory groups {{ _openhpc_node_inventory_groups | join(', ') }}:
       {{ _openhpc_check_hosts | dict2items | rejectattr('value', 'equalto', 1) | items2dict | to_nice_yaml }}
