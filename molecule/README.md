@@ -10,7 +10,7 @@ test1  | 1            | N                       | 2x compute node, sequential na
 test1b | 1            | N                       | 1x compute node
 test1c | 1            | N                       | 2x compute nodes, nonsequential names
 test2  | 2            | N                       | 4x compute node, sequential names
-test3  | 1            | Y                       | -
+test3  | 1            | Y                       | 4x compute nodes in 2x groups, single partition
 test4  | 1            | N                       | 2x compute node, accounting enabled
 test5  | 1            | N                       | As for #1 but configless
 test6  | 1            | N                       | 0x compute nodes, configless
