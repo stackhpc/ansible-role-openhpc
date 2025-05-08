@@ -158,7 +158,7 @@ Epilog=/etc/slurm/slurm.epilog.clean
 {%          set hostlists = (inventory_group_hosts | hostlist_expression) %}{# hosts in inventory group aren't necessarily a single hostlist expression #}
 {%              for hostlist in  hostlists %}
 NodeName={{ hostlist }} {{ '' -}}
-    Features=nodegroup_{{ nodegroup.name }} {{ '' -}}
+    Features={{ (['nodegroup_' ~ nodegroup.name] + nodegroup.features | default([]) ) | join(',') }} {{ '' -}}
     State=UNKNOWN {{ '' -}}
     RealMemory={{ nodegroup.ram_mb | default(ram_mb) }} {{ '' -}}
     Sockets={{ first_host_hv['ansible_processor_count'] }} {{ '' -}}
