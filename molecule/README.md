@@ -21,7 +21,7 @@ test10 | 1            | N                       | As for #5 but then tries to ad
 test11 | 1            | N                       | As for #5 but then deletes a node (actually changes the partition due to molecule/ansible limitations)
 test12 | 1            | N                       | As for #5 but enabling job completion and testing `sacct -c`
 test13 | 1            | N                       | As for #5 but tests `openhpc_config` variable.
-test14 | 1            | N                       | As for #5 but also tests `extra_nodes` via State=DOWN nodes.
+test14 | 1            | N                       | [removed, extra_nodes removed]
 test15 | 1            | Y                       | As for #5 but also tests `partitions with different name but with the same NodeName`.
 
 
