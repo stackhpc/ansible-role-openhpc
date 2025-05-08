@@ -15,7 +15,7 @@
       {{ _openhpc_check_hosts | dict2items | rejectattr('value', 'equalto', 1) | items2dict | to_nice_yaml }}
   vars:
     _openhpc_node_inventory_groups: "{{ openhpc_nodegroups | map(attribute='name') | map('regex_replace', '^', openhpc_cluster_name ~ '_') }}"
-    _openhpc_check_hosts: "{{ _openhpc_node_inventory_groups | map('extract', groups) | flatten | community.general.counter }}"
+    _openhpc_check_hosts: "{{ groups | dict2items | list | selectattr('key', 'in', _openhpc_node_inventory_groups) | map(attribute='value') | flatten | community.general.counter }}"
 
 - name: Fail if configuration is old
   assert:
