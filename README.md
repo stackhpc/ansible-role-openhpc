@@ -48,8 +48,6 @@ each list element:
 
 `openhpc_module_system_install`: Optional, default true. Whether or not to install an environment module system. If true, lmod will be installed. If false, You can either supply your own module system or go without one.
 
-`openhpc_gres_autodetect`: Optional. The [auto detection mechanism](https://slurm.schedmd.com/gres.conf.html#OPT_AutoDetect) to use for the  generic resources. Can be set on individual hosts or groups of hosts using host/group vars. Note: you must still define `gres` dictionary in `openhpc_slurm_partitions`, but you only need the define the `conf` key. 
-
 ### slurm.conf
 
 `openhpc_nodegroups`: Optional, default `[]`. List of mappings, each defining a
@@ -61,6 +59,7 @@ unique set of homogenous nodes:
   `free --mebi` total * `openhpc_ram_multiplier`.
   * `ram_multiplier`: Optional.  An override for the top-level definition
   `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
+  * `gres_autodetect`: Optional. The [auto detection mechanism](https://slurm.schedmd.com/gres.conf.html#OPT_AutoDetect) to use for the  generic resources. Note: you must still define the `gres` dictionary (see below) but you only need the define the `conf` key.
   * `gres`: Optional. List of dicts defining [generic resources](https://slurm.schedmd.com/gres.html). Each dict should define:
       - `conf`: A string with the [resource specification](https://slurm.schedmd.com/slurm.conf.html#OPT_Gres_1) but requiring the format `<name>:<type>:<number>`, e.g. `gpu:A100:2`. Note the `type` is an arbitrary string.
       - `file`: Omit if `gres_autodetect` is set. A string with the [File](https://slurm.schedmd.com/gres.conf.html#OPT_File) (path to device(s)) for this resource, e.g. `/dev/nvidia[0-1]` for the above example.
