@@ -63,8 +63,10 @@ unique set of homogenous nodes:
       - `conf`: A string with the [resource specification](https://slurm.schedmd.com/slurm.conf.html#OPT_Gres_1) but requiring the format `<name>:<type>:<number>`, e.g. `gpu:A100:2`. Note the `type` is an arbitrary string.
       - `file`: A string with the [File](https://slurm.schedmd.com/gres.conf.html#OPT_File) (path to device(s)) for this resource, e.g. `/dev/nvidia[0-1]` for the above example.
     Note [GresTypes](https://slurm.schedmd.com/slurm.conf.html#OPT_GresTypes) must be set in `openhpc_config` if this is used.
+  * `features`: Optional. List of [Features](https://slurm.schedmd.com/slurm.conf.html#OPT_Features) strings.
   * `node_params`: Optional. Mapping of additional parameters and values for
   [node configuration](https://slurm.schedmd.com/slurm.conf.html#lbAE).
+  **NB:** Parameters which can be set via the keys above must not be included here.
 
   Each nodegroup will contain hosts from an Ansible inventory group named
   `{{ openhpc_cluster_name }}_{{ group_name}}`. Note that:
@@ -88,6 +90,7 @@ partition. Each partition mapping may contain:
   given by `openhpc_job_maxtime`. The value should be quoted to avoid Ansible conversions.
   * `partition_params`: Optional. Mapping of additional parameters and values for
   [partition configuration](https://slurm.schedmd.com/slurm.conf.html#SECTION_PARTITION-CONFIGURATION).
+  **NB:** Parameters which can be set via the keys above must not be included here.
 
 `openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days). See [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime` for format. The default is 60 days. The value should be quoted to avoid Ansible conversions.
 
