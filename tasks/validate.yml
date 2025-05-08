@@ -6,6 +6,8 @@
       - openhpc_cluster_name is defined
       - openhpc_cluster_name != ''
     fail_msg: openhpc role variables not correctly defined, see detail above
+  delegate_to: localhost
+  run_once: true
 
 - name: Check no host appears in more than one nodegroup
   assert:
@@ -16,8 +18,12 @@
   vars:
     _openhpc_node_inventory_groups: "{{ openhpc_nodegroups | map(attribute='name') | map('regex_replace', '^', openhpc_cluster_name ~ '_') }}"
     _openhpc_check_hosts: "{{ groups | dict2items | list | selectattr('key', 'in', _openhpc_node_inventory_groups) | map(attribute='value') | flatten | community.general.counter }}"
+  delegate_to: localhost
+  run_once: true
 
 - name: Fail if configuration is old
   assert:
     that: openhpc_slurm_partitions is not defined
     fail_msg: stackhpc.openhpc parameter openhpc_slurm_partitions has been replaced - see openhpc_nodegroups and openhpc_partitions
+  delegate_to: localhost
+  run_once: true
