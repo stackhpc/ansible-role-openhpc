@@ -182,7 +182,7 @@ PartitionName={{partition.name}} {{ '' -}}
     Default={{ partition.get('default', 'YES') }} {{ '' -}}
     MaxTime={{ partition.get('maxtime', openhpc_job_maxtime) }} {{ '' -}}
     State=UP  {{ '' -}}
-    Nodes={{ partition.get('groups', [partition.name]) | map('regex_replace', '^', 'nodegroup_') | join(',') }} {{ '' -}}
+    Nodes={{ partition.get('nodegroups', [partition.name]) | map('regex_replace', '^', 'nodegroup_') | join(',') }} {{ '' -}}
     {{ partition.partition_params | default({}) | dict2parameters }}
 {% endfor %}{# openhpc_partitions #}
 

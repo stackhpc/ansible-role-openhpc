@@ -12,7 +12,7 @@
       - name: grp2
     openhpc_partitions:
       - name: compute
-        groups:
+        nodegroups:
           - grp1
           - grp2
     openhpc_cluster_name: testohpc

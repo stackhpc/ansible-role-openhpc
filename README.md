@@ -83,7 +83,7 @@ unique set of homogenous nodes:
 `openhpc_partitions`: Optional. List of mappings, each defining a
 partition. Each partition mapping may contain:
   * `name`: Required. Name of partition.
-  * `groups`: Optional. List of node group names. If omitted, the node group
+  * `nodegroups`: Optional. List of node group names. If omitted, the node group
      with the same name as the partition is used.
   * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
   * `maxtime`: Optional.  A partition-specific time limit overriding `openhpc_job_maxtime`.
@@ -258,13 +258,13 @@ job runtime for "production" jobs:
 ```yaml
 openhpc_partitions:
   - name: test
-    groups:
+    nodegroups:
       - general
       - gpu
     maxtime: '1:0:0' # 1 hour
     default: 'YES'
   - name: general
-    groups:
+    nodegroups:
       - general
       - large
       - gpu
