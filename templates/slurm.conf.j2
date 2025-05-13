@@ -156,8 +156,7 @@ Epilog=/etc/slurm/slurm.epilog.clean
 {%          set first_host_hv = hostvars[first_host] %}
 {%          set ram_mb = (first_host_hv['ansible_memory_mb']['real']['total'] * (nodegroup.ram_multiplier | default(openhpc_ram_multiplier))) | int %}
 {%          set hostlists = (inventory_group_hosts | hostlist_expression) %}{# hosts in inventory group aren't necessarily a single hostlist expression #}
-{%              for hostlist in  hostlists %}
-NodeName={{ hostlist }} {{ '' -}}
+NodeName={{ hostlists | join(',') }} {{ '' -}}
     Features={{ (['nodegroup_' ~ nodegroup.name] + nodegroup.features | default([]) ) | join(',') }} {{ '' -}}
     State=UNKNOWN {{ '' -}}
     RealMemory={{ nodegroup.ram_mb | default(ram_mb) }} {{ '' -}}
@@ -167,7 +166,6 @@ NodeName={{ hostlist }} {{ '' -}}
     {{ nodegroup.node_params | default({}) | dict2parameters }} {{ '' -}}
     {% if 'gres' in nodegroup %}Gres={{ ','.join(nodegroup.gres | map(attribute='conf')) }}{% endif %}
 
-{%              endfor %}{# hostlists #}
 {%      endif %}{# 1 or more hosts in inventory #}
 NodeSet=nodegroup_{{ nodegroup.name }} Feature=nodegroup_{{ nodegroup.name }}
 
