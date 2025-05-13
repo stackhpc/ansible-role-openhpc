@@ -1,0 +1,63 @@
+- name: Check slurmdbd is inactive
+  # only even check for upgrade if slurmdbd isn't already started
+  command: systemctl is-active slurmdbd
+  changed_when: false
+  failed_when: false # rc = 0 when active
+  register: _openhpc_slurmdbd_state
+
+- name: Check if slurm database requires an upgrade
+  ansible.builtin.command: slurmdbd -u
+  register: _openhpc_slurmdbd_check
+  changed_when: false
+  failed_when: >-
+    _openhpc_slurmdbd_check.rc > 1 or
+    'Slurm Database is somehow higher than expected' in _openhpc_slurmdbd_check.stdout
+  when: "_openhpc_slurmdbd_state.stdout == 'inactive'"
+
+- name: Set fact for slurm database upgrade
+  # If -u option doesn't exist it can't be a major upgrade due to existing
+  # appliance version
+  # Otherwise from manpage, rc 0 = no conversion, 1 = conversion required
+  # Default skips upgrade steps if slurmdbd is running
+  set_fact:
+    _openhpc_slurmdb_upgrade: >-
+      {{ false
+          if (
+            ( _openhpc_slurmdbd_check.rc | default(0) )
+            or
+            ( "'Usage: slurmdbd' in _openhpc_slurmdbd_check.stderr" )
+          ) else
+          true
+      }}
+
+- name: Ensure Slurm database service stopped
+  ansible.builtin.systemd:
+    name: "{{ openhpc_slurm_accounting_storage_service }}"
+    state: stopped
+  register: _openhpc_slurmdb_state
+  when: _openhpc_slurmdb_upgrade
+
+- name: Backup Slurm database
+  ansible.builtin.shell:
+    cmd: "{{ openhpc_slurm_accounting_storage_backup_cmd }}"
+  delegate_to: "{{ openhpc_slurm_accounting_storage_backup_host }}"
+  become: "{{ openhpc_slurm_accounting_storage_backup_become }}"
+  run_once: true
+  when: _openhpc_slurmdb_upgrade
+
+- name: Ensure Slurm database service started
+  ansible.builtin.systemd:
+    name: mysql
+    state: started
+  when: _openhpc_slurmdb_state.changed | default(false)
+
+- name: Run slurmdbd in foreground for upgrade
+  ansible.builtin.expect:
+    command: /usr/sbin/slurmdbd -D -vvv
+    responses:
+      (?i)Everything rolled up:
+  # See https://wiki.fysik.dtu.dk/Niflheim_system/Slurm_installation/#upgrade-slurmdbd
+  # and
+  # https://github.com/SchedMD/slurm/blob/0ce058c5adcf63001ec2ad211c65e67b0e7682a8/src/plugins/accounting_storage/mysql/as_mysql_usage.c#L1042
+  become_user: slurm
+  when: _openhpc_slurmdb_upgrade
