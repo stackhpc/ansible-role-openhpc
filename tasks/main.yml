@@ -1,5 +1,11 @@
 ---
 
+- name: Validate configuration
+  block:
+    - include_tasks: validate.yml
+  when: openhpc_enable.runtime | default(false) | bool
+  tags: install
+
 - name: Install packages
   block:
     - include_tasks: install.yml

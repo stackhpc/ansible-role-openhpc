@@ -2,15 +2,6 @@
 
 - include_tasks: pre.yml
 
-- name: Check openhpc_slurm_control_host, openhpc_cluster_name or openhpc_slurm_partitions exist
-  assert:
-    that:
-      - openhpc_slurm_control_host is defined
-      - openhpc_cluster_name is defined
-      - openhpc_cluster_name != ''
-      - openhpc_slurm_partitions is defined
-    fail_msg: "Undefined openhpc_slurm_control_host, openhpc_cluster_name or openhpc_slurm_partitions."
-
 - name: Fail if control host not in play and munge key not specified
   fail:
     msg: "Either the slurm control node must be in the play or `openhpc_munge_key` must be set"
