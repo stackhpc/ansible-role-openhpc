@@ -54,7 +54,7 @@
 
 - name: Ensure Slurm database service started
   ansible.builtin.systemd:
-    name: mysql
+    name: "{{ openhpc_slurm_accounting_storage_service }}"
     state: started
   when: _openhpc_slurmdb_state.changed | default(false)
 
