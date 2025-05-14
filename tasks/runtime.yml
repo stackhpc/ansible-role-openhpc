@@ -164,9 +164,16 @@
     state: "{{ 'restarted' if _openhpc_munge_key_copy.changed else 'started' }}"
   when: openhpc_slurm_service_started | bool
 
-- name: Ensure slurm database is upgraded
+- name: Check slurmdbd state
+  command: systemctl is-active slurmdbd
+  changed_when: false
+  failed_when: false # rc = 0 when active
+  register: _openhpc_slurmdbd_state
+
+- name: Ensure slurm database is upgraded if slurmdbd inactive
   import_tasks: upgrade.yml # need import for conditional support
   when:
+    - "_openhpc_slurmdbd_state.stdout == 'inactive'"
     - openhpc_enable.database | default(false)
     - openhpc_slurm_accounting_storage_service != ''
 

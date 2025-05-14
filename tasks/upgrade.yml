@@ -1,9 +1,15 @@
-- name: Check slurmdbd is inactive
-  # only even check for upgrade if slurmdbd isn't already started
-  command: systemctl is-active slurmdbd
-  changed_when: false
-  failed_when: false # rc = 0 when active
-  register: _openhpc_slurmdbd_state
+- name: Check if slurm database has been initialised
+  # DB is initialised on the first slurmdbd startup (without -u option).
+  # If it is not initialised, `slurmdbd -u` errors with something like
+  # > Slurm Database is somehow higher than expected '4294967294' but I only
+  # > know as high as '16'. Conversion needed.
+  community.mysql.mysql_query:
+    login_db: "{{ openhpc_slurmdbd_mysql_database }}"
+    login_user: "{{ openhpc_slurmdbd_mysql_username }}"
+    login_password: "{{ openhpc_slurmdbd_mysql_password }}"
+    #login_host: 
+    query: SHOW TABLES
+  register: _openhpc_slurmdb_tables
 
 - name: Check if slurm database requires an upgrade
   ansible.builtin.command: slurmdbd -u
@@ -12,13 +18,14 @@
   failed_when: >-
     _openhpc_slurmdbd_check.rc > 1 or
     'Slurm Database is somehow higher than expected' in _openhpc_slurmdbd_check.stdout
-  when: "_openhpc_slurmdbd_state.stdout == 'inactive'"
+  # from https://github.com/SchedMD/slurm/blob/master/src/plugins/accounting_storage/mysql/as_mysql_convert.c
+  when: _openhpc_slurmdb_tables.query_result != [[]] # i.e. when db is initialised
 
 - name: Set fact for slurm database upgrade
   # If -u option doesn't exist it can't be a major upgrade due to existing
   # appliance version
   # Otherwise from manpage, rc 0 = no conversion, 1 = conversion required
-  # Default skips upgrade steps if slurmdbd is running
+  # Default skips upgrade steps if slurmdbd is running or db not initialised
   set_fact:
     _openhpc_slurmdb_upgrade: >-
       {{ false
