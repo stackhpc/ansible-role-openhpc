@@ -175,7 +175,6 @@
   when:
     - "_openhpc_slurmdbd_state.stdout == 'inactive'"
     - openhpc_enable.database | default(false)
-    - openhpc_slurm_accounting_storage_service != ''
 
 - name: Notify handler for slurmd restart
   debug:

@@ -42,7 +42,9 @@
     name: "{{ openhpc_slurm_accounting_storage_service }}"
     state: stopped
   register: _openhpc_slurmdb_state
-  when: _openhpc_slurmdb_upgrade
+  when:
+    - _openhpc_slurmdb_upgrade
+    - openhpc_slurm_accounting_storage_service != ''
 
 - name: Backup Slurm database
   ansible.builtin.shell:
@@ -50,13 +52,17 @@
   delegate_to: "{{ openhpc_slurm_accounting_storage_backup_host }}"
   become: "{{ openhpc_slurm_accounting_storage_backup_become }}"
   run_once: true
-  when: _openhpc_slurmdb_upgrade
+  when:
+    - _openhpc_slurmdb_upgrade
+    - openhpc_slurm_accounting_storage_backup_cmd != ''
 
 - name: Ensure Slurm database service started
   ansible.builtin.systemd:
     name: "{{ openhpc_slurm_accounting_storage_service }}"
     state: started
-  when: _openhpc_slurmdb_state.changed | default(false)
+  when:
+    - openhpc_slurm_accounting_storage_service != ''
+    - _openhpc_slurmdb_state.changed | default(false)
 
 - name: Run slurmdbd in foreground for upgrade
   ansible.builtin.expect:
