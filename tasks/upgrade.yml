@@ -26,12 +26,12 @@
   # If -u option doesn't exist it can't be a major upgrade due to existing
   # appliance version
   # Otherwise from manpage, rc 0 = no conversion, 1 = conversion required
-  # Default skips upgrade steps if slurmdbd is running or db not initialised
+  # Default skips upgrade steps if skipped check because db is not initialised
   set_fact:
     _openhpc_slurmdb_upgrade: >-
       {{ false
           if (
-            ( _openhpc_slurmdbd_check.rc | default(0) )
+            ( _openhpc_slurmdbd_check.rc | default(0) == 0)
             or
             ( "'Usage: slurmdbd' in _openhpc_slurmdbd_check.stderr" )
           ) else
