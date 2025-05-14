@@ -50,53 +50,32 @@ each list element:
 
 ### slurm.conf
 
-`openhpc_nodegroups`: Optional, default `[]`. List of mappings, each defining a
-unique set of homogenous nodes:
-  * `name`: Required. Name of node group.
-  * `ram_mb`: Optional.  The physical RAM available in each node of this group
-  ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`)
-  in MiB. This is set using ansible facts if not defined, equivalent to
-  `free --mebi` total * `openhpc_ram_multiplier`.
-  * `ram_multiplier`: Optional.  An override for the top-level definition
-  `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
+`openhpc_slurm_partitions`: Optional. List of one or more slurm partitions, default `[]`.  Each partition may contain the following values:
+* `groups`: If there are multiple node groups that make up the partition, a list of group objects can be defined here.
+  Otherwise, `groups` can be omitted and the following attributes can be defined in the partition object:
+  * `name`: The name of the nodes within this group.
+  * `cluster_name`: Optional.  An override for the top-level definition `openhpc_cluster_name`.
+  * `extra_nodes`: Optional. A list of additional node definitions, e.g. for nodes in this group/partition not controlled by this role. Each item should be a dict, with keys/values as per the ["NODE CONFIGURATION"](https://slurm.schedmd.com/slurm.conf.html#lbAE) docs for slurm.conf. Note the key `NodeName` must be first.
+  * `ram_mb`: Optional.  The physical RAM available in each node of this group ([slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `RealMemory`) in MiB. This is set using ansible facts if not defined, equivalent to `free --mebi` total * `openhpc_ram_multiplier`.
+  * `ram_multiplier`: Optional.  An override for the top-level definition `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
   * `gres`: Optional. List of dicts defining [generic resources](https://slurm.schedmd.com/gres.html). Each dict must define:
       - `conf`: A string with the [resource specification](https://slurm.schedmd.com/slurm.conf.html#OPT_Gres_1) but requiring the format `<name>:<type>:<number>`, e.g. `gpu:A100:2`. Note the `type` is an arbitrary string.
       - `file`: A string with the [File](https://slurm.schedmd.com/gres.conf.html#OPT_File) (path to device(s)) for this resource, e.g. `/dev/nvidia[0-1]` for the above example.
+
     Note [GresTypes](https://slurm.schedmd.com/slurm.conf.html#OPT_GresTypes) must be set in `openhpc_config` if this is used.
-  * `features`: Optional. List of [Features](https://slurm.schedmd.com/slurm.conf.html#OPT_Features) strings.
-  * `node_params`: Optional. Mapping of additional parameters and values for
-  [node configuration](https://slurm.schedmd.com/slurm.conf.html#lbAE).
-  **NB:** Parameters which can be set via the keys above must not be included here.
 
-  Each nodegroup will contain hosts from an Ansible inventory group named
-  `{{ openhpc_cluster_name }}_{{ group_name}}`. Note that:
-  - Each host may only appear in one nodegroup.
-  - Hosts in a nodegroup are assumed to be homogenous in terms of processor and memory.
-  - Hosts may have arbitrary hostnames, but these should be lowercase to avoid a
-    mismatch between inventory and actual hostname.
-  - An inventory group may be missing or empty, in which case the node group
-    contains no hosts.
-  - If the inventory group is not empty the play must contain at least one host.
-    This is used to set `Sockets`, `CoresPerSocket`, `ThreadsPerCore` and
-    optionally `RealMemory` for the nodegroup.
+* `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
+* `maxtime`: Optional.  A partition-specific time limit following the format of [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime`.  The default value is
+  given by `openhpc_job_maxtime`. The value should be quoted to avoid Ansible conversions.
+* `partition_params`: Optional. Mapping of additional parameters and values for [partition configuration](https://slurm.schedmd.com/slurm.conf.html#SECTION_PARTITION-CONFIGURATION).
 
-`openhpc_partitions`: Optional. List of mappings, each defining a
-partition. Each partition mapping may contain:
-  * `name`: Required. Name of partition.
-  * `nodegroups`: Optional. List of node group names. If omitted, the node group
-     with the same name as the partition is used.
-  * `default`: Optional.  A boolean flag for whether this partion is the default.  Valid settings are `YES` and `NO`.
-  * `maxtime`: Optional.  A partition-specific time limit overriding `openhpc_job_maxtime`.
-  * `partition_params`: Optional. Mapping of additional parameters and values for
-  [partition configuration](https://slurm.schedmd.com/slurm.conf.html#SECTION_PARTITION-CONFIGURATION).
-  **NB:** Parameters which can be set via the keys above must not be included here.
+For each group (if used) or partition any nodes in an ansible inventory group `<cluster_name>_<group_name>` will be added to the group/partition. Note that:
+- Nodes may have arbitrary hostnames but these should be lowercase to avoid a mismatch between inventory and actual hostname.
+- Nodes in a group are assumed to be homogenous in terms of processor and memory.
+- An inventory group may be empty or missing, but if it is not then the play must contain at least one node from it (used to set processor information).
 
-If this variable is not set one partition per nodegroup is created, with default
-partition configuration for each.
 
-`openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days), see
-[slurm.conf:MaxTime](https://slurm.schedmd.com/slurm.conf.html#OPT_MaxTime).
-**NB:** This should be quoted to avoid Ansible conversions.
+`openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days). See [slurm.conf](https://slurm.schedmd.com/slurm.conf.html) parameter `MaxTime` for format. The default is 60 days. The value should be quoted to avoid Ansible conversions.
 
 `openhpc_cluster_name`: name of the cluster.
 
@@ -165,121 +144,50 @@ accessed (with facts gathering enabled) using `ansible_local.slurm`. As per the
 in mixed case are from from config files. Note the facts are only refreshed
 when this role is run.
 
-## Example
+## Example Inventory
 
-### Simple
+And an Ansible inventory as this:
 
-The following creates a cluster with a a single partition `compute`
-containing two nodes:
+    [openhpc_login]
+    openhpc-login-0 ansible_host=10.60.253.40 ansible_user=centos
 
-```ini
-# inventory/hosts:
-[hpc_login]
-cluster-login-0
+    [openhpc_compute]
+    openhpc-compute-0 ansible_host=10.60.253.31 ansible_user=centos
+    openhpc-compute-1 ansible_host=10.60.253.32 ansible_user=centos
 
-[hpc_compute]
-cluster-compute-0
-cluster-compute-1
+    [cluster_login:children]
+    openhpc_login
 
-[hpc_control]
-cluster-control
-```
+    [cluster_control:children]
+    openhpc_login
 
-```yaml
-#playbook.yml
+    [cluster_batch:children]
+    openhpc_compute
+
+## Example Playbooks
+
+To deploy, create a playbook which looks like this:
+
+    ---
+    - hosts:
+      - cluster_login
+      - cluster_control
+      - cluster_batch
+      become: yes
+      roles:
+        - role: openhpc
+          openhpc_enable:
+            control: "{{ inventory_hostname in groups['cluster_control'] }}"
+            batch: "{{ inventory_hostname in groups['cluster_batch'] }}"
+            runtime: true
+          openhpc_slurm_service_enabled: true
+          openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
+          openhpc_slurm_partitions:
+            - name: "compute"
+          openhpc_cluster_name: openhpc
+          openhpc_packages: []
+    ...
+
 ---
-- hosts: all
-  become: yes
-  tasks:
-    - import_role:
-        name: stackhpc.openhpc
-      vars:
-        openhpc_cluster_name: hpc
-        openhpc_enable:
-          control: "{{ inventory_hostname in groups['cluster_control'] }}"
-          batch: "{{ inventory_hostname in groups['cluster_compute'] }}"
-          runtime: true
-        openhpc_slurm_control_host: "{{ groups['cluster_control'] | first }}"
-        openhpc_nodegroups:
-          - name: compute
-        openhpc_partitions:
-          - name: compute
----
-```
-
-### Multiple nodegroups
-
-This example shows how partitions can span multiple types of compute node.
-
-This example inventory describes three types of compute node (login and
-control nodes are omitted for brevity):
-
-```ini
-# inventory/hosts:
-...
-[hpc_general]
-# standard compute nodes
-cluster-general-0
-cluster-general-1
-
-[hpc_large]
-# large memory nodes
-cluster-largemem-0
-cluster-largemem-1
-
-[hpc_gpu]
-# GPU nodes
-cluster-a100-0
-cluster-a100-1
-...
-```
-
-Firstly the `openhpc_nodegroups` is set to capture these inventory groups and
-apply any node-level parameters - in this case the `largemem` nodes have
-2x cores reserved for some reason, and GRES is configured for the GPU nodes:
-
-```yaml
-openhpc_cluster_name: hpc
-openhpc_nodegroups:
-  - name: general
-  - name: large
-    node_params:
-      CoreSpecCount: 2
-  - name: gpu
-    gres:
-      - conf: gpu:A100:2
-        file: /dev/nvidia[0-1]
-```
-
-Now two partitions can be configured - a default one with a short timelimit and
-no large memory nodes for testing jobs, and another with all hardware and longer
-job runtime for "production" jobs:
-
-```yaml
-openhpc_partitions:
-  - name: test
-    nodegroups:
-      - general
-      - gpu
-    maxtime: '1:0:0' # 1 hour
-    default: 'YES'
-  - name: general
-    nodegroups:
-      - general
-      - large
-      - gpu
-    maxtime: '2-0' # 2 days
-    default: 'NO'
-```
-Users will select the partition using `--partition` argument and request nodes
-with appropriate memory or GPUs using the `--mem` and `--gres` or `--gpus*`
-options for `sbatch` or `srun`.
-
-Finally here some additional configuration must be provided for GRES:
-```yaml
-openhpc_config:
-  GresTypes:
-    -gpu
-```
 
 <b id="slurm_ver_footnote">1</b> Slurm 20.11 removed `accounting_storage/filetxt` as an option. This version of Slurm was introduced in OpenHPC v2.1 but the OpenHPC repos are common to all OpenHPC v2.x releases. [↩](#accounting_storage)

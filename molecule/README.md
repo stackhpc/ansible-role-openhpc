@@ -10,7 +10,7 @@ test1  | 1            | N                       | 2x compute node, sequential na
 test1b | 1            | N                       | 1x compute node
 test1c | 1            | N                       | 2x compute nodes, nonsequential names
 test2  | 2            | N                       | 4x compute node, sequential names
-test3  | 1            | Y                       | 4x compute nodes in 2x groups, single partition
+test3  | 1            | Y                       | -
 test4  | 1            | N                       | 2x compute node, accounting enabled
 test5  | 1            | N                       | As for #1 but configless
 test6  | 1            | N                       | 0x compute nodes, configless
@@ -21,7 +21,7 @@ test10 | 1            | N                       | As for #5 but then tries to ad
 test11 | 1            | N                       | As for #5 but then deletes a node (actually changes the partition due to molecule/ansible limitations)
 test12 | 1            | N                       | As for #5 but enabling job completion and testing `sacct -c`
 test13 | 1            | N                       | As for #5 but tests `openhpc_config` variable.
-test14 | 1            | N                       | [removed, extra_nodes removed]
+test14 | 1            | N                       | As for #5 but also tests `extra_nodes` via State=DOWN nodes.
 test15 | 1            | Y                       | As for #5 but also tests `partitions with different name but with the same NodeName`.
 
 
