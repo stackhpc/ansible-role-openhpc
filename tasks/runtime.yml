@@ -80,43 +80,9 @@
   notify: Restart slurmdbd service
   when: openhpc_enable.database | default(false) | bool
 
-- name: Make local tempfile for slurm.conf templating # ensures simultaneous runs don't clobber each other
-  ansible.builtin.tempfile:
-  register: _slurm_conf_tmpfile
-  delegate_to: localhost
-  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless | bool
-  changed_when: false # so molecule doesn't fail
-  become: no
-
-- name: Template basic slurm.conf
+- name: Template slurm.conf
   template:
     src: slurm.conf.j2
-    dest: "{{ _slurm_conf_tmpfile.path }}"
-    lstrip_blocks: true
-    mode: 0644
-  delegate_to: localhost
-  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless | bool
-  changed_when: false # so molecule doesn't fail
-  become: no
-
-- name: Customise slurm.conf
-  community.general.ini_file:
-    path: "{{ _slurm_conf_tmpfile.path }}"
-    option: "{{ item.key }}"
-    section: ''
-    value: "{{ (item.value | join(',')) if (item.value is sequence and item.value is not string) else item.value }}"
-    no_extra_spaces: true
-    create: no
-    mode: 0644
-  loop: "{{ openhpc_config | dict2items }}"
-  delegate_to: localhost
-  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless | bool
-  changed_when: false # so molecule doesn't fail
-  become: no
-
-- name: Create slurm.conf
-  copy:
-    src: "{{ _slurm_conf_tmpfile.path }}"
     dest: /etc/slurm/slurm.conf
     owner: root
     group: root
