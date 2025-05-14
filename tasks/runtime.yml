@@ -165,7 +165,7 @@
   when: openhpc_slurm_service_started | bool
 
 - name: Check slurmdbd state
-  command: systemctl is-active slurmdbd
+  command: systemctl is-active slurmdbd # noqa: command-instead-of-module
   changed_when: false
   failed_when: false # rc = 0 when active
   register: _openhpc_slurmdbd_state

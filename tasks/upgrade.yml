@@ -47,10 +47,11 @@
     - openhpc_slurm_accounting_storage_service != ''
 
 - name: Backup Slurm database
-  ansible.builtin.shell:
+  ansible.builtin.shell: # noqa: command-instead-of-shell
     cmd: "{{ openhpc_slurm_accounting_storage_backup_cmd }}"
   delegate_to: "{{ openhpc_slurm_accounting_storage_backup_host }}"
   become: "{{ openhpc_slurm_accounting_storage_backup_become }}"
+  changed_when: true # limt no-changed-when
   run_once: true
   when:
     - _openhpc_slurmdb_upgrade
@@ -72,5 +73,6 @@
   # See https://wiki.fysik.dtu.dk/Niflheim_system/Slurm_installation/#upgrade-slurmdbd
   # and
   # https://github.com/SchedMD/slurm/blob/0ce058c5adcf63001ec2ad211c65e67b0e7682a8/src/plugins/accounting_storage/mysql/as_mysql_usage.c#L1042
+  become: true
   become_user: slurm
   when: _openhpc_slurmdb_upgrade
