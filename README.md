@@ -143,6 +143,9 @@ required to due to a a Slurm major version upgrade and carry it out if so.
 Slurm versions before 24.11 do not support this check and so no upgrade will
 occur. The following variables control behaviour during this upgrade:
 
+`openhpc_slurm_accounting_storage_client_package`: Optional. String giving the
+name of the database client package to install, e.g. `mariadb`. Default `mysql`.
+
 `openhpc_slurm_accounting_storage_backup_cmd`: Optional. String (possibly
 multi-line) giving a command for `ansible.builtin.shell` to run a backup of the
 Slurm database before performing the databse upgrade. Default is the empty

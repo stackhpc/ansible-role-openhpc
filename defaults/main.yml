@@ -8,7 +8,6 @@ openhpc_slurm_partitions: []
 openhpc_cluster_name:
 openhpc_packages:
   - slurm-libpmi-ohpc
-  - mysql # actually from rocky repos
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
 openhpc_job_maxtime: '60-0' # quote this to avoid ansible converting some formats to seconds, which is interpreted as minutes by Slurm
@@ -108,3 +107,4 @@ openhpc_slurm_accounting_storage_service: ''
 openhpc_slurm_accounting_storage_backup_cmd: ''
 openhpc_slurm_accounting_storage_backup_host: "{{ openhpc_slurm_accounting_storage_host }}"
 openhpc_slurm_accounting_storage_backup_become: true
+openhpc_slurm_accounting_storage_client_package: mysql

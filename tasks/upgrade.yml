@@ -7,7 +7,7 @@
     login_db: "{{ openhpc_slurmdbd_mysql_database }}"
     login_user: "{{ openhpc_slurmdbd_mysql_username }}"
     login_password: "{{ openhpc_slurmdbd_mysql_password }}"
-    #login_host: 
+    login_host: "{{ openhpc_slurm_accounting_storage_host }}"
     query: SHOW TABLES
   register: _openhpc_slurmdb_tables
 

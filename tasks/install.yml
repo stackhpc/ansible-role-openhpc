@@ -49,8 +49,8 @@
     install_weak_deps: false # avoids getting recommended packages
   when: openhpc_slurm_pkglist | default(false, true)
 
-- name: Install packages from openhpc_packages variable
+- name: Install other packages
   yum:
-    name: "{{ openhpc_packages }}"
+    name: "{{ openhpc_packages + [openhpc_slurm_accounting_storage_client_package] }}"
 
 ...
