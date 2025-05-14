@@ -7,8 +7,9 @@
     login_db: "{{ openhpc_slurmdbd_mysql_database }}"
     login_user: "{{ openhpc_slurmdbd_mysql_username }}"
     login_password: "{{ openhpc_slurmdbd_mysql_password }}"
-    login_host: "{{ openhpc_slurm_accounting_storage_host }}"
+    login_host: "{{ openhpc_slurmdbd_host }}"
     query: SHOW TABLES
+    config_file: ''
   register: _openhpc_slurmdb_tables
 
 - name: Check if slurm database requires an upgrade
