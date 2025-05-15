@@ -139,7 +139,7 @@ for more details.
 `openhpc_slurmdbd_mysql_username`: Username for authenticating with the database, defaults to `slurm`.
 
 Before starting `slurmdbd`, the role will check if a database upgrade is
-required to due to a a Slurm major version upgrade and carry it out if so.
+required to due to a Slurm major version upgrade and carry it out if so.
 Slurm versions before 24.11 do not support this check and so no upgrade will
 occur. The following variables control behaviour during this upgrade:
 
