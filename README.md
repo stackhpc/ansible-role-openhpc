@@ -69,7 +69,8 @@ unique set of homogenous nodes:
   **NB:** Parameters which can be set via the keys above must not be included here.
 
   Each nodegroup will contain hosts from an Ansible inventory group named
-  `{{ openhpc_cluster_name }}_{{ group_name}}`. Note that:
+  `{{ openhpc_cluster_name }}_{{ name }}`, where `name` is the nodegroup name.
+  Note that:
   - Each host may only appear in one nodegroup.
   - Hosts in a nodegroup are assumed to be homogenous in terms of processor and memory.
   - Hosts may have arbitrary hostnames, but these should be lowercase to avoid a
