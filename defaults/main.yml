@@ -95,7 +95,7 @@ ohpc_default_extra_repos:
 # Concatenate all repo definitions here
 ohpc_repos: "{{ ohpc_openhpc_repos[ansible_distribution_major_version] + ohpc_default_extra_repos[ansible_distribution_major_version] + openhpc_extra_repos }}"
 
-openhpc_munge_key:
+openhpc_munge_key_base64:
 openhpc_login_only_nodes: ''
 openhpc_module_system_install: true
 

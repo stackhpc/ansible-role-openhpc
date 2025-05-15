@@ -42,7 +42,7 @@ each list element:
 
 `openhpc_slurm_configless`: Optional, default false. If true then slurm's ["configless" mode](https://slurm.schedmd.com/configless_slurm.html) is used.
 
-`openhpc_munge_key`: Optional. Define a munge key to use. If not provided then one is generated but the `openhpc_slurm_control_host` must be in the play.
+`openhpc_munge_key_base64`: Optional. Define a base-64-encoded munge key to use. If not provided then one is generated but the `openhpc_slurm_control_host` must be in the play.
 
 `openhpc_login_only_nodes`: Optional. If using "configless" mode specify the name of an ansible group containing nodes which are login-only nodes (i.e. not also control nodes), if required. These nodes will run `slurmd` to contact the control node for config.
 
