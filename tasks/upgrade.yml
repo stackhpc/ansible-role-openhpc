@@ -33,7 +33,7 @@
           if (
             ( _openhpc_slurmdbd_check.rc | default(0) == 0)
             or
-            ( "'Usage: slurmdbd' in _openhpc_slurmdbd_check.stderr" )
+            ( 'Usage: slurmdbd' in _openhpc_slurmdbd_check.stderr )
           ) else
           true
       }}
