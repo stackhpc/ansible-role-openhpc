@@ -20,13 +20,15 @@
     _openhpc_slurmdbd_check.rc > 1 or
     'Slurm Database is somehow higher than expected' in _openhpc_slurmdbd_check.stdout
   # from https://github.com/SchedMD/slurm/blob/master/src/plugins/accounting_storage/mysql/as_mysql_convert.c
-  when: _openhpc_slurmdb_tables.query_result != [[]] # i.e. when db is initialised
+  when: _openhpc_slurmdb_tables.query_result | flatten | length > 0 # i.e. when db is initialised
 
 - name: Set fact for slurm database upgrade
-  # If -u option doesn't exist it can't be a major upgrade due to existing
-  # appliance version
-  # Otherwise from manpage, rc 0 = no conversion, 1 = conversion required
-  # Default skips upgrade steps if skipped check because db is not initialised
+  # Explanation of ifs below:
+  # - `slurmdbd -u` rc == 0 then no conversion required (from manpage)
+  # - default of 0 on rc skips upgrade steps if check was skipped because
+  #   db is not initialised
+  # - Usage message (and rc == 1) if -u option doesn't exist, in which case
+  # it can't be a major upgrade due to existing openhpc versions
   set_fact:
     _openhpc_slurmdb_upgrade: >-
       {{ false
@@ -52,7 +54,7 @@
     cmd: "{{ openhpc_slurm_accounting_storage_backup_cmd }}"
   delegate_to: "{{ openhpc_slurm_accounting_storage_backup_host }}"
   become: "{{ openhpc_slurm_accounting_storage_backup_become }}"
-  changed_when: true # limt no-changed-when
+  changed_when: true
   run_once: true
   when:
     - _openhpc_slurmdb_upgrade
