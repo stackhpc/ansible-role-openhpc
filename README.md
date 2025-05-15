@@ -121,10 +121,12 @@ accounting data such as start and end times. By default no job accounting is con
 `openhpc_slurm_job_comp_loc`: Location to store the job accounting records. Depends on value of
 `openhpc_slurm_job_comp_type`, e.g for `jobcomp/filetxt` represents a path on disk.
 
-### slurmdbd.conf
+### slurmdbd
 
-The following options affect `slurmdbd.conf`. Please see the slurm [documentation](https://slurm.schedmd.com/slurmdbd.conf.html) for more details.
-You will need to configure these variables if you have set `openhpc_enable.database` to `true`.
+When the slurm database daemon (`slurmdbd`) is enabled by setting
+`openhpc_enable.database` to `true` the following options must be configured.
+See documentation for [slurmdbd.conf](https://slurm.schedmd.com/slurmdbd.conf.html)
+for more details.
 
 `openhpc_slurmdbd_port`: Port for slurmdb to listen on, defaults to `6819`.
 
@@ -135,6 +137,30 @@ You will need to configure these variables if you have set `openhpc_enable.datab
 `openhpc_slurmdbd_mysql_password`: Password for authenticating with the database. You must set this variable.
 
 `openhpc_slurmdbd_mysql_username`: Username for authenticating with the database, defaults to `slurm`.
+
+Before starting `slurmdbd`, the role will check if a database upgrade is
+required to due to a Slurm major version upgrade and carry it out if so.
+Slurm versions before 24.11 do not support this check and so no upgrade will
+occur. The following variables control behaviour during this upgrade:
+
+`openhpc_slurm_accounting_storage_client_package`: Optional. String giving the
+name of the database client package to install, e.g. `mariadb`. Default `mysql`.
+
+`openhpc_slurm_accounting_storage_backup_cmd`: Optional. String (possibly
+multi-line) giving a command for `ansible.builtin.shell` to run a backup of the
+Slurm database before performing the databse upgrade. Default is the empty
+string which performs no backup.
+
+`openhpc_slurm_accounting_storage_backup_host`: Optional. Inventory hostname
+defining host to run the backup command. Default is `openhpc_slurm_accounting_storage_host`.
+
+`openhpc_slurm_accounting_storage_backup_become`: Optional. Whether to run the
+backup command as root. Default `true`.
+
+`openhpc_slurm_accounting_storage_service`: Optional. Name of systemd service
+for the accounting storage database, e.g. `mysql`. If this is defined this
+service is stopped before the backup and restarted after, to allow for physical
+backups. Default is the empty string, which does not stop/restart any service.
 
 ## Facts
 

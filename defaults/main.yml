@@ -101,3 +101,10 @@ openhpc_module_system_install: true
 
 # Auto detection
 openhpc_ram_multiplier: 0.95
+
+# Database upgrade
+openhpc_slurm_accounting_storage_service: ''
+openhpc_slurm_accounting_storage_backup_cmd: ''
+openhpc_slurm_accounting_storage_backup_host: "{{ openhpc_slurm_accounting_storage_host }}"
+openhpc_slurm_accounting_storage_backup_become: true
+openhpc_slurm_accounting_storage_client_package: mysql
