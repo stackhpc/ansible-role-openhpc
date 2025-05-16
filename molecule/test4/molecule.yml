@@ -3,38 +3,41 @@ driver:
   name: podman
 platforms:
   - name: testohpc-login-0
+    hostname: testohpc-login-0
     image: ${MOLECULE_IMAGE}
     pre_build_image: true
     groups:
       - testohpc_login
     command: /sbin/init
     tmpfs:
-      - /run
-      - /tmp
+      /run: rw
+      /tmp: rw
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     network: net1
   - name: testohpc-compute-0
+    hostname: testohpc-compute-0
     image: ${MOLECULE_IMAGE}
     pre_build_image: true
     groups:
       - testohpc_compute
     command: /sbin/init
     tmpfs:
-      - /run
-      - /tmp
+      /run: rw
+      /tmp: rw
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     network: net1
   - name: testohpc-compute-1
+    hostname: testohpc-compute-1
     image: ${MOLECULE_IMAGE}
     pre_build_image: true
     groups:
       - testohpc_compute
     command: /sbin/init
     tmpfs:
-      - /run
-      - /tmp
+      /run: rw
+      /tmp: rw
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     network: net1
