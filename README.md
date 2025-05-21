@@ -59,9 +59,11 @@ unique set of homogenous nodes:
   `free --mebi` total * `openhpc_ram_multiplier`.
   * `ram_multiplier`: Optional.  An override for the top-level definition
   `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
-  * `gres`: Optional. List of dicts defining [generic resources](https://slurm.schedmd.com/gres.html). Each dict must define:
+  * `gres_autodetect`: Optional. The [auto detection mechanism](https://slurm.schedmd.com/gres.conf.html#OPT_AutoDetect) to use for the  generic resources. Note: you must still define the `gres` dictionary (see below) but you only need the define the `conf` key. See [GRES autodetection](#gres-autodetection) section below.
+  * `gres`: Optional. List of dicts defining [generic resources](https://slurm.schedmd.com/gres.html). Each dict should define:
       - `conf`: A string with the [resource specification](https://slurm.schedmd.com/slurm.conf.html#OPT_Gres_1) but requiring the format `<name>:<type>:<number>`, e.g. `gpu:A100:2`. Note the `type` is an arbitrary string.
-      - `file`: A string with the [File](https://slurm.schedmd.com/gres.conf.html#OPT_File) (path to device(s)) for this resource, e.g. `/dev/nvidia[0-1]` for the above example.
+      - `file`: Omit if `gres_autodetect` is set. A string with the [File](https://slurm.schedmd.com/gres.conf.html#OPT_File) (path to device(s)) for this resource, e.g. `/dev/nvidia[0-1]` for the above example.
+
     Note [GresTypes](https://slurm.schedmd.com/slurm.conf.html#OPT_GresTypes) must be set in `openhpc_config` if this is used.
   * `features`: Optional. List of [Features](https://slurm.schedmd.com/slurm.conf.html#OPT_Features) strings.
   * `node_params`: Optional. Mapping of additional parameters and values for
@@ -277,7 +279,20 @@ openhpc_nodegroups:
       - conf: gpu:A100:2
         file: /dev/nvidia[0-1]
 ```
+or if using the NVML gres_autodection mechamism (NOTE: this requires recompilation of the slurm binaries to link against the [NVIDIA Management libray](#gres-autodetection)):
 
+```yaml
+openhpc_cluster_name: hpc
+openhpc_nodegroups:
+  - name: general
+  - name: large
+    node_params:
+      CoreSpecCount: 2
+  - name: gpu
+    gres_autodetect: nvml
+    gres:
+      - conf: gpu:A100:2
+```
 Now two partitions can be configured - a default one with a short timelimit and
 no large memory nodes for testing jobs, and another with all hardware and longer
 job runtime for "production" jobs:
@@ -308,5 +323,55 @@ openhpc_config:
   GresTypes:
     -gpu
 ```
+
+## GRES autodetection
+
+Some autodetection mechanisms require recompilation of the slurm packages to
+link against external libraries. Examples are shown in the sections below.
+
+### Recompiling slurm binaries against the [NVIDIA Management libray](https://developer.nvidia.com/management-library-nvml)
+
+This will allow you to use `gres_autodetect: nvml` in your `nodegroup`
+definitions.
+
+First, [install the complete cuda toolkit from NVIDIA](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/).
+You can then recompile the slurm packages from the source RPMS as follows:
+
+```sh
+dnf download --source slurm-slurmd-ohpc
+
+rpm -i slurm-ohpc-*.src.rpm
+
+cd /root/rpmbuild/SPECS
+
+dnf builddep slurm.spec
+
+rpmbuild -bb -D "_with_nvml --with-nvml=/usr/local/cuda-12.8/targets/x86_64-linux/" slurm.spec | tee /tmp/build.txt
+```
+
+NOTE: This will need to be adapted for the version of CUDA installed (12.8 is used in the example).
+
+The RPMs will be created in ` /root/rpmbuild/RPMS/x86_64/`. The method to distribute these RPMs to
+each compute node is out of scope of this document. You can either use a custom package repository
+or simply install them manually on each node with Ansible.
+
+#### Configuration example
+
+A configuration snippet is shown below:
+
+```yaml
+openhpc_cluster_name: hpc
+openhpc_nodegroups:
+  - name: general
+  - name: large
+    node_params:
+      CoreSpecCount: 2
+  - name: gpu
+    gres_autodetect: nvml
+    gres:
+      - conf: gpu:A100:2
+```
+for additional context refer to the GPU example in: [Multiple Nodegroups](#multiple-nodegroups).
+
 
 <b id="slurm_ver_footnote">1</b> Slurm 20.11 removed `accounting_storage/filetxt` as an option. This version of Slurm was introduced in OpenHPC v2.1 but the OpenHPC repos are common to all OpenHPC v2.x releases. [↩](#accounting_storage)
