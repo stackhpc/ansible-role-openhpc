@@ -1,10 +1,4 @@
 ---
-# NOTE: We need this running before slurmdbd
-- name: Restart Munge service
-  service:
-    name: "munge"
-    state: restarted
-  when: openhpc_slurm_service_started | bool
 
 # NOTE: we need this running before slurmctld start
 - name: Issue slurmdbd restart command

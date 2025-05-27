@@ -17,6 +17,7 @@ NodeName={{ node }}
 
 # COMPUTE NODES
 {% for nodegroup in openhpc_nodegroups %}
+# nodegroup: {{ nodegroup.name }}
 {%  set inventory_group_name = openhpc_cluster_name ~ '_' ~ nodegroup.name %}
 {%  set inventory_group_hosts = groups.get(inventory_group_name, []) %}
 {%      if inventory_group_hosts | length > 0 %}
@@ -25,19 +26,18 @@ NodeName={{ node }}
 {%          set first_host_hv = hostvars[first_host] %}
 {%          set ram_mb = (first_host_hv['ansible_memory_mb']['real']['total'] * (nodegroup.ram_multiplier | default(openhpc_ram_multiplier))) | int %}
 {%          set hostlists = (inventory_group_hosts | hostlist_expression) %}{# hosts in inventory group aren't necessarily a single hostlist expression #}
-{%              for hostlist in  hostlists %}
-NodeName={{ hostlist }} {{ '' -}}
+NodeName={{ hostlists | join(',') }} {{ '' -}}
+    Features={{ (['nodegroup_' ~ nodegroup.name] + nodegroup.features | default([]) ) | join(',') }} {{ '' -}}
     State=UNKNOWN {{ '' -}}
     RealMemory={{ nodegroup.ram_mb | default(ram_mb) }} {{ '' -}}
-    Sockets={{first_host_hv['ansible_processor_count'] }} {{ '' -}}
+    Sockets={{ first_host_hv['ansible_processor_count'] }} {{ '' -}}
     CoresPerSocket={{ first_host_hv['ansible_processor_cores'] }} {{ '' -}}
     ThreadsPerCore={{ first_host_hv['ansible_processor_threads_per_core'] }} {{ '' -}}
-    {{ nodegroup.params | default({}) | dict2parameters }} {{ '' -}}
+    {{ nodegroup.node_params | default({}) | dict2parameters }} {{ '' -}}
     {% if 'gres' in nodegroup %}Gres={{ ','.join(nodegroup.gres | map(attribute='conf')) }}{% endif %}
-{%              endfor %}{# hostlists #}
-{%      endif %}{# 1 or more hosts in inventory #}
 
-NodeSet={{ nodegroup.name }} Nodes={{ ','.join(hostlists | default(['""'])) }}{# no support for creating nodesets by Feature #}
+{%      endif %}{# 1 or more hosts in inventory #}
+NodeSet=nodegroup_{{ nodegroup.name }} Feature=nodegroup_{{ nodegroup.name }}
 
 {% endfor %}
 
@@ -49,8 +49,9 @@ NodeName=nonesuch
 PartitionName={{partition.name}} {{ '' -}}
     Default={{ partition.get('default', 'YES') }} {{ '' -}}
     MaxTime={{ partition.get('maxtime', openhpc_job_maxtime) }} {{ '' -}}
-    State=UP Nodes={{ partition.get('groups', [partition.name]) | join(',') }} {{ '' -}}
-    {{ partition.params | default({}) | dict2parameters }}
+    State=UP  {{ '' -}}
+    Nodes={{ partition.get('nodegroups', [partition.name]) | map('regex_replace', '^', 'nodegroup_') | join(',') }} {{ '' -}}
+    {{ partition.partition_params | default({}) | dict2parameters }}
 {% endfor %}{# openhpc_partitions #}
 
 {% if openhpc_slurm_configless | bool %}SlurmctldParameters=enable_configless{% endif %}
