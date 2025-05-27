@@ -18,31 +18,17 @@
     state: directory
   when: inventory_hostname == openhpc_slurm_control_host
 
-- name: Generate a Munge key on control host
-  # NB this is usually a no-op as the package install actually generates a (node-unique) one, so won't usually trigger handler
-  command: "dd if=/dev/urandom of=/etc/munge/munge.key bs=1 count=1024"
-  args:
-    creates: "/etc/munge/munge.key"
-  when: inventory_hostname == openhpc_slurm_control_host
-
 - name: Retrieve Munge key from control host
+  # package install generates a node-unique one
   slurp:
     src: "/etc/munge/munge.key"
   register: openhpc_control_munge_key
   delegate_to: "{{ openhpc_slurm_control_host }}"
   when: openhpc_slurm_control_host in ansible_play_hosts
 
-- name: Fix permissions on /etc to pass Munge startup checks
-  # Rocky-9-GenericCloud-Base-9.4-20240523.0.x86_64.qcow2 makes /etc g=rwx rather than g=rx (where group=root)
-  # which fails munged startup checks
-  file:
-    path: /etc
-    state: directory
-    mode: g-w
-
 - name: Write Munge key
   copy:
-    content: "{{ openhpc_munge_key or (openhpc_control_munge_key.content | b64decode) }}"
+    content: "{{ (openhpc_munge_key_b64 or openhpc_control_munge_key.content) | b64decode }}"
     dest: "/etc/munge/munge.key"
     owner: munge
     group: munge
