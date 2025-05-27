@@ -40,7 +40,6 @@ openhpc_default_config:
   PropagateResourceLimitsExcept: MEMLOCK
   Epilog: /etc/slurm/slurm.epilog.clean
   ReturnToService: 2
-  SlurmctldParameters: "{{ 'enable_configless' if openhpc_slurm_configless else 'omit' }}"
 
 openhpc_config: {}
 openhpc_gres_template: gres.conf.j2
