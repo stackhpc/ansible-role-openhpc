@@ -29,7 +29,6 @@
         openhpc_nodegroups:
           - name: "compute_new"
         openhpc_cluster_name: testohpc
-        openhpc_slurm_configless: true
 
 - name: Check modified cluster has 1x nodes
   hosts: testohpc_login
