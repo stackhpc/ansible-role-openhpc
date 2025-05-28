@@ -12,7 +12,36 @@ openhpc_packages:
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
 openhpc_job_maxtime: '60-0' # quote this to avoid ansible converting some formats to seconds, which is interpreted as minutes by Slurm
-openhpc_config: "{{ openhpc_extra_config | default({}) }}"
+openhpc_default_config:
+  # This only defines values which are not Slurm defaults
+  SlurmctldHost: "{{ openhpc_slurm_control_host }}{% if openhpc_slurm_control_host_address is defined %}({{ openhpc_slurm_control_host_address }}){% endif %}"
+  ProctrackType: proctrack/linuxproc # TODO: really want cgroup but needs cgroup.conf and workaround for CI
+  SlurmdSpoolDir: /var/spool/slurm # NB: not OpenHPC default!
+  SlurmUser: slurm
+  StateSaveLocation: "{{ openhpc_state_save_location }}"
+  SlurmctldTimeout: 300
+  SchedulerType: sched/backfill
+  SelectType: select/cons_tres
+  SelectTypeParameters: CR_Core
+  PriorityWeightPartition: 1000
+  PreemptType: preempt/partition_prio
+  PreemptMode: SUSPEND,GANG
+  AccountingStoragePass: "{{ openhpc_slurm_accounting_storage_pass | default('omit') }}"
+  AccountingStorageHost: "{{ openhpc_slurm_accounting_storage_host }}"
+  AccountingStoragePort: "{{ openhpc_slurm_accounting_storage_port }}"
+  AccountingStorageType: "{{ openhpc_slurm_accounting_storage_type }}"
+  AccountingStorageUser: "{{ openhpc_slurm_accounting_storage_user }}"
+  JobCompLoc: "{{ openhpc_slurm_job_comp_loc }}"
+  JobCompType: "{{ openhpc_slurm_job_comp_type }}"
+  JobAcctGatherFrequency: "{{ openhpc_slurm_job_acct_gather_frequency }}"
+  JobAcctGatherType: "{{ openhpc_slurm_job_acct_gather_type }}"
+  SlurmctldSyslogDebug: info
+  SlurmdSyslogDebug: info
+  PropagateResourceLimitsExcept: MEMLOCK
+  Epilog: /etc/slurm/slurm.epilog.clean
+  ReturnToService: 2
+
+openhpc_config: {}
 openhpc_gres_template: gres.conf.j2
 openhpc_slurm_configless: "{{ 'enable_configless' in openhpc_config.get('SlurmctldParameters', []) }}"
 

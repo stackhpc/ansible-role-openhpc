@@ -22,16 +22,6 @@ import re
 # Pattern to match a hostname with numerical ending
 pattern = re.compile("^(.*\D(?=\d))(\d+)$")
 
-def _get_hostvar(context, var_name, inventory_hostname=None):
-    if inventory_hostname is None:
-        namespace = context
-    else:
-        if inventory_hostname not in context['hostvars']:
-            raise errors.AnsibleFilterError(
-                "Inventory hostname '%s' not in hostvars" % inventory_hostname)
-        namespace = context["hostvars"][inventory_hostname]
-    return namespace.get(var_name)
-
 def hostlist_expression(hosts):
     """ Group hostnames using Slurm's hostlist expression format.
 
