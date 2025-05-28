@@ -14,4 +14,3 @@
         openhpc_nodegroups:
           - name: "compute_orig"
         openhpc_cluster_name: testohpc
-        openhpc_slurm_configless: true
