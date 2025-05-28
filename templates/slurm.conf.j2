@@ -3,16 +3,9 @@ ClusterName={{ openhpc_cluster_name }}
 # PARAMETERS
 {% for k, v in openhpc_default_config | combine(openhpc_config) | items %}
 {%  if v != "omit" %}{# allow removing items using setting key: null #}
-{%    if k != 'SlurmctldParameters' %}{# handled separately due to openhpc_slurm_configless #}
 {{ k }}={{ v | join(',') if (v is sequence and v is not string) else v }}
-{%    endif %}
 {%  endif %}
 {% endfor %}
-
-{% set slurmctldparameters = ((openhpc_config.get('SlurmctldParameters', []) + (['enable_configless'] if openhpc_slurm_configless | bool else [])) | unique) %}
-{% if slurmctldparameters | length > 0 %}
-SlurmctldParameters={{ slurmctldparameters | join(',') }}
-{% endif %}
 
 # LOGIN-ONLY NODES
 # Define slurmd nodes not in partitions for login-only nodes in "configless" mode:
