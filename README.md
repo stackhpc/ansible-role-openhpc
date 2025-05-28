@@ -48,6 +48,9 @@ each list element:
 
 ### slurm.conf
 
+Note this role always operates in Slurm's [configless mode](https://slurm.schedmd.com/configless_slurm.html)
+where the `slurm.conf` configuration file is only present on the control node.
+
 `openhpc_nodegroups`: Optional, default `[]`. List of mappings, each defining a
 unique set of homogenous nodes:
   * `name`: Required. Name of node group.
