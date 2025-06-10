@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "definitions": {
+    "gres": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "conf": {
+            "type": "string",
+            "minLength": 1
+          },
+          "file": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "conf"
+        ]
+      }
+    }
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gres_autodetect": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gres": {
+      "$ref": "#/definitions/gres"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "if": {
+    "properties": {
+      "gres_autodetect": {
+        "const": "off"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "gres": {
+        "items": {
+          "required": [
+            "file"
+          ]
+        }
+      }
+    }
+  },
+  "else": {
+    "properties": {
+      "gres": {
+        "items": {
+          "not": {
+            "required": [
+              "file"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
