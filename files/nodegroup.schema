@@ -52,7 +52,6 @@
   "required": [
     "name"
   ],
-  "additionalProperties": false,
   "if": {
     "properties": {
       "gres_autodetect": {
