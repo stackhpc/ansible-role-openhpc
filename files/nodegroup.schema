@@ -1,5 +1,4 @@
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+{  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "definitions": {
     "gres": {
@@ -27,6 +26,21 @@
       "type": "string",
       "minLength": 1
     },
+    "ram_mb": {
+      "type": "number",
+    },
+    "ram_multiplier": {
+      "type": "number",
+    },
+    "features": {
+    	"type": "array",
+        "items": {
+        	"type": "string"
+        }
+    },
+    "node_params": {
+    	"type": "object",
+    },            
     "gres_autodetect": {
       "type": "string",
       "minLength": 1
@@ -38,6 +52,7 @@
   "required": [
     "name"
   ],
+  "additionalProperties": false,
   "if": {
     "properties": {
       "gres_autodetect": {
