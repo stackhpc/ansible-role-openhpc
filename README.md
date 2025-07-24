@@ -107,7 +107,14 @@ partition configuration for each.
 [slurm.conf](https://slurm.schedmd.com/slurm.conf.html). Keys are slurm.conf
 parameter names and values are lists or strings as appropriate. This can be
 used to supplement or override the template defaults. Templated parameters can
-also be removed by setting the value to the literal string`'omit'` - note
+also be removed by setting the value to the literal string `'omit'` - note
+that this is *not the same* as the Ansible `omit` [special variable](https://docs.ansible.com/ansible/latest/reference_appendices/special_variables.html#term-omit).
+
+`openhpc_cgroup_config`: Optional. Mapping of additional parameters and values for
+[cgroup.conf](https://slurm.schedmd.com/cgroup.conf.html). Keys are cgroup.conf
+parameter names and values are lists or strings as appropriate. This can be
+used to supplement or override the template defaults. Templated parameters can
+also be removed by setting the value to the literal string `'omit'` - note
 that this is *not the same* as the Ansible `omit` [special variable](https://docs.ansible.com/ansible/latest/reference_appendices/special_variables.html#term-omit).
 
 `openhpc_ram_multiplier`: Optional, default `0.95`. Multiplier used in the calculation: `total_memory * openhpc_ram_multiplier` when setting `RealMemory` for the partition in slurm.conf. Can be overriden on a per partition basis using `openhpc_slurm_partitions.ram_multiplier`. Has no effect if `openhpc_slurm_partitions.ram_mb` is set.
