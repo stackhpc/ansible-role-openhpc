@@ -90,7 +90,7 @@
     mode: "0644" # perms/ownership based off src from ohpc package
     owner: root
     group: root
-  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless | bool
+  when: openhpc_enable.control | default(false)
   notify:
     - Restart slurmctld service
   register: ohpc_cgroup_conf
