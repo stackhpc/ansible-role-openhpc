@@ -9,7 +9,6 @@
     openhpc_nodegroups:
       - name: "n/a"
     openhpc_cluster_name: testohpc
-    openhpc_slurm_configless: true
   tasks:
     - name: "Include ansible-role-openhpc"
       include_role:

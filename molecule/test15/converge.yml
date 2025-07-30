@@ -20,7 +20,6 @@
           Default: false
           AllowAccounts: Group_own_thePartition
     openhpc_cluster_name: testohpc
-    openhpc_slurm_configless: true
   tasks:
     - name: "Include ansible-role-openhpc"
       include_role:

@@ -49,7 +49,6 @@ openhpc_cgroup_default_config:
 openhpc_config: {}
 openhpc_cgroup_config: {}
 openhpc_gres_template: gres.conf.j2
-openhpc_slurm_configless: "{{ 'enable_configless' in openhpc_config.get('SlurmctldParameters', []) }}"
 
 openhpc_state_save_location: /var/spool/slurm
 

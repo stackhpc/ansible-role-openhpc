@@ -63,7 +63,7 @@
     owner: root
     group: root
     mode: 0644
-  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless | bool
+  when: openhpc_enable.control | default(false)
   notify:
     - Restart slurmctld service
   register: ohpc_slurm_conf
@@ -76,7 +76,7 @@
     mode: "0600"
     owner: slurm
     group: slurm
-  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless | bool
+  when: openhpc_enable.control | default(false)
   notify:
     - Restart slurmctld service
   register: ohpc_gres_conf
@@ -90,7 +90,7 @@
     mode: "0644" # perms/ownership based off src from ohpc package
     owner: root
     group: root
-  when: openhpc_enable.control | default(false) or not openhpc_slurm_configless | bool
+  when: openhpc_enable.control | default(false)
   notify:
     - Restart slurmctld service
   register: ohpc_cgroup_conf
@@ -136,10 +136,9 @@
 - name: Configure slurmd command line options
   vars:
     slurmd_options_configless: "--conf-server {{ openhpc_slurm_control_host_address | default(openhpc_slurm_control_host) }}"
-    slurmd_options: ""
   lineinfile:
     path: /etc/sysconfig/slurmd
-    line: "SLURMD_OPTIONS='{{ slurmd_options_configless if openhpc_slurm_configless | bool else slurmd_options }}'"
+    line: "SLURMD_OPTIONS='{{ slurmd_options_configless }}'"
     regexp: "^SLURMD_OPTIONS="
     create: yes
     owner: root
