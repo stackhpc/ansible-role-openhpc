@@ -32,9 +32,16 @@
   loop: "{{ openhpc_nodegroups }}"
   run_once: true
 
-- name: Fail if configuration is old
+- name: Fail if partition configuration is outdated
   assert:
     that: openhpc_slurm_partitions is not defined
     fail_msg: stackhpc.openhpc parameter openhpc_slurm_partitions has been replaced - see openhpc_nodegroups and openhpc_partitions
+  delegate_to: localhost
+  run_once: true
+
+- name: Fail if munge key configuration is outdated
+  assert:
+    that: openhpc_munge_key is not defined
+    fail_msg: stackhpc.openhpc parameter openhpc_munge_key has been replaced with openhpc_munge_key_b64
   delegate_to: localhost
   run_once: true
