@@ -5,7 +5,8 @@
 # See man slurm.conf and man cgroup.conf for further
 # information on cgroup configuration parameters
 #--
-ConstrainCores=yes
-ConstrainDevices=yes
-ConstrainRAMSpace=yes
-ConstrainSwapSpace=yes
+{% for k, v in openhpc_cgroup_default_config | combine(openhpc_cgroup_config) | items %}
+{%  if v != "omit" %}{# allow removing items using setting key: null #}
+{{ k }}={{ v | join(',') if (v is sequence and v is not string) else v }}
+{%  endif %}
+{% endfor %}
