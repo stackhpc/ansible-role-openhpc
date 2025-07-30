@@ -21,23 +21,15 @@
   delegate_to: localhost
   run_once: true
 
-- name: Check gres configuration when gres_autodetect is set
-  assert:
-    that:
-      - _failure_reasons | selectattr('when', 'truthy') | length == 0
-    fail_msg: >
-      Your nodegroup definition must include a single gres dictionary containing a conf key
-      if gres_autodetect is set. The following nodegroup failed this check: {{ item }}.
-      Reasons for failure: {{ _failure_reasons | selectattr('when', 'truthy') | map(attribute='msg') | join(', ') }}
+- name: Validate openhpc_nodegroups
+  ansible.utils.validate:
+    criteria: "{{ lookup('file', 'nodegroup.schema') }}"
+    engine: 'ansible.utils.jsonschema'
+    data: "{{ item }}"
   vars:
-    _openhpc_gres_autodetect_groups: "{{ openhpc_nodegroups | selectattr('gres_autodetect', 'defined') | selectattr('gres_autodetect', 'search', '(?!off).*') }}"
-    _failure_reasons:
-      - msg: The gres key was a list with more than one item
-        when: "{{ item.gres | length != 1 }}"
-      - msg: The gres dictionary does not contain a conf key
-        when: "{{ item.gres.0.conf is not defined }}"
+    ansible_jsonschema_draft: '2020-12'
   delegate_to: localhost
-  loop: "{{ _openhpc_gres_autodetect_groups }}"
+  loop: "{{ openhpc_nodegroups }}"
   run_once: true
 
 - name: Fail if partition configuration is outdated
