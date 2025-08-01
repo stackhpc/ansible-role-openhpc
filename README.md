@@ -6,7 +6,7 @@ This Ansible role installs packages and performs configuration to provide an Ope
 
 As a role it must be used from a playbook, for which a simple example is given below. This approach means it is totally modular with no assumptions about available networks or any cluster features except for some hostname conventions. Any desired cluster fileystem or other required functionality may be freely integrated using additional Ansible roles or other approaches.
 
-The minimal image for nodes is a RockyLinux 8 GenericCloud image.
+The minimal image for nodes is a Rocky Linux 8 GenericCloud image.
 
 ## Role Variables
 
