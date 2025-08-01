@@ -105,6 +105,11 @@
   changed_when: false # so molecule doesn't fail
   become: no
 
+- name: Fix permissions on /etc for Munge service
+  ansible.builtin.file:
+    mode: g-w
+    path: /etc
+
 - name: Ensure Munge service is running
   service:
     name: munge
