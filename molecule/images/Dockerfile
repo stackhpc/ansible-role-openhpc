@@ -1,2 +1,2 @@
-FROM rockylinux:9.3
+FROM rockylinux/rockylinux:9
 RUN dnf install -y systemd && dnf clean all

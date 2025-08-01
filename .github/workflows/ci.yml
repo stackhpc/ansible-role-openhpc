@@ -8,11 +8,11 @@ name: CI
 
 jobs:
   build:
-    name: Build Rocky9 container image
-    # Upstream rockylinux:9.3 images don't contain systemd, which means /sbin/init fails.
+    name: Build Rocky Linux 9 container image
+    # Upstream rockylinux/rockylinux:9 images don't contain systemd, which means /sbin/init fails.
     # A workaround of using "/bin/bash -c 'dnf -y install systemd && /sbin/init'"
     # as the container command is flaky.
-    # This job builds an image using the upstream rockylinux:9.3 image which ensures
+    # This job builds an image using the upstream rockylinux/rockylinux:9 image which ensures
     # that the image used for the molecule workflow is always updated.
     runs-on: ubuntu-latest
     defaults:
@@ -23,16 +23,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build image
-        run: podman build -t rocky93systemd:latest .
+        run: podman build -t rocky9systemd:latest .
 
       - name: Save image
-        run: podman save --output rocky93systemd.docker rocky93systemd:latest
+        run: podman save --output rocky9systemd.docker rocky9systemd:latest
 
       - name: Upload rocky9 image
         uses: actions/upload-artifact@v4
         with:
-          name: rocky93systemd
-          path: molecule/images/rocky93systemd.docker
+          name: rocky9systemd
+          path: molecule/images/rocky9systemd.docker
     
   molecule:
     name: Molecule
@@ -42,8 +42,8 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          - 'rockylinux:8.9'
-          - 'localhost/rocky93systemd'
+          - 'rockylinux/rockylinux:8'
+          - 'localhost/rocky9systemd'
         scenario:
           - test1
           - test1b
@@ -61,7 +61,7 @@ jobs:
         exclude:
           # mariadb package provides /usr/bin/mysql on RL8 which doesn't work with geerlingguy/mysql role
           - scenario: test4
-            image: 'rockylinux:8.9'
+            image: 'rockylinux/rockylinux:8'
 
     steps:
       - name: Check out the codebase.
@@ -70,14 +70,14 @@ jobs:
       - name: Download rocky9 container image
         uses: actions/download-artifact@v4
         with:
-          name: rocky93systemd
-          path: molecule/images/rocky93systemd.docker
-        if: matrix.image == 'localhost/rocky93systemd'
+          name: rocky9systemd
+          path: molecule/images/rocky9systemd.docker
+        if: matrix.image == 'localhost/rocky9systemd'
 
       - name: Load rocky9 container image
-        run: podman load --input rocky93systemd.docker/rocky93systemd.docker
+        run: podman load --input rocky9systemd.docker/rocky9systemd.docker
         working-directory: molecule/images
-        if: matrix.image == 'localhost/rocky93systemd'
+        if: matrix.image == 'localhost/rocky9systemd'
 
       - name: Set up Python 3.
         uses: actions/setup-python@v4
