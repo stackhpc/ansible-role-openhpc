@@ -11,8 +11,8 @@ platforms:
       - testohpc_login
     command: /sbin/init
     tmpfs:
-      - /run
-      - /tmp
+      /run: rw
+      /tmp: rw
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     network: net1
@@ -23,8 +23,8 @@ platforms:
       - testohpc_compute
     command: /sbin/init
     tmpfs:
-      - /run
-      - /tmp
+      /run: rw
+      /tmp: rw
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     network: net1

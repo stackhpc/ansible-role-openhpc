@@ -6,23 +6,23 @@ Test options in "Other" column flow down through table unless changed.
 
 Test   | # Partitions | Groups in partitions?   | Other
 ---    | ---          | ---                     | ---
-test1  | 1            | N                       | 2x compute node, sequential names (default test), config on all nodes
+test1  | 1            | N                       | 2x compute node, sequential names (default test)
 test1b | 1            | N                       | 1x compute node
 test1c | 1            | N                       | 2x compute nodes, nonsequential names
 test2  | 2            | N                       | 4x compute node, sequential names
-test3  | 1            | Y                       | -
+test3  | 1            | Y                       | 4x compute nodes in 2x groups, single partition
 test4  | 1            | N                       | 2x compute node, accounting enabled
-test5  | 1            | N                       | As for #1 but configless
-test6  | 1            | N                       | 0x compute nodes, configless
-test7  | 1            | N                       | 1x compute node, no login node so specified munge key, configless (checks image build should work)
-test8  | 1            | N                       | 2x compute node, 2x login-only nodes, configless
+test5  | -            | -                       | [removed, now always configless]
+test6  | 1            | N                       | 0x compute nodes
+test7  | 1            | N                       | [removed, image build should just run install.yml task, this is not expected to work]
+test8  | 1            | N                       | 2x compute node, 2x login-only nodes
 test9  | 1            | N                       | As test8 but uses `--limit=testohpc-control,testohpc-compute-0` and checks login nodes still end up in slurm.conf
-test10 | 1            | N                       | As for #5 but then tries to add an additional node
-test11 | 1            | N                       | As for #5 but then deletes a node (actually changes the partition due to molecule/ansible limitations)
-test12 | 1            | N                       | As for #5 but enabling job completion and testing `sacct -c`
-test13 | 1            | N                       | As for #5 but tests `openhpc_config` variable.
-test14 | 1            | N                       | As for #5 but also tests `extra_nodes` via State=DOWN nodes.
-
+test10 | 1            | N                       | As for #1 but then tries to add an additional node
+test11 | 1            | N                       | As for #1 but then deletes a node (actually changes the partition due to molecule/ansible limitations)
+test12 | 1            | N                       | As for #1 but enabling job completion and testing `sacct -c`
+test13 | 1            | N                       | As for #1 but tests `openhpc_config` variable.
+test14 | -            | -                       | [removed, extra_nodes removed]
+test15 | 1            | Y                       | As for #1 but also tests partitions with different name but with the same NodeName.
 
 # Local Installation & Running
 

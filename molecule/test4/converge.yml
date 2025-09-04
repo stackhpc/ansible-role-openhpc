@@ -12,9 +12,10 @@
     openhpc_slurmdbd_mysql_password: secure-password
     openhpc_slurmdbd_mysql_username: slurm
     openhpc_slurm_control_host: "{{ groups['testohpc_login'] | first }}"
-    openhpc_slurm_partitions:
+    openhpc_nodegroups:
       - name: "compute"
     openhpc_cluster_name: testohpc
+    openhpc_slurm_accounting_storage_client_package: mariadb
   tasks:
     - name: "Include ansible-role-openhpc"
       include_role:

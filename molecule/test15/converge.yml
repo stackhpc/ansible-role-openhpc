@@ -7,10 +7,19 @@
       batch: "{{ inventory_hostname in groups['testohpc_compute'] }}"
       runtime: true
     openhpc_slurm_control_host: "{{ groups['testohpc_login'] | first }}"
-    openhpc_slurm_partitions:
+    openhpc_nodegroups:
       - name: "compute"
+        partition_params:
+          PreemptMode: requeue
+      - name: beta
+        groups:
+          - name: "compute"
+        partition_params:
+          PreemptMode: 'OFF'
+          Priority: 1000
+          Default: false
+          AllowAccounts: Group_own_thePartition
     openhpc_cluster_name: testohpc
-    openhpc_slurm_configless: true
   tasks:
     - name: "Include ansible-role-openhpc"
       include_role:

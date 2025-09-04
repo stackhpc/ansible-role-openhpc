@@ -14,7 +14,7 @@ jobs:
     # as the container command is flaky.
     # This job builds an image using the upstream rockylinux:9.3 image which ensures
     # that the image used for the molecule workflow is always updated.
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: molecule/images
@@ -36,7 +36,7 @@ jobs:
     
   molecule:
     name: Molecule
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: build
     strategy:
       fail-fast: false
@@ -51,17 +51,17 @@ jobs:
           - test2
           - test3
           - test4
-          - test5
           - test6
-          - test7
           - test8
           - test9
           - test10
           - test11
           - test12
           - test13
-          - test14
-        exclude: []
+        exclude:
+          # mariadb package provides /usr/bin/mysql on RL8 which doesn't work with geerlingguy/mysql role
+          - scenario: test4
+            image: 'rockylinux:8.9'
 
     steps:
       - name: Check out the codebase.
@@ -107,7 +107,7 @@ jobs:
 
   checks:
     name: Checks
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
         uses: actions/checkout@v3

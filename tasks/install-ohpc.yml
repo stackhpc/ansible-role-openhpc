@@ -10,7 +10,7 @@
 
 - name: Ensure extra repos
   ansible.builtin.yum_repository: "{{ item }}" # noqa: args[module]
-  loop: "{{ ohpc_extra_repos }}" # NB this gets required ones for OpenHPC too
+  loop: "{{ ohpc_default_extra_repos[ansible_distribution_major_version] + openhpc_extra_repos }}"
   loop_control:
     label: "{{ item.name }}"
 
@@ -47,8 +47,8 @@
     install_weak_deps: false # avoids getting recommended packages
   when: openhpc_slurm_pkglist | default(false, true)
 
-- name: Install packages from openhpc_packages variable
+- name: Install other packages
   yum:
-    name: "{{ openhpc_packages }}"
+    name: "{{ openhpc_packages + [openhpc_slurm_accounting_storage_client_package] }}"
 
 ...

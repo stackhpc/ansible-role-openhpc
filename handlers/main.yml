@@ -1,10 +1,4 @@
 ---
-# NOTE: We need this running before slurmdbd
-- name: Restart Munge service
-  service:
-    name: "munge"
-    state: restarted
-  when: openhpc_slurm_service_started | bool
 
 # NOTE: we need this running before slurmctld start
 - name: Issue slurmdbd restart command
@@ -58,7 +52,15 @@
   service:
     name: "slurmd"
     state: restarted
+  retries: 5
+  register: slurmd_restart
+  until: slurmd_restart is success
+  delay: 30
   when:
     - openhpc_slurm_service_started | bool
     - openhpc_enable.batch | default(false) | bool
     # 2nd condition required as notification happens on controller, which isn't necessarily a compute note
+
+- name: Reload facts
+  ansible.builtin.setup:
+    filter: ansible_local
