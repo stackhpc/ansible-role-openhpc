@@ -39,7 +39,7 @@
     dest: "/etc/munge/munge.key"
     owner: munge
     group: munge
-    mode: 0400
+    mode: '0400'
   register: _openhpc_munge_key_copy
 
 - name: Ensure JobComp logfile exists
@@ -48,7 +48,7 @@
     state: touch
     owner: slurm
     group: slurm
-    mode: 0644
+    mode: '0644'
     access_time: preserve
     modification_time: preserve
   when: openhpc_slurm_job_comp_type == 'jobcomp/filetxt'
@@ -69,7 +69,7 @@
     dest: "{{ openhpc_slurm_conf_path }}"
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   when: openhpc_enable.control | default(false)
   notify:
     - Restart slurmctld service
@@ -141,7 +141,7 @@
     create: yes
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   when:
     - openhpc_enable.batch | default(false)
   notify:
