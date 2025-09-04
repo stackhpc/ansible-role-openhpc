@@ -127,7 +127,9 @@
   changed_when: true
   when:
     - openhpc_slurm_control_host in ansible_play_hosts
-    - hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed or hostvars[openhpc_slurm_control_host].ohpc_gres_conf.changed # noqa no-handler
+    - hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed or
+      hostvars[openhpc_slurm_control_host].ohpc_cgroup_conf.changed or
+      hostvars[openhpc_slurm_control_host].ohpc_gres_conf.changed # noqa no-handler
   notify:
     - Restart slurmd service
 
