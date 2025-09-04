@@ -2,7 +2,7 @@
 
 # stackhpc.openhpc
 
-This Ansible role installs packages and performs configuration to provide a Slurm cluster. By default this uses packages from [OpenHPC](https://openhpc.community/) but it is also possible to use alternative Slurm binaries and packages.
+This Ansible role installs packages and performs configuration to provide a Slurm cluster. By default this uses packages from [OpenHPC](https://openhpc.community/) but it can also use user-provided Slurm binaries.
 
 As a role it must be used from a playbook, for which a simple example is given below. This approach means it is totally modular with no assumptions about available networks or any cluster features except for some hostname conventions. Any desired cluster fileystem or other required functionality may be freely integrated using additional Ansible roles or other approaches.
 
@@ -53,10 +53,6 @@ Variables only relevant for `install-ohpc.yml` or `install-generic.yml` task fil
 `openhpc_bin_dir`: Optional. Path to Slurm user binaries such as `sinfo`, default `/usr/bin` (`install-generic.yml` only).
 
 `openhpc_lib_dir`: Optional. Path to Slurm libraries, default `/usr/lib64/slurm` (`install-generic.yml` only).
-
-`openhpc_config_files`: Optional. List of additional Slurm configuration files to template. Changes to any templated files will restart `slurmctld` and `slurmd`s.  The default templates `gres.conf` on the control node. List elements are dicts which must contain:
-  - `template`: A dict with parameters for Ansible's [template](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/template_module.html) module.
-  - `enable`: String `control`, `batch`, `database` or `runtime` specifying nodes to template this file on (i.e. matches keys from `openhpc_enable`). Any other string results in no templating.
 
 ### slurm.conf
 
