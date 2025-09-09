@@ -2,27 +2,27 @@
 
 # stackhpc.openhpc
 
-This Ansible role installs packages and performs configuration to provide an OpenHPC v2.x Slurm cluster.
+This Ansible role installs packages and performs configuration to provide a Slurm cluster. By default this uses packages from [OpenHPC](https://openhpc.community/) but it can also use user-provided Slurm binaries.
 
 As a role it must be used from a playbook, for which a simple example is given below. This approach means it is totally modular with no assumptions about available networks or any cluster features except for some hostname conventions. Any desired cluster fileystem or other required functionality may be freely integrated using additional Ansible roles or other approaches.
 
 The minimal image for nodes is a RockyLinux 8 GenericCloud image.
 
+## Task files
+This role provides four task files which can be selected by using the `tasks_from` parameter of Ansible's `import_role` or `include_role` modules:
+- `main.yml`: Runs `install-ohpc.yml` and `runtime.yml`. Default if no `tasks_from` parameter is used.
+- `install-ohpc.yml`: Installs repos and packages for OpenHPC.
+- `install-generic.yml`: Installs systemd units etc. for user-provided binaries.
+- `runtime.yml`: Slurm/service configuration.
+
 ## Role Variables
 
-`openhpc_extra_repos`: Optional list. Extra Yum repository definitions to configure, following the format of the Ansible
-[yum_repository](https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html) module. Respected keys for
-each list element:
-* `name`: Required
-* `description`: Optional
-* `file`: Required
-* `baseurl`: Optional
-* `metalink`: Optional
-* `mirrorlist`: Optional
-* `gpgcheck`: Optional
-* `gpgkey`: Optional
+Variables only relevant for `install-ohpc.yml` or `install-generic.yml` task files are marked as such below.
 
-`openhpc_slurm_service_enabled`: boolean, whether to enable the appropriate slurm service (slurmd/slurmctld).
+`openhpc_extra_repos`: Optional list. Extra Yum repository definitions to configure, following the format of the Ansible
+[yum_repository](https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html) module.
+
+`openhpc_slurm_service_enabled`: Optional boolean, whether to enable the appropriate slurm service (slurmd/slurmctld). Default `true`.
 
 `openhpc_slurm_service_started`: Optional boolean. Whether to start slurm services. If set to false, all services will be stopped. Defaults to `openhpc_slurm_service_enabled`.
 
@@ -30,7 +30,7 @@ each list element:
 
 `openhpc_slurm_control_host_address`: Optional string. IP address or name to use for the `openhpc_slurm_control_host`, e.g. to use a different interface than is resolved from `openhpc_slurm_control_host`.
 
-`openhpc_packages`: additional OpenHPC packages to install.
+`openhpc_packages`: Optional list. Additional OpenHPC packages to install (`install-ohpc.yml` only).
 
 `openhpc_enable`:
 * `control`: whether to enable control host
@@ -44,7 +44,15 @@ each list element:
 
 `openhpc_login_only_nodes`: Optional. If using "configless" mode specify the name of an ansible group containing nodes which are login-only nodes (i.e. not also control nodes), if required. These nodes will run `slurmd` to contact the control node for config.
 
-`openhpc_module_system_install`: Optional, default true. Whether or not to install an environment module system. If true, lmod will be installed. If false, You can either supply your own module system or go without one.
+`openhpc_module_system_install`: Optional, default true. Whether or not to install an environment module system. If true, lmod will be installed. If false, You can either supply your own module system or go without one (`install-ohpc.yml` only).
+
+`openhpc_generic_packages`: Optional. List of system packages to install, see `defaults/main.yml` for details (`install-generic.yml` only).
+
+`openhpc_sbin_dir`: Optional. Path to slurm daemon binaries such as `slurmctld`, default `/usr/sbin` (`install-generic.yml` only).
+
+`openhpc_bin_dir`: Optional. Path to Slurm user binaries such as `sinfo`, default `/usr/bin` (`install-generic.yml` only).
+
+`openhpc_lib_dir`: Optional. Path to Slurm libraries, default `/usr/lib64/slurm` (`install-generic.yml` only).
 
 ### slurm.conf
 
@@ -121,6 +129,16 @@ that this is *not the same* as the Ansible `omit` [special variable](https://doc
 `openhpc_ram_multiplier`: Optional, default `0.95`. Multiplier used in the calculation: `total_memory * openhpc_ram_multiplier` when setting `RealMemory` for the partition in slurm.conf. Can be overriden on a per partition basis using `openhpc_slurm_partitions.ram_multiplier`. Has no effect if `openhpc_slurm_partitions.ram_mb` is set.
 
 `openhpc_state_save_location`: Optional. Absolute path for Slurm controller state (`slurm.conf` parameter [StateSaveLocation](https://slurm.schedmd.com/slurm.conf.html#OPT_StateSaveLocation))
+
+`openhpc_slurmd_spool_dir`: Optional. Absolute path for slurmd state (`slurm.conf` parameter [SlurmdSpoolDir](https://slurm.schedmd.com/slurm.conf.html#OPT_SlurmdSpoolDir))
+
+`openhpc_slurm_conf_template`: Optional. Path of Jinja template for `slurm.conf` configuration file. Default is `slurm.conf.j2` template in role. **NB:** The required templating is complex, if just setting specific parameters use `openhpc_config` intead.
+
+`openhpc_slurm_conf_path`: Optional. Path to template `slurm.conf` configuration file to. Default `/etc/slurm/slurm.conf`
+
+`openhpc_gres_template`: Optional. Path of Jinja template for `gres.conf` configuration file. Default is `gres.conf.j2` template in role.
+
+`openhpc_cgroup_template`: Optional. Path of Jinja template for `cgroup.conf` configuration file. Default is `cgroup.conf.j2` template in role.
 
 #### Accounting
 

@@ -8,7 +8,7 @@
 
 - name: Install packages
   block:
-    - include_tasks: install.yml
+    - include_tasks: install-ohpc.yml
   when: openhpc_enable.runtime | default(false) | bool
   tags: install
 

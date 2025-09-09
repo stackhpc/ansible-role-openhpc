@@ -49,8 +49,12 @@ openhpc_cgroup_default_config:
 openhpc_config: {}
 openhpc_cgroup_config: {}
 openhpc_gres_template: gres.conf.j2
+openhpc_cgroup_template: cgroup.conf.j2
 
 openhpc_state_save_location: /var/spool/slurm
+openhpc_slurmd_spool_dir: /var/spool/slurm
+openhpc_slurm_conf_path: /etc/slurm/slurm.conf
+openhpc_slurm_conf_template: slurm.conf.j2
 
 # Accounting
 openhpc_slurm_accounting_storage_host: "{{ openhpc_slurmdbd_host }}"
@@ -79,6 +83,15 @@ openhpc_enable:
   batch: false
   database: false
   runtime: false
+
+# Only used for install-generic.yml:
+openhpc_generic_packages:
+  - munge
+  - mariadb-connector-c # only required on slurmdbd
+  - hwloc-libs # only required on slurmd
+openhpc_sbin_dir: /usr/sbin # path to slurm daemon binaries (e.g. slurmctld)
+openhpc_bin_dir: /usr/bin  # path to slurm user binaries (e.g sinfo)
+openhpc_lib_dir: /usr/lib64/slurm # path to slurm libraries
 
 # Repository configuration
 openhpc_extra_repos: []
@@ -127,12 +140,9 @@ ohpc_default_extra_repos:
       gpgcheck: true
       gpgkey: "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-8"
 
-# Concatenate all repo definitions here
-ohpc_repos: "{{ ohpc_openhpc_repos[ansible_distribution_major_version] + ohpc_default_extra_repos[ansible_distribution_major_version] + openhpc_extra_repos }}"
-
 openhpc_munge_key_b64:
 openhpc_login_only_nodes: ''
-openhpc_module_system_install: true
+openhpc_module_system_install: true # only works for install-ohpc.yml/main.yml
 
 # Auto detection
 openhpc_ram_multiplier: 0.95
