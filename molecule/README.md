@@ -26,7 +26,7 @@ test15 | 1            | Y                       | As for #1 but also tests parti
 
 # Local Installation & Running
 
-Local installation on a RockyLinux 8.x machine looks like:
+Local installation on a Rocky Linux 8.x machine looks like:
 
     sudo dnf install -y podman
     sudo dnf install podman-plugins # required for DNS
@@ -39,17 +39,17 @@ Local installation on a RockyLinux 8.x machine looks like:
     pip install -r molecule/requirements.txt
     ansible-galaxy collection install containers.podman:>=1.10.1
 
-Build a RockyLinux 9.3 image with systemd included:
+Build a Rocky Linux 9 image with systemd included:
 
     cd ansible-role-openhpc/molecule/images
-    podman build -t rocky93systemd:latest .
+    podman build -t rocky9systemd:latest .
 
 Run tests, e.g.:
 
     cd ansible-role-openhpc/
-    MOLECULE_NO_LOG="false" MOLECULE_IMAGE=rockylinux:8.9 molecule test --all
+    MOLECULE_NO_LOG="false" MOLECULE_IMAGE=rockylinux:8 molecule test --all
 
-where the image may be `rockylinux:8.9` or `localhost/rocky93systemd`.
+where the image may be `rockylinux:8` or `localhost/rocky9systemd`.
 
 Other useful options during development:
 - Prevent destroying instances by using `molecule test --destroy never`
