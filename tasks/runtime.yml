@@ -112,7 +112,7 @@
     mode: "0644"
   when:
     - openhpc_enable.control | default(false)
-    - openhpc_mpi_conf | length > 0
+    - (openhpc_mpi_default_config | combine(openhpc_mpi_config)) | length > 0
   notify:
     - Restart slurmctld service
   register: ohpc_mpi_conf
