@@ -127,6 +127,25 @@
     - "_openhpc_slurmdbd_state.stdout == 'inactive'"
     - openhpc_enable.database | default(false)
 
+- name: Stop slurmd if configuration has changed
+  service:
+    name: "slurmd"
+    state: stopped
+  retries: 5
+  register: slurmd_stop
+  until: slurmd_stop is success
+  delay: 30
+  when:
+    - openhpc_slurm_service_started | bool
+    - openhpc_enable.batch | default(false) | bool
+    - openhpc_slurm_control_host in ansible_play_hosts
+    - hostvars[openhpc_slurm_control_host].ohpc_slurm_conf.changed or
+      hostvars[openhpc_slurm_control_host].ohpc_cgroup_conf.changed or
+      hostvars[openhpc_slurm_control_host].ohpc_gres_conf.changed # noqa no-handler
+
+- name: Flush handler
+  meta: flush_handlers # This will restart slurmctld while slurmd services are stopped, if needed
+
 - name: Notify handler for slurmd restart
   debug:
     msg: "notifying handlers" # meta: noop doesn't support 'when'
