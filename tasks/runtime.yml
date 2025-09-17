@@ -103,6 +103,12 @@
   register: ohpc_cgroup_conf
   # NB uses restart rather than reload as this is needed in some cases
 
+# Workaround for https://bugs.rockylinux.org/view.php?id=10165
+- name: Fix permissions on /etc for Munge service
+  ansible.builtin.file:
+    mode: g-w
+    path: /etc
+
 - name: Ensure Munge service is running
   service:
     name: munge
