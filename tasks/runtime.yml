@@ -103,6 +103,20 @@
   register: ohpc_cgroup_conf
   # NB uses restart rather than reload as this is needed in some cases
 
+- name: Template mpi.conf
+  template:
+    src: "{{ openhpc_mpi_template }}"
+    dest: "{{ openhpc_slurm_conf_path | dirname }}/mpi.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  when:
+    - openhpc_enable.control | default(false)
+    - openhpc_mpi_conf | length > 0
+  notify:
+    - Restart slurmctld service
+  register: ohpc_mpi_conf
+
 # Workaround for https://bugs.rockylinux.org/view.php?id=10165
 - name: Fix permissions on /etc for Munge service
   ansible.builtin.file:
