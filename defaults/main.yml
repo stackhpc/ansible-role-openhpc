@@ -51,6 +51,9 @@ openhpc_cgroup_config: {}
 openhpc_gres_template: gres.conf.j2
 openhpc_cgroup_template: cgroup.conf.j2
 
+openhpc_mpi_template: mpi.conf.j2
+openhpc_mpi_config: {}
+
 openhpc_state_save_location: /var/spool/slurm
 openhpc_slurmd_spool_dir: /var/spool/slurm
 openhpc_slurm_conf_path: /etc/slurm/slurm.conf
