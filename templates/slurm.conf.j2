@@ -40,7 +40,7 @@ NodeName={{ hostlists | join(',') }} {{ '' -}}
     {{ nodegroup.node_params | default({}) | dict2parameters }} {{ '' -}}
     {% if 'gres' in nodegroup -%}
     Gres={{ ','.join(nodegroup.gres | map(attribute='conf')) -}}
-    {% elif openhpc_gres_autodetect == 'nvml' and first_host_hv['ohpc_node_gpu_gres'] != '' -%}
+    {% elif nodegroup.gres_autodetect | default(openhpc_gres_autodetect) == 'nvml' and first_host_hv['ohpc_node_gpu_gres'] != '' -%}
     Gres={{ first_host_hv['ohpc_node_gpu_gres'] -}}
     {% endif %}
 
