@@ -63,6 +63,16 @@
   notify: Restart slurmdbd service
   when: openhpc_enable.database | default(false) | bool
 
+- name: Query GPU info
+  gpu_info:
+  register: _gpu_info
+  when: openhpc_enable.batch | default(false)
+
+- name: Set fact for node GPU GRES
+  set_fact:
+    ohpc_node_gpu_gres: "{{ _gpu_info.gres }}"
+  when: openhpc_enable.batch | default(false)
+
 - name: Template slurm.conf
   template:
     src: "{{ openhpc_slurm_conf_template }}"

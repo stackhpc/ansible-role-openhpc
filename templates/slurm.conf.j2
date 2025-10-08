@@ -38,7 +38,11 @@ NodeName={{ hostlists | join(',') }} {{ '' -}}
     CoresPerSocket={{ first_host_hv['ansible_processor_cores'] }} {{ '' -}}
     ThreadsPerCore={{ first_host_hv['ansible_processor_threads_per_core'] }} {{ '' -}}
     {{ nodegroup.node_params | default({}) | dict2parameters }} {{ '' -}}
-    {% if 'gres' in nodegroup %}Gres={{ ','.join(nodegroup.gres | map(attribute='conf')) }}{% endif %}
+    {% if 'gres' in nodegroup -%}
+    Gres={{ ','.join(nodegroup.gres | map(attribute='conf')) -}}
+    {% elif openhpc_gres_autodetect == 'nvml' and first_host_hv['ohpc_node_gpu_gres'] != '' -%}
+    Gres={{ first_host_hv['ohpc_node_gpu_gres'] -}}
+    {% endif %}
 
 {%      endif %}{# 1 or more hosts in inventory #}
 NodeSet=nodegroup_{{ nodegroup.name }} Feature=nodegroup_{{ nodegroup.name }}
