@@ -21,15 +21,35 @@
   delegate_to: localhost
   run_once: true
 
-- name: Validate openhpc_nodegroups
-  ansible.utils.validate:
-    criteria: "{{ lookup('file', 'nodegroup.schema') }}"
-    engine: 'ansible.utils.jsonschema'
-    data: "{{ item }}"
-  vars:
-    ansible_jsonschema_draft: '2020-12'
-  delegate_to: localhost
+
+# - name: Validate openhpc_nodegroups contain name
+#   ansible.builtin.assert:
+#     that:
+#       - "'name' in nodegroup
+#       - openhpc_cluster_name ~ '_' ~ nodegroup.name in group_names
+#     fail_msg: "nodegroup does not specify a name or openhpc_cluster_name ~ '_' ~ nodegroup.name not found in inventory"
+
+#   loop: "{{ openhpc_nodegroups }}"
+
+- name: debug openhpc_nodegroups
+  ansible.builtin.debug:
+    msg: "{{ (item.gres | select('contains', 'file')) }} == {{ (item.gres | length) }}"
   loop: "{{ openhpc_nodegroups }}"
+  when:
+    - item.gres_autodetect | default(openhpc_gres_autodetect) == 'off'
+    - "'gres' in item"
+  delegate_to: localhost
+  run_once: true
+
+- name: Validate openhpc_nodegroups
+  ansible.builtin.assert:
+    that: "(item.gres | select('contains', 'file') | length) == (item.gres | length)"
+    fail_msg: "GRES configuration(s) in openhpc_nodegroup '{{ item.name }}' do not include 'file' but GRES autodetection is not enabled"
+  loop: "{{ openhpc_nodegroups }}"
+  when:
+    - item.gres_autodetect | default(openhpc_gres_autodetect) == 'off'
+    - "'gres' in item"
+  delegate_to: localhost
   run_once: true
 
 - name: Fail if partition configuration is outdated
