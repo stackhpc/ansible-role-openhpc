@@ -10,7 +10,7 @@ NodeName={{ hostlist_string }} AutoDetect={{ nodegroup_gres_autodetect }}
 {%      else %}
 {%          for gres in gres_list %}
 {%              set gres_name, gres_type, _ = gres.conf.split(':') %}
-NodeName={{ hostlist_string }} Name={{ gres_name }} Type={{ gres_type }} File={{ gres.file | mandatory('The gres configuration dictionary: ' ~  gres ~ ' is missing the file key, but gres_autodetect is not specified. The error occured on node group: ' ~  nodegroup.name ~ '. Please add the file key or set gres_autodetect.') }}
+NodeName={{ hostlist_string }} Name={{ gres_name }} Type={{ gres_type }}{% if openhpc_gres_autodetect == nodegroup_gres_autodetect == 'off' %} File={{ gres.file | mandatory('The gres configuration dictionary: ' ~  gres ~ ' is missing the file key, but gres_autodetect is not specified. The error occured on node group: ' ~  nodegroup.name ~ '. Please add the file key or set gres_autodetect.') }}{% endif %}
 {%          endfor %}{# gres #}
 {%      endif %}{# autodetect #}
 {% endfor %}{# nodegroup #}
