@@ -40,6 +40,7 @@ openhpc_default_config:
   PropagateResourceLimitsExcept: MEMLOCK
   Epilog: /etc/slurm/slurm.epilog.clean
   ReturnToService: 2
+  GresTypes: "{{ ohpc_nodegroup_gres_types if ohpc_nodegroup_gres_types != '' else 'omit' }}"
 openhpc_cgroup_default_config:
   ConstrainCores: "yes"
   ConstrainDevices: "yes"
@@ -48,6 +49,15 @@ openhpc_cgroup_default_config:
 
 openhpc_config: {}
 openhpc_cgroup_config: {}
+ohpc_nodegroup_gres_types: >-
+  {{
+    openhpc_nodegroups |
+    community.general.json_query('[].gres[].conf') |
+    map('split', ':') |
+    map('first') |
+    unique |
+    join(',')
+  }}
 openhpc_gres_template: gres.conf.j2
 openhpc_cgroup_template: cgroup.conf.j2
 

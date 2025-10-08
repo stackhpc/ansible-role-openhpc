@@ -73,7 +73,7 @@ unique set of homogenous nodes:
       - `conf`: A string with the [resource specification](https://slurm.schedmd.com/slurm.conf.html#OPT_Gres_1) but requiring the format `<name>:<type>:<number>`, e.g. `gpu:A100:2`. Note the `type` is an arbitrary string.
       - `file`: Omit if `gres_autodetect` is set. A string with the [File](https://slurm.schedmd.com/gres.conf.html#OPT_File) (path to device(s)) for this resource, e.g. `/dev/nvidia[0-1]` for the above example.
 
-    Note [GresTypes](https://slurm.schedmd.com/slurm.conf.html#OPT_GresTypes) must be set in `openhpc_config` if this is used.
+    Note [GresTypes](https://slurm.schedmd.com/slurm.conf.html#OPT_GresTypes) is automatically set from `gres` entries.
   * `features`: Optional. List of [Features](https://slurm.schedmd.com/slurm.conf.html#OPT_Features) strings.
   * `node_params`: Optional. Mapping of additional parameters and values for
   [node configuration](https://slurm.schedmd.com/slurm.conf.html#lbAE).
