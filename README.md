@@ -115,8 +115,8 @@ If this variable is not set one partition per nodegroup is created, with default
 partition configuration for each.
 
 `openhpc_gres_autodetect`: Optional. A global default for `openhpc_nodegroups.gres_autodetect`
-defined above. **NB:** A value of `'off'` (the default) must be quoted to avoid yaml
-     conversion to `false`.
+defined above. **NB:** A value of `'off'` (the default) must be quoted to avoid
+yaml conversion to `false`.
 
 `openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days), see
 [slurm.conf:MaxTime](https://slurm.schedmd.com/slurm.conf.html#OPT_MaxTime).
@@ -308,7 +308,7 @@ cluster-largemem-1
 ...
 ```
 
-Firstly `openhpc_nodegroups` maps to these inventory groups and applys any
+Firstly `openhpc_nodegroups` maps to these inventory groups and applies any
 node-level parameters - in this case the `largemem` nodes have 2x cores
 reserved for some reason:
 
@@ -350,7 +350,7 @@ with appropriate memory using the `--mem` option for `sbatch` or `srun`.
 Some autodetection mechanisms require recompilation of Slurm packages to link
 against external libraries. Examples are shown in the sections below.
 
-#### Recompiling Slurm binaries against the [NVIDIA Management libray](https://developer.nvidia.com/management-library-nvml)
+#### Recompiling Slurm binaries against the [NVIDIA Management library](https://developer.nvidia.com/management-library-nvml)
 
 This allows using `openhpc_gres_autodetect: nvml` or `openhpc_nodegroup.gres_autodetect: nvml`.
 
