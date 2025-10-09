@@ -41,7 +41,7 @@ openhpc_default_config:
   PropagateResourceLimitsExcept: MEMLOCK
   Epilog: /etc/slurm/slurm.epilog.clean
   ReturnToService: 2
-  GresTypes: "{{ ohpc_gres_types | flatten | sort | unique | join(',') if ohpc_gres_types else 'omit' }}"
+  GresTypes: "{{ ohpc_gres_types if ohpc_gres_types != '' else 'omit' }}"
 openhpc_cgroup_default_config:
   ConstrainCores: "yes"
   ConstrainDevices: "yes"
@@ -50,18 +50,16 @@ openhpc_cgroup_default_config:
 
 openhpc_config: {}
 openhpc_cgroup_config: {}
-ohpc_gres_types:
-  # toplevel nvml autodetect:
-  - "{{ ['gpu'] if openhpc_gres_autodetect == 'nvml' else [] }}"
-  # nodegroup nvml autodetect:
-  - "{{ ['gpu'] if openhpc_nodegroups | map(attribute='gres_autodetect', default='') | unique | select('eq', 'nvml') else [] }}"
-  # nodegroup specific gres conf:
-  - "{{
-        openhpc_nodegroups |
+ohpc_gres_types: >-
+  {{
+    (
+      ['gpu'] if openhpc_gres_autodetect == 'nvml' else [] +
+      ['gpu'] if openhpc_nodegroups | map(attribute='gres_autodetect', default='') | unique | select('eq', 'nvml') else [] +
+      openhpc_nodegroups |
         community.general.json_query('[].gres[].conf') |
         map('regex_search', '^(\\w+)')
-    }}"
-
+    ) | flatten | reject('eq', '') | sort | unique | join(',')
+  }}
 openhpc_gres_template: gres.conf.j2
 openhpc_cgroup_template: cgroup.conf.j2
 
