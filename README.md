@@ -407,8 +407,8 @@ openhpc_nodegroups:
   - name: general
   - name: gpu
     gres:
-      conf: gpu:H200:2
-      file: /dev/nvidia[0-1]
+      - conf: gpu:H200:2
+        file: /dev/nvidia[0-1]
 ```
 
 Note that the `nvml` autodetection is special in this role. Other autodetection
