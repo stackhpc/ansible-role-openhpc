@@ -9,6 +9,16 @@
   delegate_to: localhost
   run_once: true
 
+- name: Validate nodegroups define names
+  # Needed for the next check..
+  # NB: Don't validate names against inventory groups as those are allowed to be missing
+  ansible.builtin.assert:
+    that: "'name' in item"
+    fail_msg: "A mapping in openhpc_nodegroups is missing 'name'"
+  loop: "{{ openhpc_nodegroups }}"
+  delegate_to: localhost
+  run_once: true
+  
 - name: Check no host appears in more than one nodegroup
   assert:
     that: "{{ _openhpc_check_hosts.values() | select('greaterthan', 1) | length == 0 }}"
@@ -21,30 +31,10 @@
   delegate_to: localhost
   run_once: true
 
-
-# - name: Validate openhpc_nodegroups contain name
-#   ansible.builtin.assert:
-#     that:
-#       - "'name' in nodegroup
-#       - openhpc_cluster_name ~ '_' ~ nodegroup.name in group_names
-#     fail_msg: "nodegroup does not specify a name or openhpc_cluster_name ~ '_' ~ nodegroup.name not found in inventory"
-
-#   loop: "{{ openhpc_nodegroups }}"
-
-- name: debug openhpc_nodegroups
-  ansible.builtin.debug:
-    msg: "{{ (item.gres | select('contains', 'file')) }} == {{ (item.gres | length) }}"
-  loop: "{{ openhpc_nodegroups }}"
-  when:
-    - item.gres_autodetect | default(openhpc_gres_autodetect) == 'off'
-    - "'gres' in item"
-  delegate_to: localhost
-  run_once: true
-
-- name: Validate openhpc_nodegroups
+- name: Validate GRES definitions
   ansible.builtin.assert:
     that: "(item.gres | select('contains', 'file') | length) == (item.gres | length)"
-    fail_msg: "GRES configuration(s) in openhpc_nodegroup '{{ item.name }}' do not include 'file' but GRES autodetection is not enabled"
+    fail_msg: "GRES configuration(s) in openhpc_nodegroups '{{ item.name }}' do not include 'file' but GRES autodetection is not enabled"
   loop: "{{ openhpc_nodegroups }}"
   when:
     - item.gres_autodetect | default(openhpc_gres_autodetect) == 'off'
