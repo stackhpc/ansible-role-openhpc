@@ -13,29 +13,15 @@ ANSIBLE_METADATA = {
 
 DOCUMENTATION = """
 ---
-module: sacct_cluster
-short_description: Manages clusters in the accounting database
-version_added: "2.9"
+module: gpu_info
+short_description: Gathers information about NVIDIA GPUs on a node
 description:
-    - "Adds/removes a cluster from the accounting database"
-options:
-    name:
-        description:
-            - Name of the cluster
-        required: true
-        type: str
-    state:
-        description:
-        - If C(present), cluster will be added if it does't already exist
-        - If C(absent), cluster will be removed if it exists
-        type: str
-        required: true
-        choices: [ absent, present]
-
+    - "This module queries for NVIDIA GPUs using `nvidia-smi` and returns information about them. It is designed to fail gracefully if `nvidia-smi` is not present or if the NVIDIA driver is not running."
+options: {}
 requirements:
     - "python >= 3.6"
 author:
-    - Will Szumski, StackHPC
+    - Steve Brasier, StackHPC
 """
 
 EXAMPLES = """
