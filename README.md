@@ -68,12 +68,20 @@ unique set of homogenous nodes:
   `free --mebi` total * `openhpc_ram_multiplier`.
   * `ram_multiplier`: Optional.  An override for the top-level definition
   `openhpc_ram_multiplier`. Has no effect if `ram_mb` is set.
-  * `gres_autodetect`: Optional. The [auto detection mechanism](https://slurm.schedmd.com/gres.conf.html#OPT_AutoDetect) to use for the  generic resources. Note: you must still define the `gres` dictionary (see below) but you only need the define the `conf` key. See [GRES autodetection](#gres-autodetection) section below.
-  * `gres`: Optional. List of dicts defining [generic resources](https://slurm.schedmd.com/gres.html). Each dict should define:
-      - `conf`: A string with the [resource specification](https://slurm.schedmd.com/slurm.conf.html#OPT_Gres_1) but requiring the format `<name>:<type>:<number>`, e.g. `gpu:A100:2`. Note the `type` is an arbitrary string.
-      - `file`: Omit if `gres_autodetect` is set. A string with the [File](https://slurm.schedmd.com/gres.conf.html#OPT_File) (path to device(s)) for this resource, e.g. `/dev/nvidia[0-1]` for the above example.
-
-    Note [GresTypes](https://slurm.schedmd.com/slurm.conf.html#OPT_GresTypes) is automatically set from `gres` entries.
+  * `gres_autodetect`: Optional. The [hardware autodetection mechanism](https://slurm.schedmd.com/gres.conf.html#OPT_AutoDetect)
+     to use for [generic resources](https://slurm.schedmd.com/gres.html).
+     **NB:** A value of `'off'` (the default) must be quoted to avoid yaml
+     conversion to `false`.
+  * `gres`: Optional. List of dicts defining [generic resources](https://slurm.schedmd.com/gres.html).
+     Not required if using `nvml` GRES autodetection. Keys/values in dicts are:
+      - `conf`: A string defining the [resource specification](https://slurm.schedmd.com/slurm.conf.html#OPT_Gres_1)
+        in the format `<name>:<type>:<number>`, e.g. `gpu:A100:2`.
+      - `file`: A string defining device path(s) as per [File](https://slurm.schedmd.com/gres.conf.html#OPT_File),
+        e.g. `/dev/nvidia[0-1]`. Not required if using any GRES autodetection.
+    
+    Note [GresTypes](https://slurm.schedmd.com/slurm.conf.html#OPT_GresTypes) is
+    automatically set from the defined GRES or GRES autodetection. See [GRES Configuration](#gres-configuration)
+    for more discussion.
   * `features`: Optional. List of [Features](https://slurm.schedmd.com/slurm.conf.html#OPT_Features) strings.
   * `node_params`: Optional. Mapping of additional parameters and values for
   [node configuration](https://slurm.schedmd.com/slurm.conf.html#lbAE).
@@ -105,6 +113,10 @@ partition. Each partition mapping may contain:
 
 If this variable is not set one partition per nodegroup is created, with default
 partition configuration for each.
+
+`openhpc_gres_autodetect`: Optional. A global default for `openhpc_nodegroups.gres_autodetect`
+defined above. **NB:** A value of `'off'` (the default) must be quoted to avoid yaml
+     conversion to `false`.
 
 `openhpc_job_maxtime`: Maximum job time limit, default `'60-0'` (60 days), see
 [slurm.conf:MaxTime](https://slurm.schedmd.com/slurm.conf.html#OPT_MaxTime).
@@ -278,7 +290,7 @@ cluster-control
 
 This example shows how partitions can span multiple types of compute node.
 
-This example inventory describes three types of compute node (login and
+Assume an inventory containing two types of compute node (login and
 control nodes are omitted for brevity):
 
 ```ini
@@ -293,17 +305,12 @@ cluster-general-1
 # large memory nodes
 cluster-largemem-0
 cluster-largemem-1
-
-[hpc_gpu]
-# GPU nodes
-cluster-a100-0
-cluster-a100-1
 ...
 ```
 
-Firstly the `openhpc_nodegroups` is set to capture these inventory groups and
-apply any node-level parameters - in this case the `largemem` nodes have
-2x cores reserved for some reason, and GRES is configured for the GPU nodes:
+Firstly `openhpc_nodegroups` maps to these inventory groups and applys any
+node-level parameters - in this case the `largemem` nodes have 2x cores
+reserved for some reason:
 
 ```yaml
 openhpc_cluster_name: hpc
@@ -312,104 +319,100 @@ openhpc_nodegroups:
   - name: large
     node_params:
       CoreSpecCount: 2
-  - name: gpu
-    gres:
-      - conf: gpu:A100:2
-        file: /dev/nvidia[0-1]
 ```
-or if using the NVML gres_autodection mechamism (NOTE: this requires recompilation of the slurm binaries to link against the [NVIDIA Management libray](#gres-autodetection)):
 
-```yaml
-openhpc_cluster_name: hpc
-openhpc_nodegroups:
-  - name: general
-  - name: large
-    node_params:
-      CoreSpecCount: 2
-  - name: gpu
-    gres_autodetect: nvml
-    gres:
-      - conf: gpu:A100:2
-```
-Now two partitions can be configured - a default one with a short timelimit and
-no large memory nodes for testing jobs, and another with all hardware and longer
-job runtime for "production" jobs:
+Now two partitions can be configured using `openhpc_partitions`: A default
+partition for testing jobs with a short timelimit and no large memory nodes,
+and another partition with all hardware and longer job runtime for "production"
+jobs:
 
 ```yaml
 openhpc_partitions:
   - name: test
     nodegroups:
       - general
-      - gpu
     maxtime: '1:0:0' # 1 hour
     default: 'YES'
   - name: general
     nodegroups:
       - general
       - large
-      - gpu
     maxtime: '2-0' # 2 days
     default: 'NO'
 ```
 Users will select the partition using `--partition` argument and request nodes
-with appropriate memory or GPUs using the `--mem` and `--gres` or `--gpus*`
-options for `sbatch` or `srun`.
+with appropriate memory using the `--mem` option for `sbatch` or `srun`.
 
-Finally here some additional configuration must be provided for GRES:
-```yaml
-openhpc_config:
-  GresTypes:
-    -gpu
-```
+## GRES Configuration
 
-## GRES autodetection
+### Autodetection
 
-Some autodetection mechanisms require recompilation of the slurm packages to
-link against external libraries. Examples are shown in the sections below.
+Some autodetection mechanisms require recompilation of Slurm packages to link
+against external libraries. Examples are shown in the sections below.
 
-### Recompiling slurm binaries against the [NVIDIA Management libray](https://developer.nvidia.com/management-library-nvml)
+#### Recompiling Slurm binaries against the [NVIDIA Management libray](https://developer.nvidia.com/management-library-nvml)
 
-This will allow you to use `gres_autodetect: nvml` in your `nodegroup`
-definitions.
+This allows using `openhpc_gres_autodetect: nvml` or `openhpc_nodegroup.gres_autodetect: nvml`.
 
 First, [install the complete cuda toolkit from NVIDIA](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/).
 You can then recompile the slurm packages from the source RPMS as follows:
 
 ```sh
 dnf download --source slurm-slurmd-ohpc
-
 rpm -i slurm-ohpc-*.src.rpm
-
 cd /root/rpmbuild/SPECS
-
 dnf builddep slurm.spec
-
 rpmbuild -bb -D "_with_nvml --with-nvml=/usr/local/cuda-12.8/targets/x86_64-linux/" slurm.spec | tee /tmp/build.txt
 ```
 
 NOTE: This will need to be adapted for the version of CUDA installed (12.8 is used in the example).
 
-The RPMs will be created in ` /root/rpmbuild/RPMS/x86_64/`. The method to distribute these RPMs to
-each compute node is out of scope of this document. You can either use a custom package repository
-or simply install them manually on each node with Ansible.
+The RPMs will be created in `/root/rpmbuild/RPMS/x86_64/`. The method to distribute these RPMs to
+each compute node is out of scope of this document.
 
-#### Configuration example
+## GRES configuration examples
 
-A configuration snippet is shown below:
+For NVIDIA GPUs, `nvml` GRES autodetection can be used. This requires:
+- The relevant GPU nodes to have the `nvidia-smi` binary installed
+- Slurm to be compiled against the NVIDIA management library as above
+
+Autodetection can then be enabled using either for all nodegroups:
 
 ```yaml
-openhpc_cluster_name: hpc
+openhpc_gres_autodetection: nvml
+```
+
+or for individual nodegroups e.g:
+```yaml
+openhpc_nodegroups:
+  - name: example
+    gres_autodetection: nvml
+  ...
+```
+
+In either case no additional configuration of GRES is required. Any nodegroups
+with NVIDIA GPUs will automatically get `gpu` GRES defined for all GPUs found.
+GPUs within a node do not need to be the same model but nodes in a nodegroup
+must be homogenous. GRES types are set to the autodetected model names e.g. `H100`.
+
+For `nvml` GRES autodetection per-nodegroup `gres_autodetection` and/or `gres` keys
+can be still be provided. These can be used to disable/override the default
+autodetection method, or to allow checking autodetected resources against
+expectations as described by [gres.conf documentation](https://slurm.schedmd.com/gres.conf.html).
+
+Without any autodetection, a GRES configuration for NVIDIA GPUs might be:
+
+```
 openhpc_nodegroups:
   - name: general
-  - name: large
-    node_params:
-      CoreSpecCount: 2
   - name: gpu
-    gres_autodetect: nvml
     gres:
-      - conf: gpu:A100:2
+      conf: gpu:H200:2
+      file: /dev/nvidia[0-1]
 ```
-for additional context refer to the GPU example in: [Multiple Nodegroups](#multiple-nodegroups).
 
+Note that the `nvml` autodetection is special in this role. Other autodetection
+mechanisms, e.g. `nvidia` or `rsmi` allow the `gres.file:` specification to be
+omitted but still require `gres.conf:` to be defined.
 
 <b id="slurm_ver_footnote">1</b> Slurm 20.11 removed `accounting_storage/filetxt` as an option. This version of Slurm was introduced in OpenHPC v2.1 but the OpenHPC repos are common to all OpenHPC v2.x releases. [↩](#accounting_storage)
