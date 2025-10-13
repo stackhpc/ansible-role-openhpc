@@ -1,5 +1,5 @@
 # {{ ansible_managed }}
-{% for k, v in openhpc_mpi_config.items %}
+{% for k, v in openhpc_mpi_config.items() %}
 {%  if v != "omit" %}{# allow removing items using setting key: omit #}
 {{ k }}={{ v | join(',') if (v is sequence and v is not string) else v }}
 {%  endif %}
