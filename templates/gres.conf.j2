@@ -6,5 +6,6 @@ AutoDetect={{ openhpc_gres_autodetect }}
 {%      for gres in nodegroup.gres | default([]) %}
 {%          set gres_name, gres_type, _ = gres.conf.split(':') %}
 NodeName={{ hostlist_string }}{% if 'gres_autodetect' in nodegroup %} AutoDetect={{ nodegroup.gres_autodetect }}{% endif %} Name={{ gres_name }} Type={{ gres_type }}{% if 'file' in gres %} File={{ gres.file }}{% endif %}
+
 {%      endfor %}{# gres #}
 {% endfor %}{# nodegroup #}
