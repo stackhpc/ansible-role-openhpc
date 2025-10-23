@@ -57,7 +57,7 @@ ohpc_gres_types: >-
       ['gpu'] if openhpc_nodegroups | map(attribute='gres_autodetect', default='') | unique | select('eq', 'nvml') else [] +
       openhpc_nodegroups |
         community.general.json_query('[].gres[].conf') |
-        map('regex_search', '^(\\w+)')
+        map('regex_search', '^(\w+)')
     ) | flatten | reject('eq', '') | sort | unique | join(',')
   }}
 openhpc_gres_template: gres.conf.j2
