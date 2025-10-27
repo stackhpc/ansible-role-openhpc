@@ -1,5 +1,8 @@
 pip
 setuptools
 molecule[lint,ansible]
-molecule-plugins[podman]
+molecule-plugins[podman]==23.5.0
 ansible>=2.9.0
+yamllint
+ansible-lint
+jmespath

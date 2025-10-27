@@ -12,6 +12,7 @@ openhpc_packages:
 openhpc_resume_timeout: 300
 openhpc_retry_delay: 10
 openhpc_job_maxtime: '60-0' # quote this to avoid ansible converting some formats to seconds, which is interpreted as minutes by Slurm
+openhpc_gres_autodetect: 'off'
 openhpc_default_config:
   # This only defines values which are not Slurm defaults
   SlurmctldHost: "{{ openhpc_slurm_control_host }}{% if openhpc_slurm_control_host_address is defined %}({{ openhpc_slurm_control_host_address }}){% endif %}"
@@ -40,6 +41,7 @@ openhpc_default_config:
   PropagateResourceLimitsExcept: MEMLOCK
   Epilog: /etc/slurm/slurm.epilog.clean
   ReturnToService: 2
+  GresTypes: "{{ ohpc_gres_types if ohpc_gres_types != '' else 'omit' }}"
 openhpc_cgroup_default_config:
   ConstrainCores: "yes"
   ConstrainDevices: "yes"
@@ -48,6 +50,16 @@ openhpc_cgroup_default_config:
 
 openhpc_config: {}
 openhpc_cgroup_config: {}
+ohpc_gres_types: >-
+  {{
+    (
+      ['gpu'] if openhpc_gres_autodetect == 'nvml' else [] +
+      ['gpu'] if openhpc_nodegroups | map(attribute='gres_autodetect', default='') | unique | select('eq', 'nvml') else [] +
+      openhpc_nodegroups |
+        community.general.json_query('[].gres[].conf') |
+        map('regex_search', '^(\w+)')
+    ) | flatten | reject('eq', '') | sort | unique | join(',')
+  }}
 openhpc_gres_template: gres.conf.j2
 openhpc_cgroup_template: cgroup.conf.j2
 
