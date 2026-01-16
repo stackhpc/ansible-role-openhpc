@@ -20,7 +20,7 @@ import jinja2
 import re
 
 # Pattern to match a hostname with numerical ending
-pattern = re.compile("^(.*\D(?=\d))(\d+)$")
+pattern = re.compile(r"^(.*\D(?=\d))(\d+)$")
 
 def hostlist_expression(hosts):
     """ Group hostnames using Slurm's hostlist expression format.
@@ -37,7 +37,7 @@ def hostlist_expression(hosts):
             dev-compute-001 ansible_host=localhost
 
         Then "{{ groups[compute] | hostlist_expression }}" will return:
-            
+
             ['dev-foo-[00,04-05,3]', 'dev-compute-[000-001]', 'my-random-host']
 
         NB: This does not guranteed to return parts in the same order as `scontrol hostlist`, but its output should return the same hosts when passed to `scontrol hostnames`.
@@ -72,7 +72,7 @@ def _group_numbers(numbers):
 
 def error(condition, msg):
     """ Raise an error if condition is not True """
-    
+
     if not condition:
         raise errors.AnsibleFilterError(msg)
 
@@ -83,14 +83,14 @@ def dict2parameters(d):
 
 def config2dict(lines):
     """ Convert a sequence of output lines from `scontrol show config` to a dict.
-        
+
         As per man page uppercase keys are derived parameters, mixed case are from
         from config files.
 
         The following case-insensitive conversions of values are carried out:
         - '(null)' and 'n/a' are converted to None.
         - yes and no are converted to True and False respectively
-        
+
         Except for these, values are always strings.
     """
     cfg = {}
