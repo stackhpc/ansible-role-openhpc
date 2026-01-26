@@ -16,14 +16,15 @@ openhpc_gres_autodetect: 'off'
 openhpc_default_config:
   # This only defines values which are not Slurm defaults
   SlurmctldHost: "{{ openhpc_slurm_control_host }}{% if openhpc_slurm_control_host_address is defined %}({{ openhpc_slurm_control_host_address }}){% endif %}"
-  ProctrackType: proctrack/linuxproc # TODO: really want cgroup but needs cgroup.conf and workaround for CI
+  ProctrackType: proctrack/cgroup
+  TaskPlugin: task/cgroup,task/affinity
   SlurmdSpoolDir: /var/spool/slurm # NB: not OpenHPC default!
   SlurmUser: slurm
   StateSaveLocation: "{{ openhpc_state_save_location }}"
   SlurmctldTimeout: 300
   SchedulerType: sched/backfill
   SelectType: select/cons_tres
-  SelectTypeParameters: CR_Core
+  SelectTypeParameters: CR_Core_Memory
   PriorityWeightPartition: 1000
   PreemptType: preempt/partition_prio
   PreemptMode: SUSPEND,GANG
