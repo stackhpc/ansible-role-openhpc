@@ -6,7 +6,30 @@
   - name: Get slurm partition info
     command: sinfo --noheader --format="%P,%a,%l,%D,%t,%N" # using --format ensures we control whitespace
     register: sinfo
-  - name: 
+  - name:
     assert:                        # PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
       that: "sinfo.stdout_lines == ['compute*,up,60-00:00:00,2,idle,testohpc-compute-[0-1]']"
       fail_msg: "FAILED - actual value: {{ sinfo.stdout_lines }}"
+
+- name: Run limited job
+  hosts: testohpc_login
+  tasks:
+  - shell: printf '#!bin/bash\nsleep 500' | sbatch --cpus-per-task=1 --ntasks=1 --mem=200m --nodelist=testohpc-compute-0
+
+- name: Check cgroup limits on jobs
+  hosts: testohpc-compute-0
+  tasks:
+  - name: Get cpuset cgroup limit
+    shell: cat /sys/fs/cgroup/system.slice/testohpc-compute-0_slurmstepd.scope/job_*/cpuset.cpus
+    register: job_cpuset
+  - name: Assert cpuset cgroup presence
+    assert:
+      that: "job_cpuset.stdout_lines[0] in ('0', '0-1')"  # depending on the VM's state
+      fail_msg: "FAILED - actual value: {{ job_cpuset.stdout_lines }}"
+  - name: Get memory cgroup limit
+    shell: cat /sys/fs/cgroup/system.slice/testohpc-compute-0_slurmstepd.scope/job_*/memory.max
+    register: job_memory
+  - name: Assert memory cgroup limit
+    assert:
+      that: "job_memory.stdout_lines == ['209715200']"
+      fail_msg: "FAILED - actual value: {{ job_memory.stdout_lines }}"

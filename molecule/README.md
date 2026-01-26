@@ -47,9 +47,11 @@ Build a Rocky Linux 9 image with systemd included:
 Run tests, e.g.:
 
     cd ansible-role-openhpc/
-    MOLECULE_NO_LOG="false" MOLECULE_IMAGE=rockylinux:8 molecule test --all
+    MOLECULE_NO_LOG="false" MOLECULE_IMAGE=rockylinux/rockylinux:8 molecule test --all
 
-where the image may be `rockylinux:8` or `localhost/rocky9systemd`.
+where the image may be `rockylinux/rockylinux:8` or `localhost/rocky9systemd`.
+
+Tested with version 8.7.0 of `ansible`, 2.15.13 of `ansible-core` (installed when python version is 3.9).
 
 Other useful options during development:
 - Prevent destroying instances by using `molecule test --destroy never`
