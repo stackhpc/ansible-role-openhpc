@@ -79,6 +79,10 @@ jobs:
         working-directory: molecule/images
         if: matrix.image == 'localhost/rocky9systemd'
 
+      - name: Load rocky8 container image
+        run: podman pull ${{ matrix.image }}
+        if: matrix.image != 'localhost/rocky9systemd'
+
       - name: Set up Python 3.
         uses: actions/setup-python@v4
         with:
