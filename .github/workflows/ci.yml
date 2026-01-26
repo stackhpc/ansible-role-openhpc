@@ -99,6 +99,22 @@ jobs:
       - name: Create ansible.cfg with correct roles_path
         run:  printf '[defaults]\nroles_path=../' >ansible.cfg
 
+      - name: Enable the cpuset controller
+        run: |
+          echo "======== BEFORE ========"
+          find /sys/fs/cgroup/ -name cgroup.subtree_control -exec grep -H '' '{}' ';'
+          echo "==== CHANGING CPUSET ==="
+          set -x
+          echo +cpuset | sudo tee  /sys/fs/cgroup/user.slice/cgroup.subtree_control
+          echo +cpuset | sudo tee  /sys/fs/cgroup/user.slice/user-1001.slice/cgroup.subtree_control
+          echo +cpuset | sudo tee  /sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/cgroup.subtree_control
+          echo +cpuset | sudo tee  /sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/session.slice/cgroup.subtree_control
+          echo +cpuset | sudo tee  /sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/user.slice/cgroup.subtree_control
+          echo +cpuset | sudo tee  /sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/cgroup.subtree_control
+          set +x
+          echo "======= CHECKING ======="
+          find /sys/fs/cgroup/ -name cgroup.subtree_control -exec grep -H '' '{}' ';'
+
       - name: Run Molecule tests.
         run: molecule test -s ${{ matrix.scenario }}
         env:
