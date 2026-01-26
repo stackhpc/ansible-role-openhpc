@@ -81,7 +81,7 @@ openhpc_slurm_accounting_storage_user: slurm
 #openhpc_slurm_accounting_storage_pass:
 
 # Job accounting
-openhpc_slurm_job_acct_gather_type: jobacct_gather/linux
+openhpc_slurm_job_acct_gather_type: jobacct_gather/cgroup
 openhpc_slurm_job_acct_gather_frequency: 30
 openhpc_slurm_job_comp_type: jobcomp/none
 openhpc_slurm_job_comp_loc: /var/log/slurm_jobacct.log
