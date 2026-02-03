@@ -17,8 +17,13 @@
   - name: Assert expected SelectTypeParameters
     ansible.builtin.assert:
       that: ansible_local.slurm.SelectTypeParameters in ('CR_CORE', 'CR_CORE_MEMORY')
-  - ansible.builtin.shell: >
+  - ansible.builtin.shell: |
       printf '#!bin/bash\nsleep 500' | sbatch --cpus-per-task=1 --ntasks=1 --mem=200m --nodelist=testohpc-compute-0
+      retry=0
+      while [[ "$retry" -lt 10 ]] && ! squeue -l | grep -q RUNNING; do
+        sleep 1
+        retry=$(( retry + 1))
+      done
   - name: Get cpuset cgroup limit
     shell: cat /sys/fs/cgroup/system.slice/testohpc-compute-0_slurmstepd.scope/job_*/cpuset.cpus
     register: job_cpuset
