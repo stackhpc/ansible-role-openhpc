@@ -24,7 +24,7 @@ openhpc_default_config:
   SlurmctldTimeout: 300
   SchedulerType: sched/backfill
   SelectType: select/cons_tres
-  SelectTypeParameters: CR_Core_Memory
+  SelectTypeParameters: CR_Core
   PriorityWeightPartition: 1000
   PreemptType: preempt/partition_prio
   PreemptMode: SUSPEND,GANG
