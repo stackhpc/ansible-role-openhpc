@@ -6,7 +6,7 @@
   - name: Get slurm partition info
     command: sinfo --noheader --format="%P,%a,%l,%D,%t,%N" # using --format ensures we control whitespace
     register: sinfo
-  - name:
+  - name: Check nodes are up/idle
     assert:                        # PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
       that: "sinfo.stdout_lines == ['compute*,up,60-00:00:00,2,idle,testohpc-compute-[0-1]']"
       fail_msg: "FAILED - actual value: {{ sinfo.stdout_lines }}"
