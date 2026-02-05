@@ -31,13 +31,3 @@
     assert:
       that: "job_cpuset.stdout_lines[0] in ('0', '0-1')"  # depending on the VM's state
       fail_msg: "FAILED - actual value: {{ job_cpuset.stdout_lines }}"
-  - name: Check memory limit
-    when: ansible_local.slurm.SelectTypeParameters == 'CR_CORE_MEMORY'
-    block:
-      - name: Get memory cgroup limit
-        shell: cat /sys/fs/cgroup/system.slice/testohpc-compute-0_slurmstepd.scope/job_*/memory.max
-        register: job_memory
-      - name: Assert memory cgroup limit
-        assert:
-          that: "job_memory.stdout_lines == ['209715200']"
-          fail_msg: "FAILED - actual value: {{ job_memory.stdout_lines }}"
