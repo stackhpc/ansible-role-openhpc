@@ -21,7 +21,7 @@
       enable: control
     - path: "{{ openhpc_slurm_conf_path | dirname }}"
       enable: control
-    - path: "{{ openhpc_slurmd_spool_dir }}" # SlurmdSpoolDir
+    - path: "/var/spool/slurmd" # SLURM's default for SlurmdSpoolDir
       enable: batch
   when: "openhpc_enable[item.enable] | default(false) | bool"
 

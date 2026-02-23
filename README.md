@@ -149,8 +149,6 @@ that this is *not the same* as the Ansible `omit` [special variable](https://doc
 
 `openhpc_state_save_location`: Optional. Absolute path for Slurm controller state (`slurm.conf` parameter [StateSaveLocation](https://slurm.schedmd.com/slurm.conf.html#OPT_StateSaveLocation))
 
-`openhpc_slurmd_spool_dir`: Optional. Absolute path for slurmd state (`slurm.conf` parameter [SlurmdSpoolDir](https://slurm.schedmd.com/slurm.conf.html#OPT_SlurmdSpoolDir))
-
 `openhpc_slurm_conf_template`: Optional. Path of Jinja template for `slurm.conf` configuration file. Default is `slurm.conf.j2` template in role. **NB:** The required templating is complex, if just setting specific parameters use `openhpc_config` intead.
 
 `openhpc_slurm_conf_path`: Optional. Path to template `slurm.conf` configuration file to. Default `/etc/slurm/slurm.conf`

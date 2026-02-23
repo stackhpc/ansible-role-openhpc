@@ -18,7 +18,6 @@ openhpc_default_config:
   SlurmctldHost: "{{ openhpc_slurm_control_host }}{% if openhpc_slurm_control_host_address is defined %}({{ openhpc_slurm_control_host_address }}){% endif %}"
   ProctrackType: proctrack/cgroup
   TaskPlugin: task/cgroup,task/affinity
-  SlurmdSpoolDir: /var/spool/slurm # NB: not OpenHPC default!
   SlurmUser: slurm
   StateSaveLocation: "{{ openhpc_state_save_location }}"
   SlurmctldTimeout: 300
@@ -68,7 +67,6 @@ openhpc_mpi_template: mpi.conf.j2
 openhpc_mpi_config: {}
 
 openhpc_state_save_location: /var/spool/slurmctld
-openhpc_slurmd_spool_dir: /var/spool/slurm
 openhpc_slurm_conf_path: /etc/slurm/slurm.conf
 openhpc_slurm_conf_template: slurm.conf.j2
 
