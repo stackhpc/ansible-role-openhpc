@@ -17,6 +17,7 @@ openhpc_default_config:
   # This only defines values which are not Slurm defaults
   SlurmctldHost: "{{ openhpc_slurm_control_host }}{% if openhpc_slurm_control_host_address is defined %}({{ openhpc_slurm_control_host_address }}){% endif %}"
   ProctrackType: proctrack/cgroup
+  RebootProgram: /sbin/reboot
   TaskPlugin: task/cgroup,task/affinity
   SlurmdSpoolDir: /var/spool/slurm # NB: not OpenHPC default!
   SlurmUser: slurm
