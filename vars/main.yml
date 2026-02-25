@@ -35,9 +35,27 @@ ohpc_nodegroups_computed: >
           "first_host": {{ first_host | to_json }},
           "ram_mb": {{ ram_mb }},
           "def_mem_per_cpu": {{ (ram_mb / first_host_hv['ansible_processor_vcpus']) | int }},
+  {%         if 'gres' in nodegroup -%}
+          "gres": {{ ','.join(nodegroup.gres | map(attribute='conf')) | to_json }},
+  {%         elif nodegroup.gres_autodetect | default(openhpc_gres_autodetect) == 'nvml' and first_host_hv['ohpc_node_gpu_gres'] != '' -%}
+          "gres": {{ first_host_hv['ohpc_node_gpu_gres'] | to_json }},
+          {% endif %}
       },
   {%      endif %}
   {% endfor %}
   }
+
+ohpc_accounting_storage_tres: >-
+  {%- set tres =
+      ohpc_nodegroups_computed.values()
+      | selectattr('gres', 'defined') | map(attribute='gres')
+      | map('regex_replace', ':[0-9]+(,|$)', '\\1')
+      | map('split', ',')
+      | flatten | sort | unique
+      | map('regex_replace', '^', 'gres/')
+      | join(',')
+  -%}
+  {# add the generic gres/gpu otherwise a job requesting `--gpus 1` or `--gres=gpu:1` will be assigned to a "random" gpu model #}
+  {{ ('gres/gpu:' in tres and not tres is search('gres/gpu(,|$)')) | ternary('gres/gpu,' ~ tres, tres) }}
 
 ...
