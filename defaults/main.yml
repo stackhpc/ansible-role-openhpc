@@ -30,7 +30,7 @@ openhpc_default_config:
   AccountingStoragePass: "{{ openhpc_slurm_accounting_storage_pass | default('omit') }}"
   AccountingStorageHost: "{{ openhpc_slurm_accounting_storage_host }}"
   AccountingStoragePort: "{{ openhpc_slurm_accounting_storage_port }}"
-  AccountingStorageType: "{{ openhpc_slurm_accounting_storage_type }}"
+  AccountingStorageType: "{{ openhpc_slurm_accounting_storage_type | default('omit') }}"
   AccountingStorageUser: "{{ openhpc_slurm_accounting_storage_user }}"
   JobCompLoc: "{{ openhpc_slurm_job_comp_loc }}"
   JobCompType: "{{ openhpc_slurm_job_comp_type }}"
@@ -73,7 +73,6 @@ openhpc_slurm_conf_template: slurm.conf.j2
 # Accounting
 openhpc_slurm_accounting_storage_host: "{{ openhpc_slurmdbd_host }}"
 openhpc_slurm_accounting_storage_port: 6819
-openhpc_slurm_accounting_storage_type: accounting_storage/none
 # NOTE: You only need to set these if using accounting_storage/mysql
 openhpc_slurm_accounting_storage_user: slurm
 #openhpc_slurm_accounting_storage_pass:
