@@ -1,7 +1,7 @@
 ClusterName={{ openhpc_cluster_name }}
 
 # PARAMETERS
-{% for k, v in openhpc_default_config | combine(openhpc_config) | items %}
+{% for k, v in openhpc_merged_config | items %}
 {%  if v != "omit" %}{# allow removing items using setting key: omit #}
 {%    if k != 'SlurmctldParameters' %}{# handled separately due to configless mode #}
 {{ k }}={{ v | join(',') if (v is sequence and v is not string) else v }}
@@ -9,7 +9,7 @@ ClusterName={{ openhpc_cluster_name }}
 {%  endif %}
 {% endfor %}
 
-{% set slurmctldparameters = ((openhpc_config.get('SlurmctldParameters', []) + ['enable_configless']) | unique) %}
+{% set slurmctldparameters = ((openhpc_merged_config.get('SlurmctldParameters', []) + ['enable_configless']) | unique) %}
 SlurmctldParameters={{ slurmctldparameters | join(',') }}
 
 # LOGIN-ONLY NODES
