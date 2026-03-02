@@ -26,8 +26,6 @@ openhpc_default_config:
   SelectType: select/cons_tres
   SelectTypeParameters: CR_Core
   PriorityWeightPartition: 1000
-  PreemptType: preempt/partition_prio
-  PreemptMode: SUSPEND,GANG
   AccountingStoragePass: "{{ openhpc_slurm_accounting_storage_pass | default('omit') }}"
   AccountingStorageHost: "{{ openhpc_slurm_accounting_storage_host }}"
   AccountingStoragePort: "{{ openhpc_slurm_accounting_storage_port }}"
