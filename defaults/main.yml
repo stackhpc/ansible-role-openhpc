@@ -101,6 +101,13 @@ openhpc_slurmdbd_default_config:
   # NOTE: By default, slurmdbd will log to syslog
   # LogFile: /var/log/slurm/slurmdbd.log
   PidFile: /var/run/slurmdbd.pid
+  PurgeEventAfter: 24month
+  PurgeJobAfter: 24month
+  PurgeResvAfter: 24month
+  PurgeStepAfter: 24month
+  PurgeSuspendAfter: 24month
+  PurgeTXNAfter: 24month
+  PurgeUsageAfter: 24month
   SlurmUser: slurm
   StorageType: accounting_storage/mysql
   StorageHost: "{{ openhpc_slurmdbd_mysql_host }}"
