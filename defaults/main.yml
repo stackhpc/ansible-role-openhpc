@@ -92,6 +92,25 @@ openhpc_slurmdbd_mysql_host: "{{ openhpc_slurm_control_host }}"
 openhpc_slurmdbd_mysql_database: slurm_acct_db
 #openhpc_slurmdbd_mysql_password:
 openhpc_slurmdbd_mysql_username: slurm
+openhpc_slurmdbd_default_config:
+  AuthType: auth/munge
+  DbdHost: "{{ openhpc_slurmdbd_host }}"
+  DbdAddr: "{{ openhpc_slurmdbd_host }}"
+  DbdPort: "{{ openhpc_slurmdbd_port }}"
+  DebugLevel: verbose
+  # NOTE: By default, slurmdbd will log to syslog
+  # LogFile: /var/log/slurm/slurmdbd.log
+  PidFile: /var/run/slurmdbd.pid
+  SlurmUser: slurm
+  StorageType: accounting_storage/mysql
+  StorageHost: "{{ openhpc_slurmdbd_mysql_host }}"
+  StorageUser: "{{ openhpc_slurmdbd_mysql_username }}"
+  StoragePass: "{{ openhpc_slurmdbd_mysql_password | mandatory('You must set openhpc_slurmdbd_mysql_password') }}"
+  StorageLoc: "{{ openhpc_slurmdbd_mysql_database }}"
+
+# override openhpc_slurmdbd_config in the appliance
+openhpc_slurmdbd_config: {}
+
 
 openhpc_enable:
   control: false
