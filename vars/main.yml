@@ -40,4 +40,6 @@ ohpc_nodegroups_computed: >
   {% endfor %}
   }
 
+openhpc_slurmdbd_merged_config: "{{ openhpc_slurmdbd_default_config | combine(openhpc_slurmdbd_config) }}"
+
 ...
