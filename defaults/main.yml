@@ -24,7 +24,7 @@ openhpc_default_config:
   SlurmctldTimeout: 300
   SchedulerType: sched/backfill
   SelectType: select/cons_tres
-  SelectTypeParameters: CR_Core
+  SelectTypeParameters: CR_Core_Memory
   PriorityWeightPartition: 1000
   PreemptType: preempt/partition_prio
   PreemptMode: SUSPEND,GANG
@@ -43,6 +43,7 @@ openhpc_default_config:
   Epilog: /etc/slurm/slurm.epilog.clean
   ReturnToService: 2
   GresTypes: "{{ ohpc_gres_types if ohpc_gres_types != '' else 'omit' }}"
+  DefMemPerCPU: "{{ ohpc_nodegroups_computed.values() | map(attribute='def_mem_per_cpu') | default([100], true) | min }}"
 openhpc_cgroup_default_config:
   ConstrainCores: "yes"
   ConstrainDevices: "yes"
