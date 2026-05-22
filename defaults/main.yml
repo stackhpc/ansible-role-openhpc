@@ -33,6 +33,7 @@ openhpc_default_config:
   AccountingStoragePort: "{{ openhpc_slurm_accounting_storage_port }}"
   AccountingStorageType: "{{ openhpc_slurm_accounting_storage_type | default('omit') }}"
   AccountingStorageUser: "{{ openhpc_slurm_accounting_storage_user }}"
+  AccountingStorageTRES: "{{ ohpc_accounting_storage_tres | trim | default('omit', true) }}"
   JobCompLoc: "{{ openhpc_slurm_job_comp_loc }}"
   JobCompType: "{{ openhpc_slurm_job_comp_type }}"
   JobAcctGatherFrequency: "{{ openhpc_slurm_job_acct_gather_frequency }}"
