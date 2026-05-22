@@ -90,9 +90,9 @@
   template:
     src: "{{ openhpc_gres_template }}"
     dest: "{{ openhpc_slurm_conf_path | dirname }}/gres.conf"
-    mode: "0600"
-    owner: slurm
-    group: slurm
+    mode: "0644"
+    owner: root
+    group: root
   when: openhpc_enable.control | default(false)
   notify:
     - Restart slurmctld service
