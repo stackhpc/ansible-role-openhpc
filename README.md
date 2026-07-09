@@ -234,6 +234,10 @@ for the accounting storage database, e.g. `mysql`. If this is defined this
 service is stopped before the backup and restarted after, to allow for physical
 backups. Default is the empty string, which does not stop/restart any service.
 
+`openhpc_mysql_interpreter`: Optional. Value of `ansible_python_interpreter`
+to use for `community.mysql.mysql_query` module - should be set to whatever
+was used to install `pymysql`.
+
 ## Facts
 
 This role creates local facts from the live Slurm configuration, which can be

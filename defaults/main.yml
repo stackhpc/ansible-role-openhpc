@@ -167,3 +167,4 @@ openhpc_slurm_accounting_storage_backup_cmd: ''
 openhpc_slurm_accounting_storage_backup_host: "{{ openhpc_slurm_accounting_storage_host }}"
 openhpc_slurm_accounting_storage_backup_become: true
 openhpc_slurm_accounting_storage_client_package: mysql
+openhpc_mysql_interpreter: /usr/bin/python3.9 # Need non-default python to use installed recent pymysql version, with fixed SQL injection vulnerability
