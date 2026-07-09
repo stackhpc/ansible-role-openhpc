@@ -11,8 +11,8 @@
     query: SHOW TABLES
     config_file: ''
   register: _openhpc_slurmdb_tables
-  # Need non-default python to use installed recent pymysql version, with fixed SQL injection vulnerability
-  ansible_python_interpreter: /usr/bin/python3.9
+  vars:
+    ansible_python_interpreter: "{{ openhpc_mysql_interpreter }}"
 
 - name: Check if slurm database requires an upgrade
   ansible.builtin.command: slurmdbd -u
