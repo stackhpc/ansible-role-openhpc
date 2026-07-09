@@ -17,6 +17,7 @@ ohpc_slurm_packages:
     - "{{ 'lmod-ohpc' if openhpc_module_system_install else '' }}"
   database:
     - "slurm-slurmdbd-ohpc"
+    - "python3-pexpect"
 
 openhpc_merged_config: "{{ openhpc_default_config | combine(openhpc_config) }}"
 ...
