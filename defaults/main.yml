@@ -167,4 +167,5 @@ openhpc_slurm_accounting_storage_service: ''
 openhpc_slurm_accounting_storage_backup_cmd: ''
 openhpc_slurm_accounting_storage_backup_host: "{{ openhpc_slurm_accounting_storage_host }}"
 openhpc_slurm_accounting_storage_backup_become: true
+openhpc_slurm_accounting_storage_backup_timeout: "{{ 45 * 60 }}" # seconds
 openhpc_slurm_accounting_storage_client_package: mysql

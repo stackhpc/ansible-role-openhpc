@@ -71,6 +71,9 @@
 - name: Run slurmdbd in foreground for upgrade
   ansible.builtin.expect:
     command: /usr/sbin/slurmdbd -D -vvv
+    timeout: "{{ openhpc_slurm_accounting_storage_backup_timeout }}"
+    # docs say null but that's a bug in this ansible-core
+    # https://github.com/ansible/ansible/issues/80982
     responses:
       (?i)Everything rolled up:
   # See https://wiki.fysik.dtu.dk/Niflheim_system/Slurm_installation/#upgrade-slurmdbd
@@ -78,4 +81,6 @@
   # https://github.com/SchedMD/slurm/blob/0ce058c5adcf63001ec2ad211c65e67b0e7682a8/src/plugins/accounting_storage/mysql/as_mysql_usage.c#L1042
   become: true
   become_user: slurm
+  async: "{{ openhpc_slurm_accounting_storage_backup_timeout }}"
+  poll: 10
   when: _openhpc_slurmdb_upgrade
