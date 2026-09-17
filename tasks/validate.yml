@@ -55,3 +55,37 @@
     fail_msg: stackhpc.openhpc parameter openhpc_munge_key has been replaced with openhpc_munge_key_b64
   delegate_to: localhost
   run_once: true
+
+- name: Fail if slurmd spool directory has changed
+  # This will kill running jobs, so is usually incorrect
+  # Check here relies on configless mode (always the case)
+  # which caches config inside SlurmdSpoolDir on slurmd nodes:
+  # https://slurm.schedmd.com/configless_slurm.html
+  vars:
+    # If "new" SlurmdSpoolDir not defined, assume slurm default:
+    _openhpc_slurmd_spool_dir: "{{ openhpc_merged_config.SlurmdSpoolDir | default('/var/spool/slurmd') }}"
+    _openhpc_force_slurmdspooldir_change_bool: "{{ openhpc_force_slurmdspooldir_change | bool }}"
+  when: openhpc_enable.batch | default(false)
+  block:
+    - name: Find slurmd configuration cache
+      ansible.builtin.find:
+        paths:
+          - /var/spool # this is an assumption!
+        recurse: true
+        contains: SlurmctldHost
+      register: _openhpc_slurmd_conf_cache
+    - name: Set fact for current SlurmdSpoolDir
+      # If there is none, i.e. slurmd never started, don't care so assume same as new:
+      ansible.builtin.set_fact:
+        _openhpc_slurmd_spooldir_current: "{{ _openhpc_slurmd_conf_cache.files[0].path | dirname | dirname if _openhpc_slurmd_conf_cache.matched > 0 else _openhpc_slurmd_spool_dir }}"
+    - name: Fail if SlurmdSpoolDir changing
+      ansible.builtin.assert:
+        that: _openhpc_slurmd_spooldir_current == _openhpc_slurmd_spool_dir
+        fail_msg: >
+          {% if _openhpc_force_slurmdspooldir_change_bool %}WARNING:{% else %}ERROR{% endif %} SlurmdSpoolDir is currently {{ _openhpc_slurmd_spooldir_current }}
+          but new config will use {{ _openhpc_slurmd_spool_dir }} - this change will terminate any running jobs!
+          {% if not _openhpc_force_slurmdspooldir_change_bool %}Set openhpc_force_slurmdspooldir_change to true to force this change.{% endif %}
+      register: _openhpc_slurmd_spooldir_assert
+      failed_when:
+        - _openhpc_slurmd_spooldir_assert is failed
+        - not _openhpc_force_slurmdspooldir_change_bool
