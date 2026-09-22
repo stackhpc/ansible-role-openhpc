@@ -70,6 +70,7 @@ openhpc_mpi_config: {}
 openhpc_state_save_location: /var/spool/slurmctld
 openhpc_slurm_conf_path: /etc/slurm/slurm.conf
 openhpc_slurm_conf_template: slurm.conf.j2
+openhpc_force_slurmdspooldir_change: false
 
 # Accounting
 openhpc_slurm_accounting_storage_host: "{{ openhpc_slurmdbd_host }}"
