@@ -12,13 +12,13 @@
 - name: Debug openhpc_merged_config on all hosts
   ansible.builtin.debug:
     var: openhpc_merged_config
-  when: openhpc_debug_config | bool
+  when: openhpc_debug_config | default(false) | bool
 
 - name: Validate merged configuration exists
   # Otherwise undefined variables used to define this willcause the SlurmdSpoolDir check below to incorrectly pass
   ansible.builtin.assert:
     that: openhpc_merged_config is defined
-    fail_msg: "openhpc_merged_config is not defined. Run again setting -vv and -e openhpc_debug_config=true for debugging"
+    fail_msg: "openhpc_merged_config is not defined. Run again setting -v and -e openhpc_debug_config=true for debugging"
 
 - name: Validate nodegroups define names
   # Needed for the next check..
