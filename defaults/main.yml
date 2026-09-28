@@ -101,6 +101,7 @@ openhpc_enable:
   batch: false
   database: false
   runtime: false
+  rest: false
 
 # Only used for install-generic.yml:
 openhpc_generic_packages:
@@ -176,3 +177,7 @@ openhpc_slurm_accounting_storage_client_package: mysql
 # auth/jwt
 openhpc_jwt_enabled: false
 openhpc_jwt_key_b64:
+
+# slurmrestd
+openhpc_slurmrestd_listen_endpoints:
+  - 127.0.0.1:6282
