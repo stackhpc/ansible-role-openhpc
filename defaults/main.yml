@@ -33,6 +33,8 @@ openhpc_default_config:
   AccountingStoragePort: "{{ openhpc_slurm_accounting_storage_port }}"
   AccountingStorageType: "{{ openhpc_slurm_accounting_storage_type | default('omit') }}"
   AccountingStorageUser: "{{ openhpc_slurm_accounting_storage_user }}"
+  AuthAltTypes: "{{ 'auth/jwt' if openhpc_jwt_enabled else 'omit' }}"
+  AuthAltParameters: "{{ ('jwt_key=' ~ openhpc_jwt_key_path) if openhpc_jwt_enabled else 'omit' }}"
   JobCompLoc: "{{ openhpc_slurm_job_comp_loc }}"
   JobCompType: "{{ openhpc_slurm_job_comp_type }}"
   JobAcctGatherFrequency: "{{ openhpc_slurm_job_acct_gather_frequency }}"
@@ -170,3 +172,7 @@ openhpc_slurm_accounting_storage_backup_host: "{{ openhpc_slurm_accounting_stora
 openhpc_slurm_accounting_storage_backup_become: true
 openhpc_slurm_accounting_storage_backup_timeout: "{{ 45 * 60 }}" # seconds
 openhpc_slurm_accounting_storage_client_package: mysql
+
+# auth/jwt
+openhpc_jwt_enabled: false
+openhpc_jwt_key_b64:

@@ -42,6 +42,17 @@
     mode: '0400'
   register: _openhpc_munge_key_copy
 
+- name: Write JWT key
+  copy:
+    content: "{{ openhpc_jwt_key_b64 | b64decode }}"
+    dest: "{{ openhpc_jwt_key_path }}"
+    owner: root
+    group: slurm
+    mode: '0640'
+  when:
+    - openhpc_enable.control | default(false)
+    - openhpc_jwt_key_b64 | default('') != ''
+
 - name: Ensure JobComp logfile exists
   file:
     path: "{{ openhpc_slurm_job_comp_loc }}"
