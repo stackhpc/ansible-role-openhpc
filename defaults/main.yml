@@ -40,6 +40,7 @@ openhpc_default_config:
   SlurmctldSyslogDebug: info
   SlurmdSyslogDebug: info
   PropagateResourceLimitsExcept: MEMLOCK
+  EnforcePartLimits: ANY
   Epilog: /etc/slurm/slurm.epilog.clean
   ReturnToService: 2
   GresTypes: "{{ ohpc_gres_types if ohpc_gres_types != '' else 'omit' }}"
