@@ -247,6 +247,9 @@ was used to install `pymysql`.
 
 `openhpc_slurmrestd_listen_endpoints`: Optional. List of endpoints for slurmrestd to listen on. Default is `['127.0.0.1:6282']`.
 
+`openhpc_slurmrestd_plugins`: Optional. List of openapi plugins to enable. Default empty (load all), except for RL8 when slurmdbd is not configured.
+There should be no need to change this. Use `slurmrestd -s list` for the list of available plugins.
+
 ## Facts
 
 This role creates local facts from the live Slurm configuration, which can be

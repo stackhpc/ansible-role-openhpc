@@ -1,5 +1,26 @@
 ---
 
+- name: Verify slurmrestd is working properly
+  hosts: testohpc_login
+  tasks:
+  - name: Get slurm token
+    shell: scontrol token | sed s,SLURM_JWT=,,
+    register: _root_jwt_token
+  - name: Query slurmrestd (slurmdbd)
+    register: _slurmrestd_ping_response
+    ansible.builtin.uri:
+      headers:
+        "X-SLURM-USER-TOKEN": "{{ _root_jwt_token.stdout }}"
+      url: http://127.0.0.1:6282/slurmdb/v0.0.42/ping
+      return_content: true
+  - debug:
+      var: _slurmrestd_ping_response
+  - name: Check slurmrestd ping response
+    ansible.builtin.assert:
+      that:
+        - _slurmrestd_ping_response.status == 200
+        - _slurmrestd_ping_response.json.pings[0].responding
+
 - name: Check slurm hostlist
   hosts: testohpc_login
   tasks:

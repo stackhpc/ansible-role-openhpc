@@ -6,7 +6,10 @@
       control: "{{ inventory_hostname in groups['testohpc_login'] }}"
       batch: "{{ inventory_hostname in groups['testohpc_compute'] }}"
       database: "{{ inventory_hostname in groups['testohpc_login'] }}"
+      rest: "{{ inventory_hostname in groups['testohpc_login'] }}"
       runtime: true
+    openhpc_jwt_enabled: true
+    openhpc_jwt_key_b64: JNeOItdJWyJ1eP2/BNP0wgA8MGkBc7MD2fiZVCNo5G0=
     openhpc_slurm_accounting_storage_type: 'accounting_storage/slurmdbd'
     openhpc_slurmdbd_mysql_database: slurm_acct_db
     openhpc_slurmdbd_mysql_password: secure-password
