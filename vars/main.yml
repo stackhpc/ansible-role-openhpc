@@ -18,6 +18,8 @@ ohpc_slurm_packages:
   database:
     - "slurm-slurmdbd-ohpc"
     - "python3-pexpect"
+  rest:
+    - "slurm-ohpc-slurmrestd"
 
 openhpc_merged_config: "{{ openhpc_default_config | combine(openhpc_config) }}"
 

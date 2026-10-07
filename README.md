@@ -36,6 +36,7 @@ Variables only relevant for `install-ohpc.yml` or `install-generic.yml` task fil
 * `control`: whether to enable control host
 * `database`: whether to enable slurmdbd
 * `batch`: whether to enable compute nodes
+* `rest`: whether to enable slurmrestd
 * `runtime`: whether to enable OpenHPC runtime
 
 `openhpc_slurmdbd_host`: Optional. Where to deploy slurmdbd if are using this role to deploy slurmdbd, otherwise where an existing slurmdbd is running. This should be the name of a host in your inventory. Set this to `none` to prevent the role from managing slurmdbd. Defaults to `openhpc_slurm_control_host`.
@@ -242,6 +243,10 @@ backups. Default is the empty string, which does not stop/restart any service.
 to use for `community.mysql.mysql_query` module - should be set to whatever
 was used to install `pymysql`.
 
+### slurmrestd
+
+`openhpc_slurmrestd_listen_endpoints`: Optional. List of endpoints for slurmrestd to listen on. Default is `['127.0.0.1:6282']`.
+
 ## Facts
 
 This role creates local facts from the live Slurm configuration, which can be
@@ -422,3 +427,23 @@ mechanisms, e.g. `nvidia` or `rsmi` allow the `gres.file:` specification to be
 omitted but still require `gres.conf:` to be defined.
 
 <b id="slurm_ver_footnote">1</b> Slurm 20.11 removed `accounting_storage/filetxt` as an option. This version of Slurm was introduced in OpenHPC v2.1 but the OpenHPC repos are common to all OpenHPC v2.x releases. [↩](#accounting_storage)
+
+## Slurm REST API
+
+`slurmrestd` can be enabled by setting `openhpc_enable.rest: true` on one or more cluster nodes (can be control, or a separate but it is usually better
+on the Open OnDemand nodes).
+
+Because OpenHPC's Slurm packages don't include the TLS plugin, slurmrestd only supports HTTP plaintext requests.
+It is best to run it behind an TLS termination and reverse-proxy, for instance on the Open OnDemand node, because it already has
+a floating IP and inbound internet connectivity for certbot. This is outside of the scope of this role.
+
+We support only the [JWT setup for Standalone Use](https://slurm.schedmd.com/jwt.html#setup), where a symetric jwt key is
+managed by the Slurm controller.
+
+Users obtain a JWT token via `scontrol token` and call Slurm REST API on slurmrestd, with their token in the `X-SLURM-USER-TOKEN` header.
+In turn, slurmrestd uses the slurm libraries to communicate with the Slurm controller, forwarding the given token.
+
+The `slurmrestd` daemon needs a copy of `slurm.conf` to operate. When it is deployed to a different node than the control node in configless mode,
+it depends on `slurmd` to fetch the configuration. We override the `slurmrestd.service` unit to automate this:
+- When `slurmd` restarts, it will also restart `slurmrestd`.
+- `slurmrest` will not start until `/var/spool/slurmd/conf-cache/slurm.conf` exists
