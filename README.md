@@ -122,6 +122,10 @@ yaml conversion to `false`.
 [slurm.conf:MaxTime](https://slurm.schedmd.com/slurm.conf.html#OPT_MaxTime).
 **NB:** This should be quoted to avoid Ansible conversions.
 
+`openhpc_jwt_enabled`: Whether to enable the `auth/jwt` extra authentication method in Slurm (needed for slurmrestd), default `false`.
+
+`openhpc_jwt_key_b64`: Symetric key for jwt authentication. **Required if openhpc_jwt_enabled**. Define it as 32 bytes of random data, base64 encoded.
+
 `openhpc_cluster_name`: name of the cluster.
 
 `openhpc_config`: Optional. Mapping of additional parameters and values for

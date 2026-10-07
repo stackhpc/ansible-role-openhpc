@@ -100,3 +100,9 @@
       failed_when:
         - _openhpc_slurmd_spooldir_assert is failed
         - not _openhpc_force_slurmdspooldir_change_bool
+
+- name: Fail if JWT is enabled but there is no JWT key
+  ansible.builtin.assert:
+    that:
+      - not openhpc_jwt_enabled or (openhpc_jwt_key_b64 | default('') | length) >= 44
+    fail_msg: Please give a value for openhpc_jwt_key_b64
