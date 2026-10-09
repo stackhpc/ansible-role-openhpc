@@ -433,14 +433,14 @@ omitted but still require `gres.conf:` to be defined.
 
 ## Slurm REST API
 
-`slurmrestd` can be enabled by setting `openhpc_enable.rest: true` on one or more cluster nodes (can be control, or a separate but it is usually better
-on the Open OnDemand nodes).
+`slurmrestd` can be enabled by setting `openhpc_enable.rest: true` on one or more cluster nodes (can be the control node or a separate node, but it is usually better
+on the node running Open OnDemand, if present).
 
 Because OpenHPC's Slurm packages don't include the TLS plugin, slurmrestd only supports HTTP plaintext requests.
 It is best to run it behind an TLS termination and reverse-proxy, for instance on the Open OnDemand node, because it already has
 a floating IP and inbound internet connectivity for certbot. This is outside of the scope of this role.
 
-We support only the [JWT setup for Standalone Use](https://slurm.schedmd.com/jwt.html#setup), where a symetric jwt key is
+This role only supports the [JWT setup for Standalone Use](https://slurm.schedmd.com/jwt.html#setup), where a symmetric jwt key is
 managed by the Slurm controller.
 
 Users obtain a JWT token via `scontrol token` and call Slurm REST API on slurmrestd, with their token in the `X-SLURM-USER-TOKEN` header.
