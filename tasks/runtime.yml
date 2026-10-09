@@ -50,7 +50,7 @@
     group: slurm
     mode: '0640'
   when:
-    - openhpc_enable.control | default(false)
+    - (openhpc_enable.control | default(false)) or (openhpc_enable.database | default(false))
     - openhpc_jwt_key_b64 | default('') != ''
 
 - name: Ensure JobComp logfile exists
@@ -217,6 +217,8 @@
     - name: Ensure slurmrestd.service.d/override.conf is present
       notify:
         - Reload and restart slurmrestd service
+      vars:
+        _openhpc_slurmd_spool_dir: "{{ openhpc_merged_config.SlurmdSpoolDir | default('/var/spool/slurmd') }}"
       ansible.builtin.copy:
         dest: /etc/systemd/system/slurmrestd.service.d/override.conf
         owner: root
@@ -227,7 +229,7 @@
           Requires=slurmd.service
           After=slurmd.service
           ConditionPathExists=
-          ConditionPathExists=|/var/spool/slurmd/conf-cache/slurm.conf
+          ConditionPathExists=|{{ _openhpc_slurmd_spool_dir }}/conf-cache/slurm.conf
 
 - name: Ensure slurmrestd sysconfig
   ansible.builtin.copy:

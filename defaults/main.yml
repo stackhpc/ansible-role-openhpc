@@ -181,8 +181,8 @@ openhpc_mysql_interpreter: /usr/bin/python3.9 # Need non-default python to use i
 
 # auth/jwt
 openhpc_jwt_enabled: false
-openhpc_jwt_key_b64:
 openhpc_jwt_disable_token_creation: false
+openhpc_jwt_key_b64: ''
 
 # slurmrestd
 openhpc_slurmrestd_listen_endpoints:
