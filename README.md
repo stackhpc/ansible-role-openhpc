@@ -440,8 +440,7 @@ omitted but still require `gres.conf:` to be defined.
 on the node running Open OnDemand, if present).
 
 Because OpenHPC's Slurm packages don't include the TLS plugin, slurmrestd only supports HTTP plaintext requests.
-It is best to run it behind an TLS termination and reverse-proxy, for instance on the Open OnDemand node, because it already has
-a floating IP and inbound internet connectivity for certbot. This is outside of the scope of this role.
+It is best to run it behind an TLS termination and reverse-proxy. This is outside of the scope of this role.
 
 This role only supports the [JWT setup for Standalone Use](https://slurm.schedmd.com/jwt.html#setup), where a symmetric jwt key is
 managed by the Slurm controller.
