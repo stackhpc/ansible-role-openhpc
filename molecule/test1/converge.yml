@@ -5,11 +5,14 @@
     openhpc_enable:
       control: "{{ inventory_hostname in groups['testohpc_login'] }}"
       batch: "{{ inventory_hostname in groups['testohpc_compute'] }}"
+      rest: "{{ inventory_hostname in groups['testohpc_login'] }}"
       runtime: true
     openhpc_slurm_control_host: "{{ groups['testohpc_login'] | first }}"
     openhpc_nodegroups:
       - name: "compute"
     openhpc_cluster_name: testohpc
+    openhpc_jwt_enabled: true
+    openhpc_jwt_key_b64: JNeOItdJWyJ1eP2/BNP0wgA8MGkBc7MD2fiZVCNo5G0=
   tasks:
     - name: "Include ansible-role-openhpc"
       include_role:

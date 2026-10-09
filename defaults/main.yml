@@ -33,6 +33,13 @@ openhpc_default_config:
   AccountingStoragePort: "{{ openhpc_slurm_accounting_storage_port }}"
   AccountingStorageType: "{{ openhpc_slurm_accounting_storage_type | default('omit') }}"
   AccountingStorageUser: "{{ openhpc_slurm_accounting_storage_user }}"
+  AuthAltTypes: "{{ 'auth/jwt' if openhpc_jwt_enabled else 'omit' }}"
+  AuthAltParameters: >-
+    {%- if openhpc_jwt_enabled -%}
+      jwt_key={{ openhpc_jwt_key_path }}{% if openhpc_jwt_disable_token_creation %},disable_token_creation{% endif %}
+    {%- else -%}
+      omit
+    {%- endif -%}
   JobCompLoc: "{{ openhpc_slurm_job_comp_loc }}"
   JobCompType: "{{ openhpc_slurm_job_comp_type }}"
   JobAcctGatherFrequency: "{{ openhpc_slurm_job_acct_gather_frequency }}"
@@ -98,6 +105,7 @@ openhpc_enable:
   batch: false
   database: false
   runtime: false
+  rest: false
 
 # Only used for install-generic.yml:
 openhpc_generic_packages:
@@ -170,3 +178,15 @@ openhpc_slurm_accounting_storage_backup_become: true
 openhpc_slurm_accounting_storage_backup_timeout: "{{ 45 * 60 }}" # seconds
 openhpc_slurm_accounting_storage_client_package: mysql
 openhpc_mysql_interpreter: /usr/bin/python3.9 # Need non-default python to use installed recent pymysql version, with fixed SQL injection vulnerability
+
+# auth/jwt
+openhpc_jwt_enabled: false
+openhpc_jwt_disable_token_creation: false
+openhpc_jwt_key_b64: ''
+
+# slurmrestd
+openhpc_slurmrestd_listen_endpoints:
+  - 127.0.0.1:6282
+# slurmrestd 25.05.9 refuses to start with the openapi/slurmdbd plugin if slurmdbd is not configured
+openhpc_slurmrestd_plugins: >-
+  {{ ["openapi/slurmctld"] if not (openhpc_enable.database | default(False)) and ansible_distribution_major_version == "8" else [] }}

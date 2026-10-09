@@ -51,4 +51,18 @@
   yum:
     name: "{{ openhpc_packages + [openhpc_slurm_accounting_storage_client_package] }}"
 
+- name: Ensure slurmrestd group
+  ansible.builtin.group:
+    name: slurmrestd
+    system: true
+
+- name: Create slurmrestd user
+  ansible.builtin.user:
+    name: slurmrestd
+    comment: "Slurm REST daemon unpriviledged user"
+    group: slurmrestd
+    home: /etc/slurm
+    shell: /sbin/nologin
+    system: true
+
 ...
