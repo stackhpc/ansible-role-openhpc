@@ -34,7 +34,12 @@ openhpc_default_config:
   AccountingStorageType: "{{ openhpc_slurm_accounting_storage_type | default('omit') }}"
   AccountingStorageUser: "{{ openhpc_slurm_accounting_storage_user }}"
   AuthAltTypes: "{{ 'auth/jwt' if openhpc_jwt_enabled else 'omit' }}"
-  AuthAltParameters: "{{ ('jwt_key=' ~ openhpc_jwt_key_path) if openhpc_jwt_enabled else 'omit' }}"
+  AuthAltParameters: >-
+    {%- if openhpc_jwt_enabled -%}
+      jwt_key={{ openhpc_jwt_key_path }}{% if openhpc_jwt_disable_token_creation %},disable_token_creation{% endif %}
+    {%- else -%}
+      omit
+    {%- endif -%}
   JobCompLoc: "{{ openhpc_slurm_job_comp_loc }}"
   JobCompType: "{{ openhpc_slurm_job_comp_type }}"
   JobAcctGatherFrequency: "{{ openhpc_slurm_job_acct_gather_frequency }}"
@@ -177,6 +182,7 @@ openhpc_mysql_interpreter: /usr/bin/python3.9 # Need non-default python to use i
 # auth/jwt
 openhpc_jwt_enabled: false
 openhpc_jwt_key_b64:
+openhpc_jwt_disable_token_creation: false
 
 # slurmrestd
 openhpc_slurmrestd_listen_endpoints:

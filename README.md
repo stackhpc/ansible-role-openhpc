@@ -125,6 +125,9 @@ yaml conversion to `false`.
 
 `openhpc_jwt_enabled`: Whether to enable the `auth/jwt` extra authentication method in Slurm (needed for slurmrestd), default `false`.
 
+`openhpc_jwt_disable_token_creation`: Whether to add the AuthAltParameters `disable_token_creation` to prevent users from generating tokens
+(slurm and root can generate them for other users using `scontrol token username=xxx`), default `false`.
+
 `openhpc_jwt_key_b64`: Symetric key for jwt authentication. **Required if openhpc_jwt_enabled**. Define it as 32 bytes of random data, base64 encoded.
 
 `openhpc_cluster_name`: name of the cluster.
