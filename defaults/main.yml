@@ -187,6 +187,8 @@ openhpc_jwt_key_b64: ''
 # slurmrestd
 openhpc_slurmrestd_listen_endpoints:
   - 127.0.0.1:6282
-# slurmrestd 25.05.9 refuses to start with the openapi/slurmdbd plugin if slurmdbd is not configured
+# slurmrestd 25.05.9 (current RL8 version) refuses to start with the openapi/slurmdbd plugin if slurmdbd is not configured
+# and test1 in molecule enables slurmrestd but not slurmdbd.
+# This should be removed when 25.11 or later are available on all supported OS versions.
 openhpc_slurmrestd_plugins: >-
   {{ ["openapi/slurmctld"] if not (openhpc_enable.database | default(False)) and ansible_distribution_major_version == "8" else [] }}
