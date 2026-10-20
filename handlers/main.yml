@@ -61,6 +61,16 @@
     - openhpc_enable.batch | default(false) | bool
     # 2nd condition required as notification happens on controller, which isn't necessarily a compute note
 
+- name: Reload and restart slurmrestd service
+  ansible.builtin.systemd:
+    name: "slurmrestd"
+    state: restarted
+    daemon_reload: true
+  when:
+    - openhpc_slurm_service_started | bool
+    - openhpc_enable.rest | default(false) | bool
+    # 2nd condition required as notification happens on controller, which isn't necessarily a compute note
+
 - name: Reload facts
   ansible.builtin.setup:
     filter: ansible_local

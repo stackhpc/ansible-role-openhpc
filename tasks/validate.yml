@@ -100,3 +100,15 @@
       failed_when:
         - _openhpc_slurmd_spooldir_assert is failed
         - not _openhpc_force_slurmdspooldir_change_bool
+
+- name: Fail if JWT is enabled but there is no JWT key
+  ansible.builtin.assert:
+    that:
+      - not openhpc_jwt_enabled or (openhpc_jwt_key_b64 | default('') | length) >= 44
+    fail_msg: Please give a value for openhpc_jwt_key_b64
+
+- name: Fail if slurmrestd is enabled but not jwt config
+  ansible.builtin.assert:
+    that:
+      - not (openhpc_enable.rest | default(False)) or openhpc_jwt_enabled
+    fail_msg: slurmrestd needs the JWT authentication to be useful, please set openhpc_jwt_enabled to true

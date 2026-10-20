@@ -15,7 +15,11 @@
 # Authentication info
 AuthType=auth/munge
 #AuthInfo=/var/run/munge/munge.socket.2
-#
+{% if openhpc_jwt_enabled %}
+AuthAltTypes=auth/jwt
+AuthAltParameters=jwt_key={{ openhpc_jwt_key_path }}
+{% endif %}
+
 # slurmDBD info
 DbdHost={{ openhpc_slurmdbd_host }}
 DbdAddr={{ openhpc_slurmdbd_host }}
