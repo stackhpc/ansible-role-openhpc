@@ -70,19 +70,27 @@
     - openhpc_slurm_accounting_storage_service != ''
     - _openhpc_slurmdb_state.changed | default(false)
 
-- name: Run slurmdbd in foreground for upgrade
-  ansible.builtin.expect:
-    command: /usr/sbin/slurmdbd -D -vvv
-    timeout: "{{ openhpc_slurm_accounting_storage_backup_timeout }}"
-    # docs say null but that's a bug in this ansible-core
-    # https://github.com/ansible/ansible/issues/80982
-    responses:
-      (?i)Everything rolled up:
-  # See https://wiki.fysik.dtu.dk/Niflheim_system/Slurm_installation/#upgrade-slurmdbd
-  # and
-  # https://github.com/SchedMD/slurm/blob/0ce058c5adcf63001ec2ad211c65e67b0e7682a8/src/plugins/accounting_storage/mysql/as_mysql_usage.c#L1042
+- name: Run slurmdbd in foreground until DB conversion completes
+  # See https://github.com/SchedMD/slurm/blob/master/src/slurmdbd/slurmdbd.c:
+  # acct_storage_g_init() runs the upgrade first
+  # and "started" message only occurs when daemon is "fully operational"
+  ansible.builtin.shell: |
+    log=$(mktemp) || exit 1
+    /usr/sbin/slurmdbd -D -v >"$log" 2>&1 &
+    pid=$!
+    timeout {{ openhpc_slurm_accounting_storage_backup_timeout }} bash -c "
+      until grep -q 'slurmdbd version .* started' '$log'; do
+        kill -0 $pid 2>/dev/null || exit 2   # slurmdbd exited
+        sleep 5
+      done"
+    rc=$?
+    kill -INT "$pid" 2>/dev/null; wait "$pid"
+    cat "$log"; rm -f "$log"
+    exit $rc
   become: true
   become_user: slurm
-  async: "{{ openhpc_slurm_accounting_storage_backup_timeout }}"
+  changed_when: true
+  async: "{{ openhpc_slurm_accounting_storage_backup_timeout | int + 60 }}"
+  # 60 is because on SIGINT, the shutdown path waits for any in-progress rollup thread to finish rather than cancelling it
   poll: 10
   when: _openhpc_slurmdb_upgrade
